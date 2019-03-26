@@ -1,7 +1,7 @@
 # Domoticz-Google-Assistant
 
 Based on the home assistant implementation:
-https://github.com/home-assistant/home- ... _assistant
+https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant
 and https://github.com/actions-on-google/smart-home-nodejs
 
 Required:
