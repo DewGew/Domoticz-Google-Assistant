@@ -15,7 +15,7 @@ Please feel free to modify it, extend and improve
 
 Before first launch, Actions on Google and config.py must be modified properly:
 ```
-PORT_NUMBER = 3030 -> port number for the aog server
+PORT_NUMBER = 3030 -> port number for the Domoticz-Google-Assistant server
 
 SMARTHOMEPROVIDERGOOGLECLIENTID = 'AxqqWpwYj4' - Client ID
 SMARTHOMEPROVIDEGOOGLECLIENTSECRET = '0KUYN5ExD62QOsWCO8zoFSS_' - Client secret
@@ -69,9 +69,9 @@ U_PASSWD = 'password'
   - Do NOT check Google to transmit clientID and secret via HTTP basic auth header.
   - Click ‘Save’ at the top right corner, then click ‘Test’ to generate a new draft version of the Test App.
   
-## Starting aog server:
+## Starting Domoticz-Google-Assistant server:
 ```
-python3 aog
+python3 Domoticz-Google-Assistant
 ```
 ## Force devices sync
 ```
@@ -85,13 +85,13 @@ sudo nano aog.service
 ```
 Add this in nano:
 ```
-Description=AOG Service
+Description=Domoticz-Google-Assistant Service
 After=multi-user.target
 Conflicts=getty@tty1.service
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/python3 /home/${USER}/aog/
+ExecStart=/usr/bin/python3 /home/${USER}/Domoticz-Google-Assistant/
 StandardInput=tty-force
 
 [Install]
