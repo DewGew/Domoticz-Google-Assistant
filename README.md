@@ -29,7 +29,7 @@ U_PASSWD_DOMOTICZ = 'domoticz user password'
 U_NAME = 'username'
 U_PASSWD = 'password'
 ```
-# Setup Instructions
+## Setup Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
   - Click Home Control, then click Smart Home.
   - On the left navigation menu under SETUP, click on Invocation.
