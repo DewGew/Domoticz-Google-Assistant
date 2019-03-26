@@ -24,7 +24,6 @@ IMAGE_LIGHT = ['Light']
 
 #Additional nicknames and room configuration
 DEVICE_CONFIG = {
-
     '135' : {
             'nicknames' : ['Kitchen Blind One'],
             'room' : 'Kitchen' ,
