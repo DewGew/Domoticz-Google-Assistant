@@ -69,11 +69,11 @@ U_PASSWD = 'password'
   - Do NOT check Google to transmit clientID and secret via HTTP basic auth header.
   - Click ‘Save’ at the top right corner, then click ‘Test’ to generate a new draft version of the Test App.
   
-Starting aog server:
+## Starting aog server:
 ```
 python3 aog
 ```
-Force devices sync
+## Force devices sync
 ```
 https://[YOUR REVERSE PROXY URL]/sync
 ```
