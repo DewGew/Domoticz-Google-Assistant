@@ -77,3 +77,29 @@ python3 aog
 ```
 https://[YOUR REVERSE PROXY URL]/sync
 ```
+## Run as service for autorun at startup
+Open terminal or putty.
+```
+cd /etc/systemd/system/
+sudo nano aog.service
+```
+Add this in nano:
+```
+Description=AOG Service
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/${USER}/aog/
+StandardInput=tty-force
+
+[Install]
+WantedBy=multi-user.target
+```
+Then ctrl-x save and close.
+Enable service:
+```
+ sudo systemctl enable aog.service
+ sudo systemctl start aog.service
+```
