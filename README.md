@@ -81,7 +81,7 @@ https://[YOUR REVERSE PROXY URL]/sync
 Open terminal or putty.
 ```
 cd /etc/systemd/system/
-sudo nano domoticzgoogleasssitant.service
+sudo nano dzga.service
 ```
 Add this in nano:
 ```
@@ -100,6 +100,6 @@ WantedBy=multi-user.target
 Then ctrl-x save and close.
 Enable service:
 ```
- sudo systemctl enable domoticzgoogleasssitant.service
- sudo systemctl start domoticzgoogleasssitant.service
+ sudo systemctl enable dzga.service
+ sudo systemctl start dzga.service
 ```
