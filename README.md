@@ -40,7 +40,7 @@ U_PASSWD = 'password'
   - Click Home Control, then click Smart Home.
   - On the left navigation menu under SETUP, click on Invocation.
   - Add your App's name. Click Save.
-  - Click Save.
+  - Click 'Save'.
 
 - Add Credentials
   - Navigate to the [Google Cloud Console API Manager](https://console.cloud.google.com/apis/credentials) for your project id.
@@ -72,8 +72,8 @@ U_PASSWD = 'password'
   - Change Authorization URL to https://[YOUR REVERSE PROXY URL]/oauth (replace with your actual URL).
   - Change Token URL to https://[YOUR REVERSE PROXY URL]/token (replace with your actual URL).
   In the Configure your client section:
-  - Do NOT check Google to transmit clientID and secret via HTTP basic auth header.
-  - Click ‘Save’ at the top right corner, then click ‘Test’ to generate a new draft version of the Test App.
+  - Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.
+  - Click 'Save' at the top right corner, then click 'Test' to generate a new draft version of the Test App.
   
 ## Starting Domoticz-Google-Assistant server:
 ```
