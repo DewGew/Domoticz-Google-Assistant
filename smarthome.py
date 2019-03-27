@@ -33,24 +33,18 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if 'Light/Switch' == device["Type"]:
-        if device["Image"] in IMAGE_SWITCH:
+        if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US'] :
+            return blindsDOMAIN
+        elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
         elif device["Image"] in IMAGE_LIGHT:
-            return lightDOMAIN
-        # elif 'Speaker' == device["Image"]:
-            # return mediaDOMAIN            
-        # elif 'Media' == device["Image"]:
-            # return selectorDOMAIN                
-    elif 'Group' == device["Type"]:
+            return lightDOMAIN            
+    elif device["Type"] == 'Group':
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
         return sceneDOMAIN
-    elif device["Type"] in ['Blinds', 'RFY'] and device["SwitchType"] == 'Blinds':
-        if device["idx"] == '134': #ugly hack for my screen, move it to the config.py
-            return screenDOMAIN
-        else:
-            return blindsDOMAIN
-    
+    elif 'Temp' == device["Type"]:
+        return tempDOMAIN   
     return None
     
 def getDesc(state):
