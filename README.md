@@ -12,6 +12,12 @@ Aog delivers:
 - OnOff, Brightness, Scene and OpenClose traits, rest to be done...
 Please feel free to modify it, extend and improve
 
+## Installation with git
+NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
+```
+cd /home/${USER}/
+git clone https://github.com/DewGew/Domoticz-Google-Assistant
+```
 
 Before first launch, Actions on Google and config.py must be modified properly:
 ```
@@ -102,4 +108,9 @@ Enable service:
 ```
  sudo systemctl enable dzga.service
  sudo systemctl start dzga.service
+```
+## Update
+```
+cd /home/${USER}/Domoticz-Google-Assistant/
+git pull
 ```
