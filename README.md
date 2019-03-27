@@ -114,7 +114,7 @@ Enable service:
 cd /home/${USER}/Domoticz-Google-Assistant/
 git pull
 ```
-If using service:
+If running as service:
 ```
 sudo systemctl restart dzga.service
 ```
