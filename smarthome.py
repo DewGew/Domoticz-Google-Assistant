@@ -15,7 +15,7 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     TYPE_THERMOSTAT, TYPE_FAN, TYPE_BLINDS, TYPE_SCREEN,
     ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN,
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN,
     attribBRIGHTNESS,
     DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT)
@@ -28,6 +28,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     switchDOMAIN: TYPE_SWITCH,
     blindsDOMAIN: TYPE_BLINDS,
     screenDOMAIN: TYPE_SCREEN,
+    climateDOMAIN: TYPE_THERMOSTAT,
 } 
  
 #some way to convert a domain type: Domoticz to google
@@ -39,12 +40,12 @@ def AogGetDomain(device):
             return switchDOMAIN
         elif device["Image"] in IMAGE_LIGHT:
             return lightDOMAIN            
-    elif device["Type"] == 'Group':
+    elif 'Group' == device["Type"]:
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
         return sceneDOMAIN
     elif 'Temp' == device["Type"]:
-        return tempDOMAIN   
+        return climateDOMAIN
     return None
     
 def getDesc(state):
@@ -63,6 +64,7 @@ def getAog(device):
     aog.entity_id = domain + aog.id
     aog.state = device.get("Data", "Scene")
     aog.level = device.get("LevelInt", 0)
+    aog.temp = device.get("Temp")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = attribBRIGHTNESS
@@ -82,7 +84,7 @@ def getAog(device):
 aogDevs = {} 
 def getDevices(type = "all", id = "0"):
     global aogDevs
-    
+
     url = ""
     if "all" == type:  
         url = DOMOTICZ_GET_ALL_DEVICES_URL
@@ -101,7 +103,7 @@ def getDevices(type = "all", id = "0"):
 
             aogDevs[aog.entity_id] = aog
             
-    #print([(d.name.encode('utf-8', 'ignore'), d.id, d.domain) for d in aogDevs.values()])
+    print([(d.name.encode('utf-8', 'ignore'), d.id, d.domain) for d in aogDevs.values()])
         
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
