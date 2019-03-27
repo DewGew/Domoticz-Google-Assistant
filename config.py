@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+#Http server port
 PORT_NUMBER = 3030
 
 #Set your Credentials here
@@ -7,13 +8,14 @@ SMARTHOMEPROVIDERGOOGLECLIENTID = 'sidjhfer87y'
 SMARTHOMEPROVIDEGOOGLECLIENTSECRET = 'bfuosydgrf83ye'
 SMARTHOMEPROVIDERAPIKEY = 'uwyte6514325r'
 
-DOMOTICZ_URL='http://192.168.1.110:8080'
-U_NAME_DOMOTICZ = 'User'
-U_PASSWD_DOMOTICZ = 'Password'
+#Domoticz settings
+DOMOTICZ_URL='http://192.168.1.251:8080'
+U_NAME_DOMOTICZ = 'user_name'
+U_PASSWD_DOMOTICZ = 'passwd'
 
 #Oauth credentials
-U_NAME = 'AUTH_USER'
-U_PASSWD = 'AUTH_PASS'
+U_NAME = 'oauth_user_name'
+U_PASSWD = 'oauth_passwd'
 
 #Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
 #So to differentiate them additionaly image names are used.
@@ -44,7 +46,6 @@ SCENE_CONFIG = {
     '5' : {
             'nicknames' : ['Test'] },    
 }
-
 
 
 #Hardcoded values - do not modify it!
