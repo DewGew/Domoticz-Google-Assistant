@@ -3,7 +3,7 @@
 import requests
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN,
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN,
     attribBRIGHTNESS)
        
 PREFIX_TRAITS = 'action.devices.traits.'
@@ -14,6 +14,7 @@ TRAIT_BRIGHTNESS = PREFIX_TRAITS + 'Brightness'
 TRAIT_COLOR_SPECTRUM = PREFIX_TRAITS + 'ColorSpectrum'
 TRAIT_COLOR_TEMP = PREFIX_TRAITS + 'ColorTemperature'
 TRAIT_SCENE = PREFIX_TRAITS + 'Scene'
+TRAIT_TEMPERATURE_CONTROL = PREFIX_TRAITS + 'TemperatureControl'
 TRAIT_TEMPERATURE_SETTING = PREFIX_TRAITS + 'TemperatureSetting'
 TRAIT_LOCKUNLOCK = PREFIX_TRAITS + 'LockUnlock'
 TRAIT_FANSPEED = PREFIX_TRAITS + 'FanSpeed'
@@ -45,6 +46,12 @@ def register_trait(trait):
     """Decorate a function to register a trait."""
     TRAITS.append(trait)
     return trait
+    
+def _google_temp_unit(units):
+    """Return Google temperature unit."""
+    if units == TEMP_FAHRENHEIT:
+        return 'F'
+    return 'C'
     
     
 class _Trait:
@@ -239,5 +246,43 @@ class OpenCloseTrait(_Trait):
             #stop
             url += 'Stop'
 
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))  
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+
+@register_trait 
+class TemperatureSettingTrait(_Trait):
+    """Trait to offer handling both temperature point and modes functionality.
+
+    https://developers.google.com/actions/smarthome/traits/temperaturesetting
+    """
+
+    name = TRAIT_TEMPERATURE_SETTING
+    commands = [
+        COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT,
+        COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
+        COMMAND_THERMOSTAT_SET_MODE,
+    ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in climateDOMAIN
+
+    def sync_attributes(self):
+        """Return OnOff attributes for a sync request."""
+        return {}
+
+    def query_attributes(self):
+        """Return temperature point and modes query attributes."""
+        domain = self.state.domain
+        response = {}
         
+        current_temp = self.state.temp
+        response['thermostatTemperatureAmbient'] = current_temp
+        response['thermostatTemperatureSetpoint'] = current_temp
+            
+        return response
+        
+    def execute(self, command, data, params):
+        """Execute a temperature point or mode command."""
+        # All sent in temperatures are always in Celsius
+    
