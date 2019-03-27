@@ -5,9 +5,9 @@ Based on the home assistant implementation: https://github.com/home-assistant/ho
 Required:
 - Public IP
 - python >= 3.5
-- reverse proxy for establishing secure connection (aog itself provides currently only unsecure one - http only)
+- reverse proxy for establishing secure connection (Domoticz-Google-Assistant itself provides currently only unsecure one - http only)
 
-Aog delivers: 
+Domoticz-Google-Assistant delivers: 
 - the oauth authorization and smarthome endpoint for the google assistant
 - OnOff, Brightness, Scene and OpenClose traits, rest to be done...
 Please feel free to modify it, extend and improve
