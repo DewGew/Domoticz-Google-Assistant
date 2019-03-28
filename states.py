@@ -13,5 +13,6 @@ class AogState:
         self.nicknames = None
         self.room = None
         self.level = 0
-        
-    
+        self.temp = 0
+        self.humidity = 0
+        self.setpoint = ''
