@@ -3,8 +3,8 @@
 import requests
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN,
-    attribBRIGHTNESS)
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN,
+    attribBRIGHTNESS, attribTHERMSTATSETPOINT)
        
 PREFIX_TRAITS = 'action.devices.traits.'
 TRAIT_ONOFF = PREFIX_TRAITS + 'OnOff'
@@ -258,31 +258,56 @@ class TemperatureSettingTrait(_Trait):
     name = TRAIT_TEMPERATURE_SETTING
     commands = [
         COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT,
-        COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
-        COMMAND_THERMOSTAT_SET_MODE,
+        #COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
+        #COMMAND_THERMOSTAT_SET_MODE,
     ]
 
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in climateDOMAIN
+        if domain == climateDOMAIN:
+            return features & attribTHERMSTATSETPOINT
+        else:    
+            return domain in tempDOMAIN
 
     def sync_attributes(self):
-        """Return OnOff attributes for a sync request."""
-        return {}
+        """Return temperature point and modes attributes for a sync request."""       
+        
+        return {'commandOnlyTemperatureSetting': True,
+                'availableThermostatModes': 'off,heat,cool,on',
+                'thermostatTemperatureUnit': 'C'}
 
     def query_attributes(self):
         """Return temperature point and modes query attributes."""
         domain = self.state.domain
         response = {}
         
-        current_temp = self.state.temp
-        response['thermostatTemperatureAmbient'] = current_temp
-        response['thermostatTemperatureSetpoint'] = current_temp
+        if domain == tempDOMAIN:
+            response['thermostatMode'] = 'off'
+            current_temp = self.state.temp
+            if current_temp is not None:
+                response['thermostatTemperatureAmbient'] = current_temp
+            current_humidity = self.state.humidity
+            if current_humidity is not None:
+                response['thermostatHumidityAmbient'] = current_humidity
+            
+        if domain == climateDOMAIN:
+            response['thermostatMode'] = 'heat'
+            current_temp = self.state.state
+            if current_temp is not None:
+                response['thermostatTemperatureAmbient'] = float(current_temp)
+            setpoint = self.state.setpoint
+            if setpoint is not None:
+                response['thermostatTemperatureSetpoint'] = float(setpoint)
             
         return response
         
-    def execute(self, command, data, params):
+    def execute(self, command, params):
         """Execute a temperature point or mode command."""
         # All sent in temperatures are always in Celsius
-    
+        if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(params['thermostatTemperatureSetpoint'])
+        
+            # print(url)
+            r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+            # print(r.status_code)
