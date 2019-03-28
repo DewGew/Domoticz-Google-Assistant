@@ -86,7 +86,8 @@ lightDOMAIN = 'Light/Switch'
 switchDOMAIN = 'Switch'
 blindsDOMAIN = 'Blinds'
 screenDOMAIN = 'Screen'
-climateDOMAIN = 'Temp'
+climateDOMAIN = 'Thermostat'
+tempDOMAIN = 'Temp'
 
 attribBRIGHTNESS = 1
 attribTHERMSTATSETPOINT = 1
