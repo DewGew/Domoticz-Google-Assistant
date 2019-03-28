@@ -89,6 +89,7 @@ screenDOMAIN = 'Screen'
 climateDOMAIN = 'Temp'
 
 attribBRIGHTNESS = 1
+attribTHERMSTATSETPOINT = 1
 
 #Todo... dynamic tokens handling/generation if needed
 Auth = {
