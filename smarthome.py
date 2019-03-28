@@ -15,8 +15,8 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     TYPE_THERMOSTAT, TYPE_FAN, TYPE_BLINDS, TYPE_SCREEN,
     ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN,
-    attribBRIGHTNESS,
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN,
+    attribBRIGHTNESS,attribTHERMSTATSETPOINT,
     DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT)
     
@@ -29,6 +29,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     blindsDOMAIN: TYPE_BLINDS,
     screenDOMAIN: TYPE_SCREEN,
     climateDOMAIN: TYPE_THERMOSTAT,
+    tempDOMAIN: TYPE_THERMOSTAT,
 } 
  
 #some way to convert a domain type: Domoticz to google
@@ -45,7 +46,11 @@ def AogGetDomain(device):
     elif 'Scene' == device["Type"]:
         return sceneDOMAIN
     elif 'Temp' == device["Type"]:
+        return tempDOMAIN
+    elif 'Thermostat' == device['Type']:
         return climateDOMAIN
+    elif 'Temp + Humidity' == device['Type']:
+        return tempDOMAIN
     return None
     
 def getDesc(state):
@@ -65,10 +70,14 @@ def getAog(device):
     aog.state = device.get("Data", "Scene")
     aog.level = device.get("LevelInt", 0)
     aog.temp = device.get("Temp")
+    aog.humidity = device.get("Humidity")
+    aog.setpoint = device.get("SetPoint")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = attribBRIGHTNESS
-
+    if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:
+        aog.attributes = attribTHERMSTATSETPOINT
+        
     desc = getDesc(aog)
     
     if desc != None:
@@ -103,7 +112,7 @@ def getDevices(type = "all", id = "0"):
 
             aogDevs[aog.entity_id] = aog
             
-    print([(d.name.encode('utf-8', 'ignore'), d.id, d.domain) for d in aogDevs.values()])
+    #print([(d.name.encode('utf-8', 'ignore'), d.id, d.domain) for d in aogDevs.values()])
         
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
@@ -146,7 +155,7 @@ class _GoogleEntity:
         state = self.state
         domain = state.domain
         features = state.attributes
-
+        
         t = [Trait(state) for Trait in trait.TRAITS
                 if Trait.supported(domain, features)]
         return t
@@ -230,7 +239,7 @@ class _GoogleEntity:
                     elif False == challenge.get('ack', False):
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
                             'Unable to execute {} for {} - challenge needed'.format(command, self.state.entity_id))
-                       
+                
                 trt.execute(command, params)
                 executed = True
                 break
@@ -240,7 +249,7 @@ class _GoogleEntity:
                 'Unable to execute {} for {}'.format(command, self.state.entity_id))
 
     def async_update(self):
-        """Update the entity with latest info from Home Assistant."""
+        """Update the entity with latest info from Domoticz."""
 
         if self.state.domain == groupDOMAIN or self.state.domain == sceneDOMAIN:
             getDevices('scene')
