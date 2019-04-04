@@ -89,6 +89,7 @@ screenDOMAIN = 'Screen'
 climateDOMAIN = 'Thermostat'
 tempDOMAIN = 'Temp'
 lockDOMAIN = 'Lock'
+invlockDOMAIN = 'Door Lock Inverted'
 
 attribBRIGHTNESS = 1
 attribTHERMSTATSETPOINT = 1
