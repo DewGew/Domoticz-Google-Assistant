@@ -16,4 +16,3 @@ class AogState:
         self.temp = 0
         self.humidity = 0
         self.setpoint = ''
-        self.switchtype = ''
