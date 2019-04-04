@@ -40,8 +40,10 @@ def AogGetDomain(device):
     if 'Light/Switch' == device["Type"]:
         if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US'] :
             return blindsDOMAIN
-        elif device["SwitchType"] in ['Door Lock', 'Door Lock Inverted'] :
+        elif 'Door Lock' == device["SwitchType"]:
             return lockDOMAIN
+        elif 'Door Lock Inverted' == device["SwitchType"]:
+            return invlockDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
         elif device["Image"] in IMAGE_LIGHT:
