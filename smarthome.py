@@ -15,7 +15,8 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     TYPE_THERMOSTAT, TYPE_FAN, TYPE_BLINDS, TYPE_SCREEN,
     ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN,
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN,
+    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN,
     attribBRIGHTNESS,attribTHERMSTATSETPOINT,
     DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT)
@@ -31,6 +32,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     climateDOMAIN: TYPE_THERMOSTAT,
     tempDOMAIN: TYPE_THERMOSTAT,
     lockDOMAIN: TYPE_LOCK,
+    invlockDOMAIN: TYPE_LOCK,
 } 
  
 #some way to convert a domain type: Domoticz to google
@@ -38,7 +40,7 @@ def AogGetDomain(device):
     if 'Light/Switch' == device["Type"]:
         if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US'] :
             return blindsDOMAIN
-        if device["SwitchType"] in ['Door Lock', 'Door Lock Inverted'] :
+        elif device["SwitchType"] in ['Door Lock', 'Door Lock Inverted'] :
             return lockDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
