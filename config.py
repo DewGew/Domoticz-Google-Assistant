@@ -88,6 +88,7 @@ blindsDOMAIN = 'Blinds'
 screenDOMAIN = 'Screen'
 climateDOMAIN = 'Thermostat'
 tempDOMAIN = 'Temp'
+lockDOMAIN = 'Lock'
 
 attribBRIGHTNESS = 1
 attribTHERMSTATSETPOINT = 1
