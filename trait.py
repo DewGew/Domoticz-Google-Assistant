@@ -3,16 +3,15 @@
 import requests
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN,
-    attribBRIGHTNESS, attribTHERMSTATSETPOINT)
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN,
+    lockDOMAIN, invlockDOMAIN, attribBRIGHTNESS, attribTHERMSTATSETPOINT)
        
 PREFIX_TRAITS = 'action.devices.traits.'
 TRAIT_ONOFF = PREFIX_TRAITS + 'OnOff'
 TRAIT_DOCK = PREFIX_TRAITS + 'Dock'
 TRAIT_STARTSTOP = PREFIX_TRAITS + 'StartStop'
 TRAIT_BRIGHTNESS = PREFIX_TRAITS + 'Brightness'
-TRAIT_COLOR_SPECTRUM = PREFIX_TRAITS + 'ColorSpectrum'
-TRAIT_COLOR_TEMP = PREFIX_TRAITS + 'ColorTemperature'
+TRAIT_COLOR_SETTING = PREFIX_TRAITS + 'ColorSetting'
 TRAIT_SCENE = PREFIX_TRAITS + 'Scene'
 TRAIT_TEMPERATURE_CONTROL = PREFIX_TRAITS + 'TemperatureControl'
 TRAIT_TEMPERATURE_SETTING = PREFIX_TRAITS + 'TemperatureSetting'
@@ -326,7 +325,8 @@ class LockUnlockTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain == lockDOMAIN
+        return domain in (lockDOMAIN,
+                            invlockDOMAIN)
 
     def sync_attributes(self):
         """Return LockUnlock attributes for a sync request."""
@@ -338,11 +338,12 @@ class LockUnlockTrait(_Trait):
 
     def execute(self, command, params):
         """Execute an LockUnlock command."""
+        domain = self.state.domain
         
-        if self.state.switchtype == 'Door Lock Inverted':
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('Off' if params['lock'] else 'On')
-        else:
+        if domain == lockDOMAIN:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['lock'] else 'Off')
+        else:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('Off' if params['lock'] else 'On')
         
         #print(url)
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
