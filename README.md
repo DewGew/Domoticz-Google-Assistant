@@ -9,7 +9,9 @@ Required:
 
 Domoticz-Google-Assistant delivers: 
 - the oauth authorization and smarthome endpoint for the google assistant
-- OnOff, Brightness, Scene and OpenClose traits, rest to be done...
+- OnOff, Brightness, Thermostat, Scene and OpenClose traits, rest to be done...
+- This is a standalone implementation. It means that you can put this server wherever you want, even on another machine.
+
 Please feel free to modify it, extend and improve
 
 ## Installation with git
