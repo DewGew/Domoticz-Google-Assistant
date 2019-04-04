@@ -3,7 +3,7 @@
 import requests
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN,
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN,
     attribBRIGHTNESS, attribTHERMSTATSETPOINT)
        
 PREFIX_TRAITS = 'action.devices.traits.'
@@ -248,6 +248,7 @@ class OpenCloseTrait(_Trait):
 
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
 
+        
 @register_trait 
 class TemperatureSettingTrait(_Trait):
     """Trait to offer handling both temperature point and modes functionality.
@@ -259,7 +260,7 @@ class TemperatureSettingTrait(_Trait):
     commands = [
         COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT,
         #COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
-        #COMMAND_THERMOSTAT_SET_MODE,
+        COMMAND_THERMOSTAT_SET_MODE,
     ]
 
     @staticmethod
@@ -273,8 +274,7 @@ class TemperatureSettingTrait(_Trait):
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""       
         
-        return {'commandOnlyTemperatureSetting': True,
-                'availableThermostatModes': 'off,heat,cool,on',
+        return {'availableThermostatModes': 'off,heat,cool,on',
                 'thermostatTemperatureUnit': 'C'}
 
     def query_attributes(self):
@@ -307,7 +307,43 @@ class TemperatureSettingTrait(_Trait):
         # All sent in temperatures are always in Celsius
         if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(params['thermostatTemperatureSetpoint'])
+
+        # print(url)
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        # print(r.status_code)
+          
+@register_trait
+class LockUnlockTrait(_Trait):
+    """Trait to lock or unlock a lock.
+    https://developers.google.com/actions/smarthome/traits/lockunlock
+    """
+
+    name = TRAIT_LOCKUNLOCK
+    commands = [
+        COMMAND_LOCKUNLOCK
+    ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain == lockDOMAIN
+
+    def sync_attributes(self):
+        """Return LockUnlock attributes for a sync request."""
+        return {}
+
+    def query_attributes(self):
+        """Return LockUnlock query attributes."""
+        return {'isLocked': self.state.state}
+
+    def execute(self, command, params):
+        """Execute an LockUnlock command."""
         
-            # print(url)
-            r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-            # print(r.status_code)
+        if self.state.switchtype == 'Door Lock Inverted':
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('Off' if params['lock'] else 'On')
+        else:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['lock'] else 'Off')
+        
+        #print(url)
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        # print(r.status_code)
