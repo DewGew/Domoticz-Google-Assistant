@@ -72,7 +72,6 @@ def getAog(device):
     aog.domain = domain
     aog.id = device["idx"]
     aog.entity_id = domain + aog.id
-    aog.switchtype = device.get["SwitchType"]
     aog.state = device.get("Data", "Scene")
     aog.level = device.get("LevelInt", 0)
     aog.temp = device.get("Temp")
