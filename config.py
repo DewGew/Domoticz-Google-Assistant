@@ -88,7 +88,7 @@ blindsDOMAIN = 'Blinds'
 screenDOMAIN = 'Screen'
 climateDOMAIN = 'Thermostat'
 tempDOMAIN = 'Temp'
-lockDOMAIN = 'Lock'
+lockDOMAIN = 'Door Lock'
 invlockDOMAIN = 'Door Lock Inverted'
 
 attribBRIGHTNESS = 1
