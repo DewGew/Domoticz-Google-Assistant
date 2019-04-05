@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
 import requests
+import json
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN,
-    lockDOMAIN, invlockDOMAIN, attribBRIGHTNESS, attribTHERMSTATSETPOINT)
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
+    lockDOMAIN, invlockDOMAIN,attribCOLOR, attribBRIGHTNESS, attribTHERMSTATSETPOINT)
        
 PREFIX_TRAITS = 'action.devices.traits.'
 TRAIT_ONOFF = PREFIX_TRAITS + 'OnOff'
@@ -98,6 +99,7 @@ class OnOffTrait(_Trait):
             groupDOMAIN,
             switchDOMAIN,
             lightDOMAIN,
+            colorDOMAIN,
         )
 
     def sync_attributes(self):
@@ -170,9 +172,9 @@ class BrightnessTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == lightDOMAIN:
+        if domain == lightDOMAIN or domain == colorDOMAIN:
             return features & attribBRIGHTNESS
-
+ 
         return False
 
     def sync_attributes(self):
@@ -185,6 +187,9 @@ class BrightnessTrait(_Trait):
         response = {}
 
         if domain == lightDOMAIN:
+            brightness = self.state.level
+            response['brightness'] = brightness
+        if domain == colorDOMAIN:
             brightness = self.state.level
             response['brightness'] = brightness
 
@@ -347,4 +352,64 @@ class LockUnlockTrait(_Trait):
         
         #print(url)
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-        # print(r.status_code)
+        #print(r.status_code)
+
+@register_trait
+class ColorSettingTrait(_Trait):
+    """Trait to offer color setting functionality.
+    https://developers.google.com/actions/smarthome/traits/colorsetting
+    """
+
+    name = TRAIT_COLOR_SETTING
+    commands = [
+        COMMAND_COLOR_ABSOLUTE
+    ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        if domain == colorDOMAIN:
+            return features & attribCOLOR
+
+        return False
+
+    def sync_attributes(self):
+        """Return color setting attributes for a sync request."""
+        # Other colorModel is hsv
+        return {'colorModel': 'rgb',
+                'colorTemperatureRange': {
+                    'temperatureMinK': 2000,
+                    'temperatureMaxK': 9000}
+                ,}
+
+    def query_attributes(self):
+        """Return color setting query attributes."""
+        response = {}
+
+        color_rgb = json.loads(self.state.color)
+        
+        if color_rgb is not None:
+            #Convert RGB to decimal
+            color_decimal = color_rgb["r"] * 65536 + color_rgb["g"] * 256 + color_rgb["b"]
+            
+            response['color'] = {'spectrumRGB': color_decimal}
+
+        return response
+
+    def can_execute(self, command, params):
+        """Test if command can be executed."""
+        return (command in self.commands and
+                'spectrumRGB' in params.get('color', {}))
+
+    def execute(self, command, params):
+        """Execute a color setting command."""
+        
+        #Convert decimal to hex
+        setcolor = params['color']
+        color_hex = hex(setcolor['spectrumRGB'])[2:]
+        
+        url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + str(color_hex)
+        
+        #print(url)
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        #print(r.status_code)
