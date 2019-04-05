@@ -11,13 +11,13 @@ from collections.abc import Mapping
 from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL,
     Auth, REQUEST_SYNC_BASE_URL, SMARTHOMEPROVIDERAPIKEY,
-    TYPE_LIGHT, TYPE_LOCK, TYPE_SCENE, TYPE_SWITCH, TYPE_VACUUM,
+    TYPE_LIGHT, TYPE_LOCK, TYPE_SCENE, TYPE_SWITCH, TYPE_VACUUM, TYPE_DOOR,
     TYPE_THERMOSTAT, TYPE_FAN, TYPE_BLINDS, TYPE_SCREEN,
     ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN,
-    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN,
-    attribBRIGHTNESS,attribTHERMSTATSETPOINT,
+    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN,
+    attribBRIGHTNESS,attribTHERMSTATSETPOINT,attribCOLOR,
     DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT)
     
@@ -33,6 +33,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     tempDOMAIN: TYPE_THERMOSTAT,
     lockDOMAIN: TYPE_LOCK,
     invlockDOMAIN: TYPE_LOCK,
+    colorDOMAIN: TYPE_LIGHT,
 } 
  
 #some way to convert a domain type: Domoticz to google
@@ -58,6 +59,8 @@ def AogGetDomain(device):
         return climateDOMAIN
     elif 'Temp + Humidity' == device['Type']:
         return tempDOMAIN
+    elif 'Color Switch' == device["Type"]:
+        return colorDOMAIN
     return None
     
 def getDesc(state):
@@ -79,9 +82,12 @@ def getAog(device):
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
     aog.setpoint = device.get("SetPoint")
+    aog.color = device.get("Color")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = attribBRIGHTNESS
+    if colorDOMAIN == aog.domain and "Color Switch" == device["Type"]:
+        aog.attributes = attribCOLOR
     if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = attribTHERMSTATSETPOINT
         
