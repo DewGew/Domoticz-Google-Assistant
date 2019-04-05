@@ -90,6 +90,7 @@ climateDOMAIN = 'Thermostat'
 tempDOMAIN = 'Temp'
 lockDOMAIN = 'Door Lock'
 invlockDOMAIN = 'Door Lock Inverted'
+colorDOMAIN = 'Color Switch'
 
 attribBRIGHTNESS = 1
 attribTHERMSTATSETPOINT = 1
