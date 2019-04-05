@@ -334,7 +334,7 @@ class LockUnlockTrait(_Trait):
 
     def query_attributes(self):
         """Return LockUnlock query attributes."""
-        return {'isLocked': self.state.state}
+        return {'isLocked': self.state.state == 'Locked'}
 
     def execute(self, command, params):
         """Execute an LockUnlock command."""
