@@ -438,9 +438,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     
                 except SmartHomeError as err:
                     results[entity_id] = {'ids': [entity_id], 'status': 'ERROR', 'errorCode': err.code}
+                    print(err)
                 except SmartHomeErrorNoChallenge as err:
                     results[entity_id] = {'ids': [entity_id], 'status': 'ERROR', 'errorCode': err.code, 'challengeNeeded': {'type': err.desc}}
-
+                    print(err)
+                    
         final_results = list(results.values())
 
         for entity in entities.values():
