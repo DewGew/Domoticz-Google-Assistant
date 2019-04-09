@@ -239,20 +239,33 @@ class _GoogleEntity:
         executed = False
         for trt in self.traits():
             if trt.can_execute(command, params):
-                
+               
                 ack = False
+                pin = False
                 desc = getDesc(self.state)
                 if desc != None:
                     ack = desc.get('ack', False)
-
+                    pin = desc.get('pin', False)
+                    
                 if ack:
+                    print(challenge)
                     if challenge == None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'ackNeeded',
-                            'Unable to execute {} for {} - challenge needed'.format(command, self.state.entity_id))
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
                     elif False == challenge.get('ack', False):
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
-                            'Unable to execute {} for {} - challenge needed'.format(command, self.state.entity_id))
-                
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                elif pin:
+                    if challenge == None:
+                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                    elif False == challenge.get('pin', False):
+                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                    elif pin != challenge.get('pin'):
+                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                    
                 trt.execute(command, params)
                 executed = True
                 break
