@@ -247,6 +247,9 @@ class _GoogleEntity:
                     ack = desc.get('ack', False)
                     pin = desc.get('pin', False)
                     
+                if pin:
+                   ack = False
+                    
                 if ack:
                     print(challenge)
                     if challenge == None:
