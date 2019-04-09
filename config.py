@@ -32,7 +32,8 @@ DEVICE_CONFIG = {
             'ack' : True},
     '150' : {
             'nicknames' : ['Dining Room Light'],
-            'room' : 'Dining Room' },
+            'room' : 'Dining Room',
+            'pin' : '332211' },
     '180' : {
             'nicknames' : ['Simon Printer'],
             'room' : 'Simon',
