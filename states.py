@@ -17,3 +17,4 @@ class AogState:
         self.humidity = 0
         self.setpoint = ''
         self.color = ''
+        self.protected = None
