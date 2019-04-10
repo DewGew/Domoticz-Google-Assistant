@@ -141,8 +141,8 @@ Enable service:
 ```
 cd /home/${USER}/Domoticz-Google-Assistant/
 git pull
-```
-If running as service:
-```
+# If needed restart service:
 sudo systemctl restart dzga.service
 ```
+Config.py will not be updated but if there is any changes on the config file compare your file with default_config.py
+
