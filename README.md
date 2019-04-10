@@ -10,8 +10,8 @@ Required:
 Domoticz-Google-Assistant delivers: 
 - the oauth authorization and smarthome endpoint for the google assistant
 - Standalone implementation. It means that you can put this server wherever you want, even on another machine.
-- OnOff, Brightness, Thermostat, LockUnlock, Scene and OpenClose traits, rest to be done...
-
+- OnOff, Brightness, Thermostat, ColorSetting, LockUnlock, Scene and OpenClose traits, rest to be done...
+- Two-factor authentication for pin protected devices
 
 Please feel free to modify it, extend and improve
 
@@ -37,6 +37,29 @@ U_PASSWD_DOMOTICZ = 'domoticz user password'
 #oauth credentials -> required for app linking
 U_NAME = 'username'
 U_PASSWD = 'password'
+
+#Additional nicknames, room hint and acknowledgement for selected devices can be added:
+DEVICE_CONFIG = {
+
+    '135' : {                                     # domoticz's idx of the device
+            'nicknames' : ['Kitchen Blind One'],  # list of the nicknames
+            'room' : 'Kitchen' ,                  # room hint
+            'ack' : True},                        # acknowledgement (yes or no) for command execution
+    '150' : {
+            'nicknames' : ['Dining Room Light'],
+            'room' : 'Dining Room' },
+    '180' : {
+            'nicknames' : ['Simon's Printer'],
+            'room' : 'Simon',
+            'ack' : False}          
+}
+
+SCENE_CONFIG = {
+    '3' : {
+            'nicknames' : ['Blinders'] },
+    '5' : {
+            'nicknames' : ['Test'] },    
+}
 ```
 ## Setup Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
