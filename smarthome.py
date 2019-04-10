@@ -226,7 +226,10 @@ class _GoogleEntity:
         for trt in self.traits():
             if trt.can_execute(command, params):
                
-                protect = self.state.protected
+                if DOMOTICZ_SWITCH_PROTECTION_PASSWD != False:
+                    protect = self.state.protected
+                else:
+                    protect = False
                 ack = False
                 pin = False
                 desc = getDesc(self.state)
