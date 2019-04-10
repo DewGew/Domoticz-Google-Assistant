@@ -10,8 +10,9 @@ Required:
 Domoticz-Google-Assistant delivers: 
 - the oauth authorization and smarthome endpoint for the google assistant
 - Standalone implementation. It means that you can put this server wherever you want, even on another machine.
+- Two-factor authentication for domoticz protected devices (works best with english language)
+- Acknowledgement with Yes or No. (works best with english language)
 - OnOff, Brightness, Thermostat, ColorSetting, LockUnlock, Scene and OpenClose traits, rest to be done...
-- Two-factor authentication for pin protected devices
 
 Please feel free to modify it, extend and improve
 
