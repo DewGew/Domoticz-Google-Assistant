@@ -20,7 +20,8 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     attribBRIGHTNESS,attribTHERMSTATSETPOINT,attribCOLOR,
     DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT)
-    
+
+from helpers import SmartHomeError, SmartHomeErrorNoChallenge    
     
 DOMOTICZ_TO_GOOGLE_TYPES = {
     groupDOMAIN: TYPE_SWITCH,
@@ -83,6 +84,7 @@ def getAog(device):
     aog.humidity = device.get("Humidity")
     aog.setpoint = device.get("SetPoint")
     aog.color = device.get("Color")
+    aog.protected = device.get("Protected")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = attribBRIGHTNESS
@@ -125,23 +127,7 @@ def getDevices(type = "all", id = "0"):
 
             aogDevs[aog.entity_id] = aog
             
-    #print([(d.name.encode('utf-8', 'ignore'), d.id, d.domain) for d in aogDevs.values()])
-        
-class SmartHomeError(Exception):
-    """Google Assistant Smart Home errors.
-    https://developers.google.com/actions/smarthome/create-app#error_responses
-    """
-    def __init__(self, code, msg):
-        """Log error code."""
-        super().__init__(msg)
-        self.code = code 
-
-class SmartHomeErrorNoChallenge(Exception):
-    def __init__(self, code, desc, msg):
-        """Log error code."""
-        super().__init__(msg)
-        self.code = code 
-        self.desc = desc
+    #print([(d.name.encode('utf-8', 'ignore'), d.id, d.domain) for d in aogDevs.values()])        
         
 def deep_update(target, source):
     """Update a nested dictionary with another nested dictionary."""
@@ -240,25 +226,16 @@ class _GoogleEntity:
         for trt in self.traits():
             if trt.can_execute(command, params):
                
+                protect = self.state.protected
                 ack = False
                 pin = False
                 desc = getDesc(self.state)
                 if desc != None:
                     ack = desc.get('ack', False)
-                    pin = desc.get('pin', False)
-                    
-                if pin:
-                   ack = False
-                    
-                if ack:
-                    print(challenge)
-                    if challenge == None:
-                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'ackNeeded',
-                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
-                    elif False == challenge.get('ack', False):
-                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
-                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
-                elif pin:
+                
+                if protect:
+                    pin = DOMOTICZ_SWITCH_PROTECTION_PASSWD
+                    ack = False
                     if challenge == None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
@@ -267,6 +244,15 @@ class _GoogleEntity:
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
                     elif pin != challenge.get('pin'):
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                            
+                if ack:
+                    print(challenge)
+                    if challenge == None:
+                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'ackNeeded',
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                    elif False == challenge.get('ack', False):
+                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
                     
                 trt.execute(command, params)
