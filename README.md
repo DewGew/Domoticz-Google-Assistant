@@ -10,7 +10,7 @@ Required:
 Domoticz-Google-Assistant delivers: 
 - the oauth authorization and smarthome endpoint for the google assistant
 - Standalone implementation. It means that you can put this server wherever you want, even on another machine.
-- Two-factor authentication for domoticz protected devices (works best with english language)
+- Two-factor authentication pin for domoticz protected devices (works best with english language)
 - Acknowledgement with Yes or No. (works best with english language)
 - OnOff, Brightness, Thermostat, ColorSetting, LockUnlock, Scene and OpenClose traits, rest to be done...
 
@@ -34,18 +34,19 @@ SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' -> Request S
 DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
 U_NAME_DOMOTICZ = 'domoticz user name'
 U_PASSWD_DOMOTICZ = 'domoticz user password'
+DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
 
-#oauth credentials -> required for app linking
+#Oauth credentials -> required for app linking
 U_NAME = 'username'
 U_PASSWD = 'password'
 
 #Additional nicknames, room hint and acknowledgement (Yes or No) for selected devices can be added:
 DEVICE_CONFIG = {
 
-    '135' : {                                     # domoticz's idx of the device
-            'nicknames' : ['Kitchen Blind One'],  # list of the nicknames
-            'room' : 'Kitchen' ,                  # room hint
-            'ack' : True},                        # acknowledgement for command execution
+    '135' : {                                     # Domoticz's idx of the device
+            'nicknames' : ['Kitchen Blind One'],  # List of the nicknames
+            'room' : 'Kitchen' ,                  # Room hint
+            'ack' : True},                        # Acknowledgement for command execution
     '150' : {
             'nicknames' : ['Dining Room Light'],
             'room' : 'Dining Room' },
