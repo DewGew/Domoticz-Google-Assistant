@@ -38,13 +38,13 @@ U_PASSWD_DOMOTICZ = 'domoticz user password'
 U_NAME = 'username'
 U_PASSWD = 'password'
 
-#Additional nicknames, room hint and acknowledgement for selected devices can be added:
+#Additional nicknames, room hint and acknowledgement (Yes or No) for selected devices can be added:
 DEVICE_CONFIG = {
 
     '135' : {                                     # domoticz's idx of the device
             'nicknames' : ['Kitchen Blind One'],  # list of the nicknames
             'room' : 'Kitchen' ,                  # room hint
-            'ack' : True},                        # acknowledgement (yes or no) for command execution
+            'ack' : True},                        # acknowledgement for command execution
     '150' : {
             'nicknames' : ['Dining Room Light'],
             'room' : 'Dining Room' },
