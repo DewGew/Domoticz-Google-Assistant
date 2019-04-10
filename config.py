@@ -12,7 +12,7 @@ SMARTHOMEPROVIDERAPIKEY = 'uwyte6514325r'
 DOMOTICZ_URL='http://192.168.1.251:8080'
 U_NAME_DOMOTICZ = 'user_name'
 U_PASSWD_DOMOTICZ = 'passwd'
-DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234'
+DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' #only works with numbers as protection password in domoticz
 
 #Oauth credentials
 U_NAME = 'oauth_user_name'
