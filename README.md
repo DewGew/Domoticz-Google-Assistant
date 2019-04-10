@@ -27,9 +27,9 @@ Before first launch, Actions on Google and config.py must be modified properly:
 ```
 PORT_NUMBER = 3030 -> port number for the Domoticz-Google-Assistant server
 
-SMARTHOMEPROVIDERGOOGLECLIENTID = 'AxqqWpwYj4' - Client ID
-SMARTHOMEPROVIDEGOOGLECLIENTSECRET = '0KUYN5ExD62QOsWCO8zoFSS_' - Client secret
-SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' -> Request Sync API
+SMARTHOMEPROVIDERGOOGLECLIENTID = 'AxqqWpwYj4'                      # Client ID
+SMARTHOMEPROVIDEGOOGLECLIENTSECRET = '0KUYN5ExD62QOsWCO8zoFSS_'     # Client secret
+SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' # Request Sync API
 
 DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
 U_NAME_DOMOTICZ = 'domoticz user name'
