@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Default config file
 
 #Http server port
 PORT_NUMBER = 3030
@@ -70,6 +69,7 @@ TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
 TYPE_LOCK = PREFIX_TYPES + 'LOCK'
 TYPE_BLINDS = PREFIX_TYPES + 'BLINDS'
 TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
+TYPE_DOOR = PREFIX_TYPES + 'DOOR'
 
 # Error codes used for SmartHomeError class
 # https://developers.google.com/actions/smarthome/create-app#error_responses
@@ -97,6 +97,7 @@ colorDOMAIN = 'Color Switch'
 
 attribBRIGHTNESS = 1
 attribTHERMSTATSETPOINT = 1
+attribCOLOR = 1
 
 #Todo... dynamic tokens handling/generation if needed
 Auth = {
