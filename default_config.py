@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+# Default config file
 
 #Http server port
 PORT_NUMBER = 3030
