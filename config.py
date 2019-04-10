@@ -12,6 +12,7 @@ SMARTHOMEPROVIDERAPIKEY = 'uwyte6514325r'
 DOMOTICZ_URL='http://192.168.1.251:8080'
 U_NAME_DOMOTICZ = 'user_name'
 U_PASSWD_DOMOTICZ = 'passwd'
+DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234'
 
 #Oauth credentials
 U_NAME = 'oauth_user_name'
@@ -32,8 +33,7 @@ DEVICE_CONFIG = {
             'ack' : True},
     '150' : {
             'nicknames' : ['Dining Room Light'],
-            'room' : 'Dining Room',
-            'pin' : '332211' },
+            'room' : 'Dining Room'},
     '180' : {
             'nicknames' : ['Simon Printer'],
             'room' : 'Simon',
@@ -80,6 +80,7 @@ ERR_PROTOCOL_ERROR = 'protocolError'
 ERR_UNKNOWN_ERROR = 'unknownError'
 ERR_FUNCTION_NOT_SUPPORTED = 'functionNotSupported'
 ERR_CHALLENGE_NEEDED = 'challengeNeeded'
+ERR_WRONG_PIN = 'pinIncorrect'
 
 groupDOMAIN = 'Group'
 sceneDOMAIN = 'Scene'
