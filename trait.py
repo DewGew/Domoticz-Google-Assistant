@@ -5,7 +5,7 @@ import json
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ,  DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
-    lockDOMAIN, invlockDOMAIN, attribCOLOR, attribBRIGHTNESS, attribTHERMSTATSETPOINT, ERR_WRONG_PIN)
+    lockDOMAIN, invlockDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ERR_WRONG_PIN)
 
 from helpers import SmartHomeError
     
@@ -119,29 +119,23 @@ class OnOffTrait(_Trait):
         """Execute an OnOff command."""
         domain = self.state.domain
         protected = self.state.protected
+            
+        if domain == groupDOMAIN:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off')
+        else:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off')
+        
         if protected:
-            if domain == groupDOMAIN:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off') + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
-            else:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off') + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
-
-            r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            
+        # print(url)
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        if protected:
             status = r.json()
             err = status.get('status')
             if err == 'ERROR':
                 raise SmartHomeError(ERR_WRONG_PIN,
                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
-        else:    
-            if domain == groupDOMAIN:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off')
-            else:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off')
-        
-            #print(url)
-            r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-            #print(r.status_code)
-            # if r.status_code == 200:
-                # pass
         
 @register_trait
 class SceneTrait(_Trait):
@@ -172,20 +166,19 @@ class SceneTrait(_Trait):
         """Execute a scene command."""
         protected = self.state.protected
         
+        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
+        
         if protected:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
             
-            r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        # print(url)
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        if protected:
             status = r.json()
             err = status.get('status')
             if err == 'ERROR':
                 raise SmartHomeError(ERR_WRONG_PIN,
                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
-        else:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
-            r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-            # if r.status_code == 200:
-                # pass
 
 @register_trait
 class BrightnessTrait(_Trait):
@@ -202,7 +195,7 @@ class BrightnessTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         if domain == lightDOMAIN or domain == colorDOMAIN:
-            return features & attribBRIGHTNESS
+            return features & ATTRS_BRIGHTNESS
  
         return False
 
@@ -264,7 +257,7 @@ class OpenCloseTrait(_Trait):
 
     def execute(self, command, params):
         """Execute a scene command."""
-
+        protected = self.state.protected
         p = params.get('openPercent', 50)
         
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
@@ -278,9 +271,18 @@ class OpenCloseTrait(_Trait):
         else:
             #stop
             url += 'Stop'
-
+            
+        if protected:
+            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            
+        # print(url)
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-
+        if protected:
+            status = r.json()
+            err = status.get('status')
+            if err == 'ERROR':
+                raise SmartHomeError(ERR_WRONG_PIN,
+                    'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
         
 @register_trait 
 class TemperatureSettingTrait(_Trait):
@@ -300,7 +302,7 @@ class TemperatureSettingTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         if domain == climateDOMAIN:
-            return features & attribTHERMSTATSETPOINT
+            return features & ATTRS_THERMSTATSETPOINT
         else:    
             return domain in tempDOMAIN
 
@@ -376,15 +378,24 @@ class LockUnlockTrait(_Trait):
     def execute(self, command, params):
         """Execute an LockUnlock command."""
         domain = self.state.domain
+        protected = self.state.protected
 
         if domain == lockDOMAIN:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['lock'] else 'Off')
         else:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('Off' if params['lock'] else 'On')
         
-        #print(url)
+        if protected:
+            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            
+        # print(url)
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-        #print(r.status_code)
+        if protected:
+            status = r.json()
+            err = status.get('status')
+            if err == 'ERROR':
+                raise SmartHomeError(ERR_WRONG_PIN,
+                    'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
 
 @register_trait
 class ColorSettingTrait(_Trait):
@@ -401,7 +412,7 @@ class ColorSettingTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         if domain == colorDOMAIN:
-            return features & attribCOLOR
+            return features & ATTRS_COLOR
 
         return False
 
@@ -410,8 +421,8 @@ class ColorSettingTrait(_Trait):
         # Other colorModel is hsv
         return {'colorModel': 'rgb',
                 'colorTemperatureRange': {
-                    'temperatureMinK': 2000,
-                    'temperatureMaxK': 9000}
+                    'temperatureMinK': 1700,
+                    'temperatureMaxK': 6500}
                 ,}
 
     def query_attributes(self):
