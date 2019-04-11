@@ -22,7 +22,7 @@ U_PASSWD = 'oauth_passwd'
 
 #Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
 #So to differentiate them additionaly image names are used.
-IMAGE_SWITCH = ['WallSocket']
+IMAGE_SWITCH = ['WallSocket', 'Generic']
 IMAGE_LIGHT = ['Light']
 #'Speaker'
 #'Media'
