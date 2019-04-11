@@ -8,18 +8,18 @@ import states
 import trait
 from collections.abc import Mapping
 
-from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
+from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SECCODE, 
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     Auth, REQUEST_SYNC_BASE_URL, SMARTHOMEPROVIDERAPIKEY,
-    TYPE_LIGHT, TYPE_LOCK, TYPE_SCENE, TYPE_SWITCH, TYPE_VACUUM, TYPE_DOOR,
-    TYPE_THERMOSTAT, TYPE_FAN, TYPE_BLINDS, TYPE_SCREEN,
+    TYPE_LIGHT, TYPE_LOCK, TYPE_SCENE, TYPE_SWITCH, TYPE_VACUUM, TYPE_DOOR,TYPE_MEDIA,
+    TYPE_THERMOSTAT, TYPE_FAN, TYPE_BLINDS, TYPE_SCREEN, TYPE_SECURITY,
     ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN,
-    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN,
-    ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
+    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN,
+    securityDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR,
     DEVICE_CONFIG, SCENE_CONFIG,
-    IMAGE_SWITCH, IMAGE_LIGHT)
+    IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA)
 
 from helpers import SmartHomeError, SmartHomeErrorNoChallenge    
     
@@ -35,6 +35,8 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     lockDOMAIN: TYPE_LOCK,
     invlockDOMAIN: TYPE_LOCK,
     colorDOMAIN: TYPE_LIGHT,
+    mediaDOMAIN: TYPE_MEDIA,
+    securityDOMAIN: TYPE_SECURITY,
 } 
  
 #some way to convert a domain type: Domoticz to google
@@ -49,7 +51,9 @@ def AogGetDomain(device):
         elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
         elif device["Image"] in IMAGE_LIGHT:
-            return lightDOMAIN            
+            return lightDOMAIN
+        elif device["Image"] in IMAGE_MEDIA:
+            return mediaDOMAIN
     elif 'Group' == device["Type"]:
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
@@ -62,6 +66,8 @@ def AogGetDomain(device):
         return tempDOMAIN
     elif 'Color Switch' == device["Type"]:
         return colorDOMAIN
+    elif 'Security' == device["Type"]:
+        return securityDOMAIN
     return None
     
 def getDesc(state):
@@ -225,20 +231,22 @@ class _GoogleEntity:
         executed = False
         for trt in self.traits():
             if trt.can_execute(command, params):
-               
-                if DOMOTICZ_SWITCH_PROTECTION_PASSWD != False:
-                    protect = self.state.protected
-                else:
-                    protect = False
-                
+                    
                 ack = False
                 pin = False
                 desc = getDesc(self.state)
                 if desc != None:
                     ack = desc.get('ack', False)
                 
-                if protect:
+                if DOMOTICZ_SWITCH_PROTECTION_PASSWD != False:
+                    protect = self.state.protected
+                else:
+                    protect = False
+
+                if protect or self.state.domain == securityDOMAIN:
                     pin = DOMOTICZ_SWITCH_PROTECTION_PASSWD
+                    if self.state.domain == securityDOMAIN:
+                        pin = DOMOTICZ_SECCODE
                     ack = False
                     if challenge == None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
