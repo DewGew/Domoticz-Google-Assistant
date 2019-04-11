@@ -74,6 +74,8 @@ TYPE_LOCK = PREFIX_TYPES + 'LOCK'
 TYPE_BLINDS = PREFIX_TYPES + 'BLINDS'
 TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
 TYPE_DOOR = PREFIX_TYPES + 'DOOR'
+TYPE_MEDIA = PREFIX_TYPES + 'TV'
+TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM
 
 # Error codes used for SmartHomeError class
 # https://developers.google.com/actions/smarthome/create-app#error_responses
