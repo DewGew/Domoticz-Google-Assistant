@@ -12,7 +12,7 @@ Domoticz-Google-Assistant delivers:
 - Standalone implementation. It means that you can put this server wherever you want, even on another machine.
 - Two-factor authentication pin for domoticz protected devices (works best with english language)
 - Acknowledgement with Yes or No. (works best with english language)
-- Arm Disarm Securitypanel
+- Arm Disarm Securitypanel (works best with english language)
 - OnOff, Brightness, Thermostat, ColorSetting, LockUnlock, Scene and OpenClose traits, rest to be done...
 
 Please feel free to modify it, extend and improve
@@ -22,7 +22,7 @@ NOTE: "${USER}" will automatically take your username. No need to change that. J
 ```
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
-#Rename default_config.py
+# Rename default_config.py to config.py:
 mv default_config.py config.py
 ```
 
@@ -37,6 +37,7 @@ SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' # Request Sy
 DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
 U_NAME_DOMOTICZ = 'domoticz user name'
 U_PASSWD_DOMOTICZ = 'domoticz user password'
+DOMOTICZ_SECCODE = '1234'
 DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
 
 #Oauth credentials -> required for app linking
