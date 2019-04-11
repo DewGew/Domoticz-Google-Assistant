@@ -97,9 +97,10 @@ lockDOMAIN = 'Door Lock'
 invlockDOMAIN = 'Door Lock Inverted'
 colorDOMAIN = 'Color Switch'
 
-attribBRIGHTNESS = 1
-attribTHERMSTATSETPOINT = 1
-attribCOLOR = 1
+ATTRS_BRIGHTNESS = 1
+ATTRS_THERMSTATSETPOINT = 1
+ATTRS_COLOR = 3
+ATTRS__COLOR_TEMP = 2
 
 #Todo... dynamic tokens handling/generation if needed
 Auth = {
