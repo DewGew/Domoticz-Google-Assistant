@@ -2,10 +2,12 @@
 
 import requests
 import json
+import hashlib
 
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ,  DOMOTICZ_SWITCH_PROTECTION_PASSWD,
+from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ,  DOMOTICZ_SECCODE, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
-    lockDOMAIN, invlockDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ERR_WRONG_PIN)
+    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
+    ERR_ALREADY_IN_STATE, ERR_WRONG_PIN)
 
 from helpers import SmartHomeError
     
@@ -77,7 +79,6 @@ class _Trait:
 
     def can_execute(self, command, params):
         """Test if command can be executed."""
-        
         return command in self.commands
 
     async def execute(self, command, params):
@@ -105,6 +106,7 @@ class OnOffTrait(_Trait):
             switchDOMAIN,
             lightDOMAIN,
             colorDOMAIN,
+            mediaDOMAIN,
         )
 
     def sync_attributes(self):
@@ -119,7 +121,7 @@ class OnOffTrait(_Trait):
         """Execute an OnOff command."""
         domain = self.state.domain
         protected = self.state.protected
-            
+
         if domain == groupDOMAIN:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off')
         else:
@@ -216,7 +218,7 @@ class BrightnessTrait(_Trait):
             response['brightness'] = brightness
 
         return response
-    
+
     def can_execute(self, command, params):
         """Test if command can be executed."""
         protected = self.state.protected
@@ -224,7 +226,7 @@ class BrightnessTrait(_Trait):
             raise SmartHomeError('notSupported',
                 'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
         return command in self.commands
-
+        
     def execute(self, command, params):
         """Execute a brightness command."""
         #domain = self.state.domain
@@ -243,6 +245,7 @@ class BrightnessTrait(_Trait):
             if err == 'ERROR':
                 raise SmartHomeError(ERR_WRONG_PIN,
                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
+                
             
             
 @register_trait
@@ -263,16 +266,16 @@ class OpenCloseTrait(_Trait):
                             screenDOMAIN)
 
     def sync_attributes(self):
-        """Return scene attributes for a sync request."""
+        """Return OpenClose attributes for a sync request."""
         # Neither supported domain can support sceneReversible
         return {}
 
     def query_attributes(self):
-        """Return scene query attributes."""
+        """Return OpenClose query attributes."""
         return {}
 
     def execute(self, command, params):
-        """Execute a scene command."""
+        """Execute a OpenClose command."""
         protected = self.state.protected
         p = params.get('openPercent', 50)
         
@@ -310,7 +313,7 @@ class TemperatureSettingTrait(_Trait):
     name = TRAIT_TEMPERATURE_SETTING
     commands = [
         COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT,
-        #COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
+        COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
         COMMAND_THERMOSTAT_SET_MODE,
     ]
 
@@ -473,3 +476,46 @@ class ColorSettingTrait(_Trait):
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
         #print(r.status_code)
         
+@register_trait
+class ArmDisarmTrait(_Trait):
+    """Trait to offer basic on and off functionality.
+    https://developers.google.com/actions/smarthome/traits/ArmDisarm
+    """
+
+    name = TRAIT_ARM_DISARM
+    commands = [
+        COMMAND_ARM_DISARM
+    ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in securityDOMAIN
+
+    def sync_attributes(self):
+        """Return ArmDisarm attributes for a sync request."""
+        return {}
+
+    def query_attributes(self):
+        """Return ArmDisarm query attributes."""
+        return {'isArmed': self.state.state != 'Normal'}
+        
+    def execute(self, command, params):
+        """Execute an ArmDisarm command."""
+        state = self.state.state
+        seccode = hashlib.md5(str.encode(DOMOTICZ_SECCODE)).hexdigest()
+        print(params)
+        if params['arm'] ==  False:
+            if state == 'Normal':
+                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                    'Unable to execute {} for {} '.format(command, self.state.entity_id))
+            else:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=' + seccode
+        elif params['arm'] == True:
+            if state != 'Normal':
+                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                    'Unable to execute {} for {} '.format(command, self.state.entity_id))
+            else:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=1&seccode=' + seccode
+            
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
