@@ -18,3 +18,4 @@ class AogState:
         self.setpoint = ''
         self.color = ''
         self.protected = None
+        self.maxdimlevel = 0
