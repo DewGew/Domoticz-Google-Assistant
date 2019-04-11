@@ -22,6 +22,8 @@ NOTE: "${USER}" will automatically take your username. No need to change that. J
 ```
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
+#Rename default_config.py
+mv default_config.py config.py
 ```
 
 Before first launch, Actions on Google and config.py must be modified properly:
