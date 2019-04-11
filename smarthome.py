@@ -232,6 +232,14 @@ class _GoogleEntity:
                     protect = self.state.protected
                 else:
                     protect = False
+                    
+                # Ugly hack because pin dont work with brightness and color  -->  
+                if lightDOMAIN == self.state.domain and self.state.attributes == ATTRS_BRIGHTNESS:
+                    protect = False
+                if colorDOMAIN == self.state.domain:
+                    protect = False
+                # <---
+                
                 ack = False
                 pin = False
                 desc = getDesc(self.state)
