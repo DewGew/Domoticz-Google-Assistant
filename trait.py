@@ -212,10 +212,10 @@ class BrightnessTrait(_Trait):
 
         if domain == lightDOMAIN:
             brightness = self.state.level
-            response['brightness'] = int(brightness / 100 * self.state.maxdimlevel)
+            response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
         if domain == colorDOMAIN:
             brightness = self.state.level
-            response['brightness'] = int(brightness / 100 * self.state.maxdimlevel)
+            response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
 
         return response
 
@@ -232,7 +232,7 @@ class BrightnessTrait(_Trait):
         #domain = self.state.domain
         protected = self.state.protected
                     
-        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(params['brightness'] / self.state.maxdimlevel * 100))
+        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(params['brightness'] * self.state.maxdimlevel / 100))
         
         if protected:
             url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
