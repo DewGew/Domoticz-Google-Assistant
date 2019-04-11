@@ -24,8 +24,8 @@ U_PASSWD = 'oauth_passwd'
 #So to differentiate them additionaly image names are used.
 IMAGE_SWITCH = ['WallSocket', 'Generic']
 IMAGE_LIGHT = ['Light']
+IMGA_MEDIA = ['Media', 'TV']
 #'Speaker'
-#'Media'
 
 #Additional nicknames and room configuration
 DEVICE_CONFIG = {
