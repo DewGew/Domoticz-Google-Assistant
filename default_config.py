@@ -13,6 +13,7 @@ SMARTHOMEPROVIDERAPIKEY = 'uwyte6514325r'
 DOMOTICZ_URL='http://192.168.1.251:8080'
 U_NAME_DOMOTICZ = 'user_name'
 U_PASSWD_DOMOTICZ = 'passwd'
+DOMOTICZ_SECCODE = '1234' # Security Panel code
 DOMOTICZ_SWITCH_PROTECTION_PASSWD = '331122' # Only works with numbers as protection password in domoticz
 # Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
 
@@ -84,6 +85,7 @@ ERR_UNKNOWN_ERROR = 'unknownError'
 ERR_FUNCTION_NOT_SUPPORTED = 'functionNotSupported'
 ERR_CHALLENGE_NEEDED = 'challengeNeeded'
 ERR_WRONG_PIN = 'pinIncorrect'
+ERR_ALREADY_IN_STATE = 'alreadyInState'
 
 groupDOMAIN = 'Group'
 sceneDOMAIN = 'Scene'
@@ -96,6 +98,8 @@ tempDOMAIN = 'Temp'
 lockDOMAIN = 'Door Lock'
 invlockDOMAIN = 'Door Lock Inverted'
 colorDOMAIN = 'Color Switch'
+mediaDOMAIN = 'Media'
+securityDOMAIN = 'Security'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
