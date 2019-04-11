@@ -216,11 +216,20 @@ class BrightnessTrait(_Trait):
             response['brightness'] = brightness
 
         return response
+    
+    def can_execute(self, command, params):
+        """Test if command can be executed."""
+        protected = self.state.protected
+        if protected:
+            raise SmartHomeError('authFailure',
+                'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
+        return command in self.commands
 
     def execute(self, command, params):
         """Execute a brightness command."""
         #domain = self.state.domain
         protected = self.state.protected
+                    
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(params['brightness'])
         
         if protected:
