@@ -17,7 +17,7 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN,
-    attribBRIGHTNESS,attribTHERMSTATSETPOINT,attribCOLOR,
+    ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
     DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT)
 
@@ -87,11 +87,13 @@ def getAog(device):
     aog.protected = device.get("Protected")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
-        aog.attributes = attribBRIGHTNESS
+        aog.attributes = ATTRS_BRIGHTNESS
+        aog.protected = False
     if colorDOMAIN == aog.domain and "Color Switch" == device["Type"]:
-        aog.attributes = attribCOLOR
+        aog.attributes = ATTRS_COLOR
+        aog.protected = False
     if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:
-        aog.attributes = attribTHERMSTATSETPOINT
+        aog.attributes = ATTRS_THERMSTATSETPOINT
         
     desc = getDesc(aog)
     
