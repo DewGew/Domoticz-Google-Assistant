@@ -220,13 +220,20 @@ class BrightnessTrait(_Trait):
     def execute(self, command, params):
         """Execute a brightness command."""
         #domain = self.state.domain
-        
+        protected = self.state.protected
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(params['brightness'])
-        #print(url)
+        
+        if protected:
+            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            
+        # print(url)
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-        #print(r.status_code)
-        # if r.status_code == 200:
-            # pass            
+        if protected:
+            status = r.json()
+            err = status.get('status')
+            if err == 'ERROR':
+                raise SmartHomeError(ERR_WRONG_PIN,
+                    'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
             
             
 @register_trait
