@@ -221,7 +221,7 @@ class BrightnessTrait(_Trait):
         """Test if command can be executed."""
         protected = self.state.protected
         if protected:
-            raise SmartHomeError('authFailure',
+            raise SmartHomeError('notSupported',
                 'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
         return command in self.commands
 
