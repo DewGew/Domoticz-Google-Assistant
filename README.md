@@ -12,6 +12,7 @@ Domoticz-Google-Assistant delivers:
 - Standalone implementation. It means that you can put this server wherever you want, even on another machine.
 - Two-factor authentication pin for domoticz protected devices (works best with english language)
 - Acknowledgement with Yes or No. (works best with english language)
+- Arm Disarm Securitypanel
 - OnOff, Brightness, Thermostat, ColorSetting, LockUnlock, Scene and OpenClose traits, rest to be done...
 
 Please feel free to modify it, extend and improve
