@@ -112,7 +112,7 @@ SCENE_CONFIG = {
 python3 Domoticz-Google-Assistant
 ```
 ## Connect smart home devices to your Google Home device
-- On your mobile device, open the Google Home appGoogle Home app.
+- On your mobile device, open the Google Home app.
 - On the Home tab, tap the “Add” quick action .
 - Tap Set up a device
 - Tap Have something already set up?
