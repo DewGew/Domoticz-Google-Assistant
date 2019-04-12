@@ -3,7 +3,7 @@
 import requests
 import json
 
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
+from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,TEMP_FAHRENHEIT,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
     mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN)
@@ -50,14 +50,7 @@ TRAITS = []
 def register_trait(trait):
     """Decorate a function to register a trait."""
     TRAITS.append(trait)
-    return trait
-    
-def _google_temp_unit(units):
-    """Return Google temperature unit."""
-    if units == TEMP_FAHRENHEIT:
-        return 'F'
-    return 'C'
-    
+    return trait   
     
 class _Trait:
     """Represents a Trait inside Google Assistant skill."""
