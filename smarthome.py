@@ -41,7 +41,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
  
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
-    if 'Light/Switch' == device["Type"]:
+    if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2']:
         if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US'] :
             return blindsDOMAIN
         elif 'Door Lock' == device["SwitchType"]:
@@ -54,10 +54,6 @@ def AogGetDomain(device):
             return lightDOMAIN
         elif device["Image"] in IMAGE_MEDIA:
             return mediaDOMAIN
-    elif 'Lighting 1' == device["Type"]:
-        return lightDOMAIN
-    elif 'Lighting 2' == device["Type"]:
-        return lightDOMAIN
     elif 'Group' == device["Type"]:
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
