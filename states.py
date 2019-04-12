@@ -19,3 +19,4 @@ class AogState:
         self.color = ''
         self.protected = None
         self.maxdimlevel = 0
+        self.seccode = ''
