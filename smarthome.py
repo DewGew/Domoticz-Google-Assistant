@@ -42,7 +42,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
  
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
-    if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2']:
+    if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
         if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US'] :
             return blindsDOMAIN
         elif 'Door Lock' == device["SwitchType"]:
