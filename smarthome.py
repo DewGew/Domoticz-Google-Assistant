@@ -8,7 +8,7 @@ import states
 import trait
 from collections.abc import Mapping
 
-from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SECCODE, 
+from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     Auth, REQUEST_SYNC_BASE_URL, SMARTHOMEPROVIDERAPIKEY,
     TYPE_LIGHT, TYPE_LOCK, TYPE_SCENE, TYPE_SWITCH, TYPE_VACUUM, TYPE_DOOR,TYPE_MEDIA,
@@ -75,6 +75,7 @@ def getDesc(state):
     return desc
         
 def getAog(device):
+    getSettings()
     domain = AogGetDomain(device)
     if domain == None:
         return None
@@ -92,6 +93,7 @@ def getAog(device):
     aog.color = device.get("Color")
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")
+    aog.seccode = settings.get("SecPassword")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -144,7 +146,20 @@ def deep_update(target, source):
         else:
             target[key] = value
     return target
+
+settings = {}
+def getSettings():
+    """Get domoticz settings."""
+    global settings
     
+    url = DOMOTICZ_GET_SETTINGS_URL
+    r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+    
+    if r.status_code == 200:
+        devs = r.json()
+        settings['SecPassword'] = devs['SecPassword']
+        settings['ProtectionPassword'] = devs['ProtectionPassword']
+        
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
 
