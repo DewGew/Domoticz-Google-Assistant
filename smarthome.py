@@ -159,7 +159,6 @@ def getSettings():
     if r.status_code == 200:
         devs = r.json()
         settings['SecPassword'] = devs['SecPassword']
-        settings['ProtectionPassword'] = devs['ProtectionPassword']
         
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
