@@ -13,7 +13,6 @@ SMARTHOMEPROVIDERAPIKEY = 'uwyte6514325r'
 DOMOTICZ_URL='http://192.168.1.251:8080'
 U_NAME_DOMOTICZ = 'user_name'
 U_PASSWD_DOMOTICZ = 'passwd'
-DOMOTICZ_SECCODE = '1234' # Security Panel code
 DOMOTICZ_SWITCH_PROTECTION_PASSWD = '331122' # Only works with numbers as protection password in domoticz
 # Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
 

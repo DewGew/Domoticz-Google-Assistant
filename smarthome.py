@@ -3,12 +3,13 @@
 from auth import *
 import requests
 import json
+import hashlib
 from itertools import product
 import states
 import trait
 from collections.abc import Mapping
 
-from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SECCODE, 
+from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, 
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     Auth, REQUEST_SYNC_BASE_URL, SMARTHOMEPROVIDERAPIKEY,
     TYPE_LIGHT, TYPE_LOCK, TYPE_SCENE, TYPE_SWITCH, TYPE_VACUUM, TYPE_DOOR,TYPE_MEDIA,
@@ -75,6 +76,7 @@ def getDesc(state):
     return desc
         
 def getAog(device):
+    getSettings()
     domain = AogGetDomain(device)
     if domain == None:
         return None
@@ -92,6 +94,7 @@ def getAog(device):
     aog.color = device.get("Color")
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")
+    aog.seccode = settings.get("SecPassword")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -144,7 +147,19 @@ def deep_update(target, source):
         else:
             target[key] = value
     return target
+
+settings = {}
+def getSettings():
+    """Get domoticz settings."""
+    global settings
     
+    url = DOMOTICZ_GET_SETTINGS_URL
+    r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+    
+    if r.status_code == 200:
+        devs = r.json()
+        settings['SecPassword'] = devs['SecPassword']
+        
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
 
@@ -232,7 +247,7 @@ class _GoogleEntity:
         executed = False
         for trt in self.traits():
             if trt.can_execute(command, params):
-                    
+ 
                 ack = False
                 pin = False
                 desc = getDesc(self.state)
@@ -247,7 +262,7 @@ class _GoogleEntity:
                 if protect or self.state.domain == securityDOMAIN:
                     pin = DOMOTICZ_SWITCH_PROTECTION_PASSWD
                     if self.state.domain == securityDOMAIN:
-                        pin = DOMOTICZ_SECCODE
+                        pin = self.state.seccode 
                     ack = False
                     if challenge == None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
@@ -255,7 +270,10 @@ class _GoogleEntity:
                     elif False == challenge.get('pin', False):
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
-                    elif pin != challenge.get('pin'):
+                    elif True == protect and pin != challenge.get('pin'):
+                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                    elif self.state.domain == securityDOMAIN and pin != hashlib.md5(str.encode(challenge.get('pin'))).hexdigest():
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
                             

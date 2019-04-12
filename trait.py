@@ -2,9 +2,8 @@
 
 import requests
 import json
-import hashlib
 
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ,  DOMOTICZ_SECCODE, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
+from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
     mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN)
@@ -503,7 +502,7 @@ class ArmDisarmTrait(_Trait):
     def execute(self, command, params):
         """Execute an ArmDisarm command."""
         state = self.state.state
-        seccode = hashlib.md5(str.encode(DOMOTICZ_SECCODE)).hexdigest()
+        seccode = self.state.seccode
         print(params)
         if params['arm'] ==  False:
             if state == 'Normal':
