@@ -3,6 +3,7 @@
 from auth import *
 import requests
 import json
+import hashlib
 from itertools import product
 import states
 import trait
@@ -247,7 +248,7 @@ class _GoogleEntity:
         executed = False
         for trt in self.traits():
             if trt.can_execute(command, params):
-                    
+ 
                 ack = False
                 pin = False
                 desc = getDesc(self.state)
@@ -262,7 +263,7 @@ class _GoogleEntity:
                 if protect or self.state.domain == securityDOMAIN:
                     pin = DOMOTICZ_SWITCH_PROTECTION_PASSWD
                     if self.state.domain == securityDOMAIN:
-                        pin = DOMOTICZ_SECCODE
+                        pin = self.state.seccode 
                     ack = False
                     if challenge == None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
@@ -270,7 +271,10 @@ class _GoogleEntity:
                     elif False == challenge.get('pin', False):
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
-                    elif pin != challenge.get('pin'):
+                    elif True == protect and pin != challenge.get('pin'):
+                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
+                            'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
+                    elif self.state.domain == securityDOMAIN and pin != hashlib.md5(str.encode(challenge.get('pin'))).hexdigest():
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
                             
