@@ -503,7 +503,6 @@ class ArmDisarmTrait(_Trait):
         """Execute an ArmDisarm command."""
         state = self.state.state
         seccode = self.state.seccode
-        print(params)
         if params['arm'] ==  False:
             if state == 'Normal':
                 raise SmartHomeError(ERR_ALREADY_IN_STATE,
