@@ -37,7 +37,6 @@ SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' # Request Sy
 DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
 U_NAME_DOMOTICZ = 'domoticz user name'
 U_PASSWD_DOMOTICZ = 'domoticz user password'
-DOMOTICZ_SECCODE = '1234'
 DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
 
 #Oauth credentials -> required for app linking
@@ -102,8 +101,7 @@ SCENE_CONFIG = {
   - For Grant Type, select 'Authorization Code' for Grant Type.
   - Under Client Information, enter the client ID and secret from earlier.
   - Change Authorization URL to https://[YOUR REVERSE PROXY URL]/oauth (replace with your actual URL).
-  - Change Token URL to https://[YOUR REVERSE PROXY URL]/token (replace with your actual URL).
-  In the Configure your client section:
+  - Change Token URL to https://[YOUR REVERSE PROXY URL]/token (replace with your actual URL).  
   - Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.
   - Click 'Save' at the top right corner, then click 'Test' to generate a new draft version of the Test App.
   
