@@ -60,6 +60,7 @@ REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
 DOMOTICZ_GET_ALL_DEVICES_URL = DOMOTICZ_URL + '/json.htm?type=devices&filter=all&used=true'
 DOMOTICZ_GET_ONE_DEVICE_URL = DOMOTICZ_URL + '/json.htm?type=devices&rid='
 DOMOTICZ_GET_SCENES_URL = DOMOTICZ_URL + '/json.htm?type=scenes'
+DOMOTICZ_GET_SETTINGS_URL = DOMOTICZ_URL + '/json.htm?type=settings'
 
 #https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
