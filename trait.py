@@ -319,9 +319,10 @@ class TemperatureSettingTrait(_Trait):
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""       
-        
-        return {'availableThermostatModes': 'off,heat,cool,on',
-                'thermostatTemperatureUnit': 'C'}
+        if TEMP_FAHRENHEIT:
+            return {'thermostatTemperatureUnit': 'F'}
+        else:
+            return {'thermostatTemperatureUnit': 'C'}
 
     def query_attributes(self):
         """Return temperature point and modes query attributes."""
@@ -329,7 +330,7 @@ class TemperatureSettingTrait(_Trait):
         response = {}
         
         if domain == tempDOMAIN:
-            response['thermostatMode'] = 'off'
+            response['thermostatMode'] = 'cool'
             current_temp = self.state.temp
             if current_temp is not None:
                 response['thermostatTemperatureAmbient'] = current_temp
