@@ -330,7 +330,6 @@ class TemperatureSettingTrait(_Trait):
         response = {}
         
         if domain == tempDOMAIN:
-            response['thermostatMode'] = 'cool'
             current_temp = self.state.temp
             if current_temp is not None:
                 response['thermostatTemperatureAmbient'] = current_temp
