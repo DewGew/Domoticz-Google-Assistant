@@ -20,6 +20,9 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '331122' # Only works with numbers as protec
 U_NAME = 'oauth_user_name'
 U_PASSWD = 'oauth_passwd'
 
+#Use Fahrenheit true or false
+TEMP_FAHRENHEIT = False
+
 #Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
 #So to differentiate them additionaly image names are used.
 IMAGE_SWITCH = ['WallSocket', 'Generic']
