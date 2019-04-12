@@ -95,6 +95,7 @@ def getAog(device):
     aog.setpoint = device.get("SetPoint")
     aog.color = device.get("Color")
     aog.protected = device.get("Protected")
+    aog.maxdimlevel = device.get("MaxDimLevel")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
