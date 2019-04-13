@@ -33,3 +33,4 @@ if __name__ == "__main__":
         addPostMappings(path, value)
         
     startServer()
+    requestDevicesSync()
