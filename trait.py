@@ -384,19 +384,30 @@ class LockUnlockTrait(_Trait):
 
     def query_attributes(self):
         """Return LockUnlock query attributes."""
-        response = {}
-        response['isLocked'] = self.state.state == 'Locked'
-        return response
+        return {'isLocked' : self.state.state == 'Locked'}
         
     def execute(self, command, params):
         """Execute an LockUnlock command."""
         domain = self.state.domain
+        state = self.state.state
         protected = self.state.protected
-
+        print(state)
         if domain == lockDOMAIN:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['lock'] else 'Off')
+            if params['lock'] == True and state == 'Unlocked':
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=On'
+            elif params['lock'] == False and state == 'Locked':
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Off'
+            else:             
+                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                    'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
         else:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('Off' if params['lock'] else 'On')
+            if params['lock'] == True and state == 'Unlocked':
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Off'
+            elif params['lock'] == False and state == 'Locked':
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=On'
+            else:             
+                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                    'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
         
         if protected:
             url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
