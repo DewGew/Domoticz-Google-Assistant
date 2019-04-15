@@ -25,9 +25,10 @@ TEMP_FAHRENHEIT = False
 
 #Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
 #So to differentiate them additionaly image names are used.
-IMAGE_SWITCH = ['WallSocket', 'Generic']
+IMAGE_SWITCH = ['Generic']
 IMAGE_LIGHT = ['Light']
 IMAGE_MEDIA = ['Media', 'TV']
+IMAGE_OUTLET = ['WallSocket']
 #'Speaker'
 #'Media'
 
@@ -69,6 +70,7 @@ DOMOTICZ_GET_SETTINGS_URL = DOMOTICZ_URL + '/json.htm?type=settings'
 PREFIX_TYPES = 'action.devices.types.'
 TYPE_LIGHT = PREFIX_TYPES + 'LIGHT'
 TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
+TYPE_OUTLET = PREFIX_TYPES + 'OUTLET'
 TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
 TYPE_SCENE = PREFIX_TYPES + 'SCENE'
 TYPE_FAN = PREFIX_TYPES + 'FAN'
@@ -97,6 +99,7 @@ groupDOMAIN = 'Group'
 sceneDOMAIN = 'Scene'
 lightDOMAIN = 'Light/Switch'
 switchDOMAIN = 'Switch'
+outletDOMAIN = 'Outlet'
 blindsDOMAIN = 'Blinds'
 screenDOMAIN = 'Screen'
 climateDOMAIN = 'Thermostat'
