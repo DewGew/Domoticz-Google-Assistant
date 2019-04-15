@@ -103,6 +103,8 @@ def getAog(device):
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
+    if outletDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
+        aog.attributes = ATTRS_BRIGHTNESS
     if colorDOMAIN == aog.domain and "Color Switch" == device["Type"]:
         aog.attributes = ATTRS_COLOR
     if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:
