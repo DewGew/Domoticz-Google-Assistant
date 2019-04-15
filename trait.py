@@ -5,7 +5,7 @@ import json
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,TEMP_FAHRENHEIT,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
-    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
+    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN)
 
 from helpers import SmartHomeError
@@ -99,6 +99,7 @@ class OnOffTrait(_Trait):
             lightDOMAIN,
             colorDOMAIN,
             mediaDOMAIN,
+            outletDOMAIN,
         )
 
     def sync_attributes(self):
