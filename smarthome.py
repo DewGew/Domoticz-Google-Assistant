@@ -55,6 +55,8 @@ def AogGetDomain(device):
             return lightDOMAIN
         elif device["Image"] in IMAGE_MEDIA:
             return mediaDOMAIN
+        else:
+            return lightDOMAIN
     elif 'Group' == device["Type"]:
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
