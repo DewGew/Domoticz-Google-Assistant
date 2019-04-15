@@ -189,7 +189,7 @@ class BrightnessTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == lightDOMAIN or domain == colorDOMAIN:
+        if domain in (lightDOMAIN, colorDOMAIN, outletDOMAIN):
             return features & ATTRS_BRIGHTNESS
  
         return False
@@ -203,7 +203,7 @@ class BrightnessTrait(_Trait):
         domain = self.state.domain
         response = {}
 
-        if domain == lightDOMAIN:
+        if domain == lightDOMAIN or domain == outletDOMAIN:
             brightness = self.state.level
             response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
         if domain == colorDOMAIN:
