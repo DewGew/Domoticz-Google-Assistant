@@ -18,9 +18,9 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN,
-    securityDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR,
+    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR,
     DEVICE_CONFIG, SCENE_CONFIG,
-    IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA)
+    IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET)
 
 from helpers import SmartHomeError, SmartHomeErrorNoChallenge    
     
@@ -29,6 +29,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     sceneDOMAIN: TYPE_SCENE,
     lightDOMAIN: TYPE_LIGHT,
     switchDOMAIN: TYPE_SWITCH,
+    outletDOMAIN: TYPE_OUTLET,
     blindsDOMAIN: TYPE_BLINDS,
     screenDOMAIN: TYPE_SCREEN,
     climateDOMAIN: TYPE_THERMOSTAT,
@@ -55,6 +56,8 @@ def AogGetDomain(device):
             return lightDOMAIN
         elif device["Image"] in IMAGE_MEDIA:
             return mediaDOMAIN
+        elif device["Image"] in IMAGE_OUTLET:
+            return outletDOMAIN
         else:
             return lightDOMAIN
     elif 'Group' == device["Type"]:
