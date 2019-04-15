@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 import socketserver
 from server import *
 from auth import *
@@ -15,6 +17,10 @@ def startServer():
         #incoming request
         server = ThreadingSimpleServer(('', PORT_NUMBER), AogServer)
         print ('Started httpserver on port ' , PORT_NUMBER)
+        
+        current_dir = Path(__file__).parent.absolute()
+        command = 'python3 ' + str(current_dir) + '/sync.py'
+        os.popen(command)
 
         #Wait forever for incoming htto requests
         server.serve_forever()
