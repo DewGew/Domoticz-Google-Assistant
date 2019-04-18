@@ -70,6 +70,8 @@ def AogGetDomain(device):
         return climateDOMAIN
     elif 'Temp + Humidity' == device['Type']:
         return tempDOMAIN
+    elif 'Temp + Humidity + Baro' == device['Type']:
+        return tempDOMAIN
     elif 'Color Switch' == device["Type"]:
         return colorDOMAIN
     elif 'Security' == device["Type"]:
