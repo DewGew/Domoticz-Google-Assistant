@@ -2,8 +2,8 @@ import requests
 from config import (U_NAME, U_PASSWD, PORT_NUMBER)
 
 s = requests.session()
-url_login = "http://127.0.0.1:" + PORT_NUMBER + "/login"
-url_sync = "http://127.0.0.1:" + PORT_NUMBER + "/sync"
+url_login = "http://127.0.0.1:" + str(PORT_NUMBER) + "/login"
+url_sync = "http://127.0.0.1:" + str(PORT_NUMBER) + "/sync"
 
 payload = {
     "username": U_NAME,
