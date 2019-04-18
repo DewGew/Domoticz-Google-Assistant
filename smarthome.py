@@ -51,7 +51,7 @@ def AogGetDomain(device):
             return lockDOMAIN
         elif 'Door Lock Inverted' == device["SwitchType"]:
             return invlockDOMAIN
-        elif device["SwitchType"] in ['Push On Button', 'Push Off Button]:
+        elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
             return pushDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
