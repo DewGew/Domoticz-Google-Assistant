@@ -100,6 +100,7 @@ def getAog(device):
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")
     aog.seccode = settings.get("SecPassword")
+    aog.tempunit = settings.get("TempUnit")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -166,6 +167,7 @@ def getSettings():
     if r.status_code == 200:
         devs = r.json()
         settings['SecPassword'] = devs['SecPassword']
+        settings['TempUnit'] = devs['TempUnit']
         
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
