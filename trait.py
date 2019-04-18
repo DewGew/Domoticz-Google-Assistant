@@ -5,7 +5,7 @@ import json
 
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
-    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
+    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, pushDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN)
 
 from helpers import SmartHomeError
@@ -100,6 +100,7 @@ class OnOffTrait(_Trait):
             colorDOMAIN,
             mediaDOMAIN,
             outletDOMAIN,
+            pushDOMAIN,
         )
 
     def sync_attributes(self):
@@ -108,7 +109,11 @@ class OnOffTrait(_Trait):
 
     def query_attributes(self):
         """Return OnOff query attributes."""
-        return {'on': self.state.state != 'Off'}
+        domain = self.state.domain
+        if domain == pushDOMAIN:
+            return {'on': False}
+        else:
+            return {'on': self.state.state != 'Off'}
     
     def execute(self, command, params):
         """Execute an OnOff command."""
