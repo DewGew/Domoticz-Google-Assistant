@@ -430,6 +430,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
         """
         devices = {}
+        getDevices()
         
         for device in payload.get('devices', []):
             devid = device['id']
