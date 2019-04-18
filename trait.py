@@ -3,7 +3,7 @@
 import requests
 import json
 
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,TEMP_FAHRENHEIT,
+from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
     mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN)
@@ -320,7 +320,7 @@ class TemperatureSettingTrait(_Trait):
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""       
-        if TEMP_FAHRENHEIT:
+        if self.state.tempunit:
             return {'thermostatTemperatureUnit': 'F'}
         else:
             return {'thermostatTemperatureUnit': 'C'}
