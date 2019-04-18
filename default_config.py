@@ -106,6 +106,7 @@ invlockDOMAIN = 'Door Lock Inverted'
 colorDOMAIN = 'Color Switch'
 mediaDOMAIN = 'Media'
 securityDOMAIN = 'Security'
+outletDOMAIN = 'Outlet'
 pushDOMAIN = 'Push'
 
 ATTRS_BRIGHTNESS = 1
