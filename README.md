@@ -1,6 +1,6 @@
 # Domoticz-Google-Assistant
 
-Based on the home assistant implementation: https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant and https://github.com/actions-on-google/smart-home-nodejs
+Based on Pawcio script and the home assistant implementation: https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant and https://github.com/actions-on-google/smart-home-nodejs
 
 Required:
 - Public IP
@@ -157,4 +157,3 @@ git pull
 sudo systemctl restart dzga.service
 ```
 Config.py will not be updated but if there is any changes on the config file compare your file with default_config.py
-
