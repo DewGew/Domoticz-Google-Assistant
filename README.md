@@ -22,7 +22,10 @@ NOTE: "${USER}" will automatically take your username. No need to change that. J
 ```
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
-# Rename default_config.py to config.py:
+```
+Rename default_config.py to config.py:
+```
+cd /home/${USER}/Domoticz-Google-Assistant
 mv default_config.py config.py
 ```
 
