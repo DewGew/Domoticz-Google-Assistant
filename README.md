@@ -26,7 +26,7 @@ git clone https://github.com/DewGew/Domoticz-Google-Assistant
 mv default_config.py config.py
 ```
 
-Before first launch, Actions on Google and config.py must be modified properly:
+Before first launch, Actions on Google and config.py must be modified properly. Edit default_config.py and save as config.py
 ```
 PORT_NUMBER = 3030 -> port number for the Domoticz-Google-Assistant server
 
@@ -107,6 +107,7 @@ SCENE_CONFIG = {
   
 ## Starting Domoticz-Google-Assistant server:
 ```
+cd /home/${USER}/
 python3 Domoticz-Google-Assistant
 ```
 ## Connect smart home devices to your Google Home device
