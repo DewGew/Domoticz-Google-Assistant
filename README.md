@@ -66,7 +66,7 @@ SCENE_CONFIG = {
             'nicknames' : ['Test'] },    
 }
 ```
-## Setup Instructions
+## Setup Actions on Google Console Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
   - Click Home Control, then click Smart Home.
   - On the left navigation menu under SETUP, click on Invocation.
