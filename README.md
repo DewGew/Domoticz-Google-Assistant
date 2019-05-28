@@ -1,6 +1,6 @@
 # Domoticz-Google-Assistant
 
-Standalone implementation. It means that you can put this server wherever you want, even on another machine.
+Standalone implementation. It means that you can put this server wherever you want, even on another machine. 
 
 Based on Pawcio script: https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244 and the home assistant implementation: https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant and https://github.com/actions-on-google/smart-home-nodejs
 
@@ -158,7 +158,9 @@ Enable service:
 ```
 cd /home/${USER}/Domoticz-Google-Assistant/
 git pull
-# If needed restart service:
+```
+If needed, restart service:
+```
 sudo systemctl restart dzga.service
 ```
 Config.py will not be updated but if there is any changes on the config file compare your file with default_config.py
