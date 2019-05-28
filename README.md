@@ -1,5 +1,7 @@
 # Domoticz-Google-Assistant
 
+Standalone implementation. It means that you can put this server wherever you want, even on another machine.
+
 Based on Pawcio script: https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244 and the home assistant implementation: https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant and https://github.com/actions-on-google/smart-home-nodejs
 
 Required:
@@ -9,7 +11,6 @@ Required:
 
 Domoticz-Google-Assistant delivers: 
 - the oauth authorization and smarthome endpoint for the google assistant
-- Standalone implementation. It means that you can put this server wherever you want, even on another machine.
 - Two-factor authentication pin for domoticz protected devices (works best with english language)
 - Acknowledgement with Yes or No. (works best with english language)
 - Arm Disarm Securitypanel (works best with english language)
