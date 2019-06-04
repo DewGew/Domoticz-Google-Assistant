@@ -244,8 +244,6 @@ class BrightnessTrait(_Trait):
                 raise SmartHomeError(ERR_WRONG_PIN,
                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
                 
-            
-            
 @register_trait
 class OpenCloseTrait(_Trait):
     """Trait to offer open/close control functionality.
@@ -266,11 +264,19 @@ class OpenCloseTrait(_Trait):
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
         # Neither supported domain can support sceneReversible
-        return {}
+        response = {}
+        response['queryOnlyOpenClose'] = True
+        
+        return response
 
     def query_attributes(self):
         """Return OpenClose query attributes."""
-        return {}
+        response = {}
+        if self.state.state == 'Off':
+            response['openPercent'] = 100
+        else:
+            response['openPercent'] = 0
+        return response
 
     def execute(self, command, params):
         """Execute a OpenClose command."""
