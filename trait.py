@@ -263,11 +263,8 @@ class OpenCloseTrait(_Trait):
 
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
-        # Neither supported domain can support sceneReversible
-        response = {}
-        response['queryOnlyOpenClose'] = True
-        
-        return response
+        # Neither supported domain can support sceneReversible       
+        return {}
 
     def query_attributes(self):
         """Return OpenClose query attributes."""
