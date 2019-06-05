@@ -269,7 +269,7 @@ class OpenCloseTrait(_Trait):
     def query_attributes(self):
         """Return OpenClose query attributes."""
         response = {}
-        if self.state.state == 'Off':
+        if self.state.state == 'Open':
             response['openPercent'] = 100
         else:
             response['openPercent'] = 0
