@@ -98,15 +98,15 @@ SCENE_CONFIG = {
 
 - Navigate back to the [Actions on Google Console](https://console.actions.google.com/).
   - On the left navigation menu under BUILD, click on Actions. Click on Add Your First Action and choose your app's language(s).
-    Enter the URL for fulfillment, e.g. https://[YOUR REVERSE PROXY URL]/smarthome, click Done.
+    Enter the URL for fulfillment, e.g. `https://[YOUR REVERSE PROXY URL]/smarthome`, click Done.
   - On the left navigation menu under ADVANCED OPTIONS, click on Account Linking.
   - Select No, I only want to allow account creation on my website. Click Next.
   - For Linking Type, select OAuth.
   - For Grant Type, select 'Authorization Code' for Grant Type.
-  - Under Client Information, enter https://oauth-redirect.googleusercontent.com/ as Client id
+  - Under Client Information, enter `https://oauth-redirect.googleusercontent.com/` as Client id
   - Client secret put anything you like, doesn’t need this field
-  - Change Authorization URL to https://[YOUR REVERSE PROXY URL]/oauth (replace with your actual URL).
-  - Change Token URL to https://[YOUR REVERSE PROXY URL]/token (replace with your actual URL).  
+  - Change Authorization URL to `https://[YOUR REVERSE PROXY URL]/oauth` (replace with your actual URL).
+  - Change Token URL to `https://[YOUR REVERSE PROXY URL]/token` (replace with your actual URL).  
   - Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.
   - Click 'Save' at the top right corner, then click 'Test' to generate a new draft version of the Test App.
   
