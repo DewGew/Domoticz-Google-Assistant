@@ -103,7 +103,8 @@ SCENE_CONFIG = {
   - Select No, I only want to allow account creation on my website. Click Next.
   - For Linking Type, select OAuth.
   - For Grant Type, select 'Authorization Code' for Grant Type.
-  - Under Client Information, enter the client ID and secret from earlier.
+  - Under Client Information, enter https://oauth-redirect.googleusercontent.com/ as Client id
+  - Client secret put anything you like, doesn’t need this field
   - Change Authorization URL to https://[YOUR REVERSE PROXY URL]/oauth (replace with your actual URL).
   - Change Token URL to https://[YOUR REVERSE PROXY URL]/token (replace with your actual URL).  
   - Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.
