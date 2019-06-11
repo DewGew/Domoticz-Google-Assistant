@@ -2,12 +2,7 @@
 
 import requests
 import json
-
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
-    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, pushDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
-    ERR_ALREADY_IN_STATE, ERR_WRONG_PIN)
-
+from config import *
 from helpers import SmartHomeError
     
 PREFIX_TRAITS = 'action.devices.traits.'
