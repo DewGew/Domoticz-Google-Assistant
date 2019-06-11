@@ -27,31 +27,28 @@ IMAGE_LIGHT = ['Light']
 IMAGE_MEDIA = ['Media', 'TV']
 IMAGE_OUTLET = ['WallSocket']
 #'Speaker'
-#'Media'
 
 #Additional nicknames and room configuration
 DEVICE_CONFIG = {
     '135' : {
-            'nicknames' : ['Kitchen Blind One'],
-            'room' : 'Kitchen' ,
-            'ack' : True},
+        'nicknames' : ['Kitchen Blind One'],
+        'room' : 'Kitchen' ,
+        'ack' : True},
     '150' : {
-            'nicknames' : ['Dining Room Light'],
-            'room' : 'Dining Room'},
+        'nicknames' : ['Dining Room Light'],
+        'room' : 'Dining Room'},
     '180' : {
-            'nicknames' : ['Simon Printer'],
-            'room' : 'Simon',
-            'ack' : False}          
+        'nicknames' : ['Simon Printer'],
+        'room' : 'Simon',
+        'ack' : False},          
 }
 
 SCENE_CONFIG = {
     '3' : {
-            'nicknames' : ['Blinders']
-            },
+        'nicknames' : ['Blinders']},
     '5' : {
-            'nicknames' : ['Test'] },    
+        'nicknames' : ['Test']},    
 }
-
 
 #Hardcoded values - do not modify it!
 SESSION_TIMEOUT = 3600
