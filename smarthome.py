@@ -292,7 +292,6 @@ class _GoogleEntity:
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
                             
                 if ack:
-                    print(challenge)
                     if challenge == None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'ackNeeded',
                             'Unable to execute {} for {} - challenge needed '.format(command, self.state.entity_id))
