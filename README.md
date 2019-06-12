@@ -121,7 +121,23 @@ python3 Domoticz-Google-Assistant
 - Tap Have something already set up?
 - Select your device app e.g: "[test]Your Appname"
 - Follow the steps to complete setup
- 
+
+## Useful commands
+With `'ack' : True`:
+>**User:** Turn on the dining room light.  
+>**Google Assistant:** Turning on the dining room light. Are you sure?  
+>**User:**	Yes.  
+>**Google Assistant:** Turning on the dining room light.
+
+Security device:
+>**User:** Set the security system to armed away.  
+>**Google Assistant:** Can I have your security code?  
+>**User**: 1234  
+>**Google Assistant:** Ok, arming the security system to armed away.
+
+>**User**: Is my security system armed?  
+>**Google Assistant:** The security system is armed to high security.
+
 ## Force devices sync
 ```
 https://[YOUR REVERSE PROXY URL]/sync
