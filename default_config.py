@@ -53,13 +53,13 @@ SCENE_CONFIG = {
 # User-friendly name for the level in your language..
 # See: https://developers.google.com/actions/smarthome/traits/#supported-languages
 ARMHOME = {
-    "level_synonym": ["låg säkerhet", "Level 1", "hemmaläge", "SL1"],
-    "lang": "sv"
+    "level_synonym": ["låg säkerhet", "Level 1", "hemmaläge", "SL1"], # Custom levelnames
+    "lang": "sv" # langauge
     }
           
 ARMAWAY = {
-    "level_synonym": ["hög säkerhet", "Level 2", "bortaläge", "SL2"],
-    "lang": "sv"
+    "level_synonym": ["hög säkerhet", "Level 2", "bortaläge", "SL2"], # Custom levelnames
+    "lang": "sv" # language
     }
 
 #Hardcoded values - do not modify it!
