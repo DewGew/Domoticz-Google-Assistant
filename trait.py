@@ -399,7 +399,7 @@ class LockUnlockTrait(_Trait):
         domain = self.state.domain
         state = self.state.state
         protected = self.state.protected
-        print(state)
+
         if domain == lockDOMAIN:
             if params['lock'] == True and state == 'Unlocked':
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=On'
@@ -485,9 +485,7 @@ class ColorSettingTrait(_Trait):
         
         url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + str(color_hex)
         
-        #print(url)
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-        #print(r.status_code)
         
 @register_trait
 class ArmDisarmTrait(_Trait):
@@ -507,27 +505,68 @@ class ArmDisarmTrait(_Trait):
 
     def sync_attributes(self):
         """Return ArmDisarm attributes for a sync request."""
-        return {}
+        return {
+          "availableArmLevels": {
+            "levels": [{
+              "level_name": "Arm Home",
+              "level_values": [{
+                "level_synonym": ["low security", "home and guarding", "level 1", "arm home", "SL1"],
+                "lang": "en"
+              },{
+                "level_synonym": ["låg säkerhet", "Level 1", "hemma läge", "SL1"],
+                "lang": "sv"
+              }]
+            },
+            {
+              "level_name": "Arm Away",
+              "level_values": [{
+                "level_synonym": ["high security", "away and guarding", "level 2", "arm away", "SL2"],
+                "lang": "en"
+              },{
+                "level_synonym": ["hög säkerhet", "Level 2", "borta läge", "SL2"],
+                "lang": "sv"
+              }]
+            }],
+            "ordered": True
+          }
+        }
 
     def query_attributes(self):
         """Return ArmDisarm query attributes."""
-        return {'isArmed': self.state.state != 'Normal'}
+        response = {}
+        state = self.state.state
+        
+        if state != 'Normal':
+            response['isArmed'] = True
+            response['currentArmLevel'] = state
+        else:
+            response['isArmed'] = False
+            
+        return response
         
     def execute(self, command, params):
         """Execute an ArmDisarm command."""
         state = self.state.state
         seccode = self.state.seccode
-        if params['arm'] ==  False or (params['arm'] ==  True and params['cancel'] == True):
+        
+        if params['arm'] ==  False:
             if state == 'Normal':
                 raise SmartHomeError(ERR_ALREADY_IN_STATE,
                     'Unable to execute {} for {} '.format(command, self.state.entity_id))
             else:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=' + seccode
-        elif params['arm'] == True:
-            if state != 'Normal':
-                raise SmartHomeError(ERR_ALREADY_IN_STATE,
-                    'Unable to execute {} for {} '.format(command, self.state.entity_id))
-            else:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=1&seccode=' + seccode
-            
+        elif params['arm'] ==  True:
+            if params['armLevel'] == 'Arm Home':
+                if state == 'Arm Home':
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                        'Unable to execute {} for {} '.format(command, self.state.entity_id))
+                else:
+                    url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=1&seccode=' + seccode
+            elif params['armLevel'] == 'Arm Away':
+                if state == 'Arm Away':
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                        'Unable to execute {} for {} '.format(command, self.state.entity_id))
+                else:
+                    url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=2&seccode=' + seccode  
+                
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
