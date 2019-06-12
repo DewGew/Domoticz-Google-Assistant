@@ -57,7 +57,7 @@ ARMHOME = {
     "lang": "sv"
     }
           
-ARMAWAY ={
+ARMAWAY = {
     "level_synonym": ["hög säkerhet", "Level 2", "bortaläge", "SL2"],
     "lang": "sv"
     }
