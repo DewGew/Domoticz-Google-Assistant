@@ -136,7 +136,7 @@ Security device:
 >**Google Assistant:** Ok, arming the security system to armed away.
 
 >**User**: Is my security system armed?  
->**Google Assistant:** The security system is armed to high security.
+>**Google Assistant:** The security system is armed to armed away.
 
 ## Force devices sync
 ```
