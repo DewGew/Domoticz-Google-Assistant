@@ -50,6 +50,18 @@ SCENE_CONFIG = {
         'nicknames' : ['Test']},    
 }
 
+# User-friendly name for the level in your language..
+# See: https://developers.google.com/actions/smarthome/traits/#supported-languages
+ARMHOME = {
+    "level_synonym": ["låg säkerhet", "Level 1", "hemmaläge", "SL1"],
+    "lang": "sv"
+    }
+          
+ARMAWAY ={
+    "level_synonym": ["hög säkerhet", "Level 2", "bortaläge", "SL2"],
+    "lang": "sv"
+    }
+
 #Hardcoded values - do not modify it!
 SESSION_TIMEOUT = 3600
 AUTH_CODE_TIMEOUT = 600
