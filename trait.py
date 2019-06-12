@@ -490,7 +490,7 @@ class ColorSettingTrait(_Trait):
 @register_trait
 class ArmDisarmTrait(_Trait):
     """Trait to offer basic on and off functionality.
-    https://developers.google.com/actions/smarthome/traits/ArmDisarm
+    https://developers.google.com/actions/smarthome/traits/armdisarm
     """
 
     name = TRAIT_ARM_DISARM
