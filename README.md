@@ -30,7 +30,7 @@ cd /home/${USER}/Domoticz-Google-Assistant
 mv default_config.py config.py
 ```
 
-Before first launch, Actions on Google and config.py must be modified properly.
+Before first launch, [Actions on Google](https://github.com/DewGew/Domoticz-Google-Assistant/wiki/Setup-Actions-on-Google) and config.py must be modified properly.
 ```
 PORT_NUMBER = 3030 -> port number for the Domoticz-Google-Assistant server
 
@@ -42,12 +42,13 @@ DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
 U_NAME_DOMOTICZ = 'domoticz_username'
 U_PASSWD_DOMOTICZ = 'domoticz_password'
 DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
+# Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
 
 #Oauth credentials -> required for app linking
 U_NAME = 'oauth_username'
 U_PASSWD = 'oauth_password'
 ```
-## Setup Actions on Google Console Instructions
+##  Setup Actions on Google Console Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
   - Click Home Control, then click Smart Home.
   - On the left navigation menu under SETUP, click on Invocation.
