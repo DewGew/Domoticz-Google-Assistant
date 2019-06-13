@@ -2,7 +2,7 @@
 
 Standalone implementation. It means that you can put this server wherever you want, even on another machine. You need to setup a project in Actions on Google Console. You find instructions below.
 
-Based on Pawcio script: https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244 and the home assistant implementation: https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant and https://github.com/actions-on-google/smart-home-nodejs
+Based on Pawcio's script at [domoticz forum](https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244) and the [home assistant implementation](https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant)
 
 Required:
 - Public IP
