@@ -39,36 +39,13 @@ SMARTHOMEPROVIDEGOOGLECLIENTSECRET = '0KUYN5ExD62QOsWCO8zoFSS_'     # Client sec
 SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' # Request Sync API
 
 DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
-U_NAME_DOMOTICZ = 'domoticz user name'
-U_PASSWD_DOMOTICZ = 'domoticz user password'
+U_NAME_DOMOTICZ = 'domoticz_username'
+U_PASSWD_DOMOTICZ = 'domoticz_password'
 DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
 
 #Oauth credentials -> required for app linking
-U_NAME = 'username'
-U_PASSWD = 'password'
-
-#Additional nicknames, room hint and acknowledgement (Yes or No) for selected devices can be added:
-DEVICE_CONFIG = {
-
-    '135' : {                                     # Domoticz's idx of the device
-            'nicknames' : ['Kitchen Blind One'],  # List of the nicknames
-            'room' : 'Kitchen' ,                  # Room hint
-            'ack' : True},                        # Acknowledgement for command execution
-    '150' : {
-            'nicknames' : ['Dining Room Light'],
-            'room' : 'Dining Room' },
-    '180' : {
-            'nicknames' : ['Simon's Printer'],
-            'room' : 'Simon',
-            'ack' : False}          
-}
-
-SCENE_CONFIG = {
-    '3' : {
-            'nicknames' : ['Blinders'] },
-    '5' : {
-            'nicknames' : ['Test'] },    
-}
+U_NAME = 'oauth_username'
+U_PASSWD = 'oauth_password'
 ```
 ## Setup Actions on Google Console Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
