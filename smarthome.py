@@ -5,7 +5,6 @@ import requests
 import json
 import hashlib
 from itertools import product
-import states
 import trait
 from collections.abc import Mapping
 from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_GET_SETTINGS_URL,
@@ -21,7 +20,7 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET)
 
-from helpers import SmartHomeError, SmartHomeErrorNoChallenge    
+from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge    
     
 DOMOTICZ_TO_GOOGLE_TYPES = {
     groupDOMAIN: TYPE_SWITCH,
@@ -90,7 +89,7 @@ def getAog(device):
     if domain == None:
         return None
         
-    aog = states.AogState()
+    aog = AogState()
     aog.name = device["Name"] #.encode('ascii', 'ignore')
     aog.domain = domain
     aog.id = device["idx"]
