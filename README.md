@@ -117,7 +117,7 @@ Security device:
 >**Google Assistant:** The security system is armed to armed away.
 
 Speaker volume:
->**User**: Set volume on living room speaker to 50% 
+>**User**: Set volume on living room speaker to 50%  
 >**Google Assistant:** Sure
 
 >**User**: Turn up the volume on living room speaker?  
