@@ -107,6 +107,7 @@ def getAog(device):
     aog.maxdimlevel = device.get("MaxDimLevel")
     aog.seccode = settings.get("SecPassword")
     aog.tempunit = settings.get("TempUnit")
+    aog.battery = device.get("BatteryLevel")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
