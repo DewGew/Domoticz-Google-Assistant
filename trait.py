@@ -103,6 +103,7 @@ class OnOffTrait(_Trait):
             mediaDOMAIN,
             outletDOMAIN,
             pushDOMAIN,
+            speakerDOMAIN,
         )
 
     def sync_attributes(self):
