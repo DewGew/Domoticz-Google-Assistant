@@ -599,7 +599,7 @@ class VolumeTrait(_Trait):
         level = self.state.level
         
         if level is not None:
-            response['currentVolume'] = int(level * 100)
+            response['currentVolume'] = int(level * 100 / self.state.maxdimlevel)
            
         return response
 
@@ -618,7 +618,7 @@ class VolumeTrait(_Trait):
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
       
     def execute(self, command, params):
-        """Execute a brightness command."""
+        """Execute a volume command."""
         if command == COMMAND_SET_VOLUME:
             self._execute_set_volume(params)
         elif command == COMMAND_VOLUME_RELATIVE:
