@@ -120,7 +120,7 @@ pushDOMAIN = 'Push'
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
 ATTRS_COLOR = 3
-ATTRS__COLOR_TEMP = 2
+ATTRS_COLOR_TEMP = 2
 
 #Todo... dynamic tokens handling/generation if needed
 Auth = {
