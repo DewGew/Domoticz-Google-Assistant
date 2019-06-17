@@ -15,10 +15,10 @@ from config import (DOMOTICZ_GET_ALL_DEVICES_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMO
     ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
-    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN,
-    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR,
+    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
+    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_VOLUME_SET,
     DEVICE_CONFIG, SCENE_CONFIG,
-    IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET)
+    IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET, IMAGE_SPEAKER)
 
 from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge    
     
@@ -38,6 +38,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     mediaDOMAIN: TYPE_MEDIA,
     securityDOMAIN: TYPE_SECURITY,
     pushDOMAIN: TYPE_SWITCH,
+    speakerDOMAIN: TYPE_SPEAKER,
 } 
  
 #some way to convert a domain type: Domoticz to google
@@ -59,6 +60,8 @@ def AogGetDomain(device):
             return mediaDOMAIN
         elif device["Image"] in IMAGE_OUTLET:
             return outletDOMAIN
+        elif device["Image"] in IMAGE_SPEAKER:
+            return speakerDOMAIN
         else:
             return lightDOMAIN
     elif 'Group' == device["Type"]:
@@ -109,6 +112,8 @@ def getAog(device):
         aog.attributes = ATTRS_BRIGHTNESS
     if outletDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
+    if speakerDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
+        aog.attributes = ATTRS_VOLUME_SET
     if colorDOMAIN == aog.domain and "Color Switch" == device["Type"]:
         aog.attributes = ATTRS_COLOR
     if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:

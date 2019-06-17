@@ -26,7 +26,7 @@ IMAGE_SWITCH = ['Generic']
 IMAGE_LIGHT = ['Light']
 IMAGE_MEDIA = ['Media', 'TV']
 IMAGE_OUTLET = ['WallSocket']
-#'Speaker'
+IMAGE_SPEAKER = ['Speaker']
 
 #Additional nicknames and room configuration
 DEVICE_CONFIG = {
@@ -87,6 +87,7 @@ TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
 TYPE_DOOR = PREFIX_TYPES + 'DOOR'
 TYPE_MEDIA = PREFIX_TYPES + 'TV'
 TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
+TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
 
 # Error codes used for SmartHomeError class
 # https://developers.google.com/actions/smarthome/create-app#error_responses
@@ -116,11 +117,13 @@ colorDOMAIN = 'Color Switch'
 mediaDOMAIN = 'Media'
 securityDOMAIN = 'Security'
 pushDOMAIN = 'Push'
+speakerDOMAIN = 'Speaker'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
 ATTRS_COLOR = 3
 ATTRS_COLOR_TEMP = 2
+ATTRS_VOLUME_SET = 1
 
 #Todo... dynamic tokens handling/generation if needed
 Auth = {

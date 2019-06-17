@@ -3,9 +3,9 @@
 import requests
 import json
 from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
-    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN,
-    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, pushDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT,
-    ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ARMHOME, ARMAWAY)
+    groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN, speakerDOMAIN,
+    mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, pushDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_VOLUME_SET,
+    ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED, ARMHOME, ARMAWAY)
 
 from helpers import SmartHomeError
     
@@ -23,6 +23,7 @@ TRAIT_FANSPEED = PREFIX_TRAITS + 'FanSpeed'
 TRAIT_MODES = PREFIX_TRAITS + 'Modes'
 TRAIT_OPEN_CLOSE = PREFIX_TRAITS + 'OpenClose'
 TRAIT_ARM_DISARM = PREFIX_TRAITS + 'ArmDisarm'
+TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -42,6 +43,8 @@ COMMAND_FANSPEED = PREFIX_COMMANDS + 'SetFanSpeed'
 COMMAND_MODES = PREFIX_COMMANDS + 'SetModes'
 COMMAND_OPEN_CLOSE = PREFIX_COMMANDS + 'OpenClose'
 COMMAND_ARM_DISARM = PREFIX_COMMANDS + 'ArmDisarm'
+COMMAND_SET_VOLUME = PREFIX_COMMANDS + 'setVolume'
+COMMAND_VOLUME_RELATIVE = PREFIX_COMMANDS + 'volumeRelative'
 
 TRAITS = []
 
@@ -100,6 +103,7 @@ class OnOffTrait(_Trait):
             mediaDOMAIN,
             outletDOMAIN,
             pushDOMAIN,
+            speakerDOMAIN,
         )
 
     def sync_attributes(self):
@@ -565,3 +569,61 @@ class ArmDisarmTrait(_Trait):
                     url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=2&seccode=' + seccode  
                 
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+
+@register_trait
+class VolumeTrait(_Trait):
+    """Trait to control volume of a device.
+    https://developers.google.com/actions/smarthome/traits/volume
+    """
+
+    name = TRAIT_VOLUME
+    commands = [
+        COMMAND_SET_VOLUME,
+        COMMAND_VOLUME_RELATIVE
+    ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        if domain in (speakerDOMAIN):
+            return features & ATTRS_VOLUME_SET
+ 
+        return False
+
+    def sync_attributes(self):
+        """Return volume attributes for a sync request."""
+        return {}
+
+    def query_attributes(self):
+        """Return volume query attributes."""
+        response = {}
+        level = self.state.level
+        
+        if level is not None:
+            response['currentVolume'] = int(level * 100 / self.state.maxdimlevel)
+           
+        return response
+
+    def _execute_set_volume(self, params):
+        level = params['volumeLevel']
+
+        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(level * self.state.maxdimlevel / 100))
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+
+    def _execute_volume_relative(self, params):
+        # This could also support up/down commands using relativeSteps
+        relative = params['volumeRelativeLevel']
+        current = level = self.state.level
+
+        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(current + relative * self.state.maxdimlevel / 100))
+        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+      
+    def execute(self, command, params):
+        """Execute a volume command."""
+        if command == COMMAND_SET_VOLUME:
+            self._execute_set_volume(params)
+        elif command == COMMAND_VOLUME_RELATIVE:
+            self._execute_volume_relative(params)
+        else:
+            raise SmartHomeError(ERR_NOT_SUPPORTED,
+                'Unable to execute {} for {} '.format(command, self.state.entity_id))
