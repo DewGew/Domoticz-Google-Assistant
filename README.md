@@ -123,6 +123,10 @@ Speaker volume:
 >**User**: Turn up the volume on living room speaker?  
 >**Google Assistant:** Alright (Volume increases with 1%)
 
+When a device has low battery:
+>**User**: Lock front door.  
+>**Google Assistant:** The front door lock has low battery. Locking the front door.  
+
 ## Force devices sync
 ```
 https://[YOUR REVERSE PROXY URL]/sync
