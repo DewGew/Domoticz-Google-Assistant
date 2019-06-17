@@ -116,6 +116,13 @@ Security device:
 >**User**: Is my security system armed?  
 >**Google Assistant:** The security system is armed to armed away.
 
+Speaker volume:
+>**User**: Set volume on living room speaker to 50% 
+>**Google Assistant:** Sure
+
+>**User**: Turn up the volume on living room speaker?  
+>**Google Assistant:** Alright (Volume increases with 1%)
+
 ## Force devices sync
 ```
 https://[YOUR REVERSE PROXY URL]/sync
