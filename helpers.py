@@ -34,3 +34,5 @@ class AogState:
         self.protected = None
         self.maxdimlevel = 0
         self.seccode = ''
+        self.tempunit = None
+        self.battery = 0
