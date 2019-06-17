@@ -2,7 +2,7 @@
 
 import requests
 import json
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD,
+from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, LOW_BATTERY_LIMIT,
     groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, climateDOMAIN, tempDOMAIN, colorDOMAIN, speakerDOMAIN,
     mediaDOMAIN, securityDOMAIN, lockDOMAIN, invlockDOMAIN, outletDOMAIN, pushDOMAIN, ATTRS_COLOR, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_VOLUME_SET,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED, ARMHOME, ARMAWAY)
@@ -113,10 +113,15 @@ class OnOffTrait(_Trait):
     def query_attributes(self):
         """Return OnOff query attributes."""
         domain = self.state.domain
+        response = {}
         if domain == pushDOMAIN:
-            return {'on': False}
+            response['on'] = False
         else:
-            return {'on': self.state.state != 'Off'}
+            response['on'] = self.state != 'Off'
+        if self.state.battery <= LOW_BATTERY_LIMIT:
+            response['exceptionCode'] = 'lowBattery'
+        
+        return response
     
     def execute(self, command, params):
         """Execute an OnOff command."""
@@ -217,6 +222,8 @@ class BrightnessTrait(_Trait):
         if domain == colorDOMAIN:
             brightness = self.state.level
             response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
+        if self.state.battery <= LOW_BATTERY_LIMIT:
+            response['exceptionCode'] = 'lowBattery'
 
         return response
 
@@ -276,6 +283,9 @@ class OpenCloseTrait(_Trait):
             response['openPercent'] = 100
         else:
             response['openPercent'] = 0
+        if self.state.battery <= LOW_BATTERY_LIMIT:
+            response['exceptionCode'] = 'lowBattery'
+            
         return response
 
     def execute(self, command, params):
@@ -340,6 +350,8 @@ class TemperatureSettingTrait(_Trait):
         """Return temperature point and modes query attributes."""
         domain = self.state.domain
         response = {}
+        if self.state.battery <= LOW_BATTERY_LIMIT:
+            response['exceptionCode'] = 'lowBattery'
         
         if domain == tempDOMAIN:
             response['thermostatMode'] = 'heat'
@@ -396,7 +408,13 @@ class LockUnlockTrait(_Trait):
 
     def query_attributes(self):
         """Return LockUnlock query attributes."""
-        return {'isLocked' : self.state.state == 'Locked'}
+        response = {}
+        if self.state.battery <= LOW_BATTERY_LIMIT:
+            response['exceptionCode'] = 'lowBattery'
+        
+        response['isLocked'] = self.state.state == 'Locked'
+        
+        return response
         
     def execute(self, command, params):
         """Execute an LockUnlock command."""

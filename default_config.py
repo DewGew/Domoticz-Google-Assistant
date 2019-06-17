@@ -62,6 +62,8 @@ ARMAWAY = {
     "lang": "sv" # language
     }
 
+#Report low battry
+LOW_BATTERY_LIMIT = 9
 #Hardcoded values - do not modify it!
 SESSION_TIMEOUT = 3600
 AUTH_CODE_TIMEOUT = 600
