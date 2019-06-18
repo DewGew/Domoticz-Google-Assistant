@@ -17,26 +17,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
     securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_VOLUME_SET)
   
-from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge    
-    
-DOMOTICZ_TO_GOOGLE_TYPES = {
-    groupDOMAIN: TYPE_SWITCH,
-    sceneDOMAIN: TYPE_SCENE,
-    lightDOMAIN: TYPE_LIGHT,
-    switchDOMAIN: TYPE_SWITCH,
-    outletDOMAIN: TYPE_OUTLET,
-    blindsDOMAIN: TYPE_BLINDS,
-    screenDOMAIN: TYPE_SCREEN,
-    climateDOMAIN: TYPE_THERMOSTAT,
-    tempDOMAIN: TYPE_THERMOSTAT,
-    lockDOMAIN: TYPE_LOCK,
-    invlockDOMAIN: TYPE_LOCK,
-    colorDOMAIN: TYPE_LIGHT,
-    mediaDOMAIN: TYPE_MEDIA,
-    securityDOMAIN: TYPE_SECURITY,
-    pushDOMAIN: TYPE_SWITCH,
-    speakerDOMAIN: TYPE_SPEAKER,
-} 
+from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge
  
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
