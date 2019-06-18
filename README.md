@@ -38,15 +38,17 @@ SMARTHOMEPROVIDERGOOGLECLIENTID = 'AxqqWpwYj4'                      # Client ID
 SMARTHOMEPROVIDEGOOGLECLIENTSECRET = '0KUYN5ExD62QOsWCO8zoFSS_'     # Client secret
 SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' # Request Sync API
 
-DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
-U_NAME_DOMOTICZ = 'domoticz_username'
-U_PASSWD_DOMOTICZ = 'domoticz_password'
-DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
-# Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
-
 #Oauth credentials -> required for app linking
 U_NAME = 'oauth_username'
 U_PASSWD = 'oauth_password'
+
+DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
+U_NAME_DOMOTICZ = 'domoticz_username'
+U_PASSWD_DOMOTICZ = 'domoticz_password'
+#Idx of Room plan. 0 is all devices.
+DOMOTICZ_ROOMPLAN = '0'
+# Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
+DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
 ```
 ##  Setup Actions on Google Console Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.

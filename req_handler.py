@@ -3,7 +3,7 @@
 from http.cookies import SimpleCookie as cookie 
 import uuid
 import time
-from config import (SESSION_TIMEOUT, Auth, AUTH_CODE_TIMEOUT)
+from const import (SESSION_TIMEOUT, Auth, AUTH_CODE_TIMEOUT)
 
 class ReqHandler():
     
