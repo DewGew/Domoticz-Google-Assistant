@@ -9,16 +9,21 @@ SMARTHOMEPROVIDERGOOGLECLIENTID = 'sidjhfer87y'
 SMARTHOMEPROVIDEGOOGLECLIENTSECRET = 'bfuosydgrf83ye'
 SMARTHOMEPROVIDERAPIKEY = 'uwyte6514325r'
 
+#Oauth credentials
+U_NAME = 'oauth_user_name'
+U_PASSWD = 'oauth_passwd'
+
 #Domoticz settings
 DOMOTICZ_URL='http://192.168.1.251:8080'
 U_NAME_DOMOTICZ = 'user_name'
 U_PASSWD_DOMOTICZ = 'passwd'
+#Idx of Room plan. 0 is all devices.
+DOMOTICZ_ROOMPLAN = '0'
+#Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
 DOMOTICZ_SWITCH_PROTECTION_PASSWD = '331122' # Only works with numbers as protection password in domoticz
-# Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
 
-#Oauth credentials
-U_NAME = 'oauth_user_name'
-U_PASSWD = 'oauth_passwd'
+#Report low battery 
+LOW_BATTERY_LIMIT = 9
 
 #Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
 #So to differentiate them additionaly image names are used.
@@ -33,14 +38,17 @@ DEVICE_CONFIG = {
     '135' : {
         'nicknames' : ['Kitchen Blind One'],
         'room' : 'Kitchen' ,
-        'ack' : True},
+        'ack' : True,
+        },
     '150' : {
         'nicknames' : ['Dining Room Light'],
-        'room' : 'Dining Room'},
+        'room' : 'Dining Room',
+        },
     '180' : {
         'nicknames' : ['Simon Printer'],
         'room' : 'Simon',
-        'ack' : False},          
+        'ack' : False,
+        },          
 }
 
 SCENE_CONFIG = {
@@ -61,98 +69,3 @@ ARMAWAY = {
     "level_synonym": ["hög säkerhet", "Level 2", "bortaläge", "SL2"], # Custom levelnames
     "lang": "sv" # language
     }
-
-#Report low battry
-LOW_BATTERY_LIMIT = 9
-#Hardcoded values - do not modify it!
-SESSION_TIMEOUT = 3600
-AUTH_CODE_TIMEOUT = 600
-HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
-REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
-DOMOTICZ_GET_ALL_DEVICES_URL = DOMOTICZ_URL + '/json.htm?type=devices&filter=all&used=true'
-DOMOTICZ_GET_ONE_DEVICE_URL = DOMOTICZ_URL + '/json.htm?type=devices&rid='
-DOMOTICZ_GET_SCENES_URL = DOMOTICZ_URL + '/json.htm?type=scenes'
-DOMOTICZ_GET_SETTINGS_URL = DOMOTICZ_URL + '/json.htm?type=settings'
-
-#https://developers.google.com/actions/smarthome/guides/
-PREFIX_TYPES = 'action.devices.types.'
-TYPE_LIGHT = PREFIX_TYPES + 'LIGHT'
-TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
-TYPE_OUTLET = PREFIX_TYPES + 'OUTLET'
-TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
-TYPE_SCENE = PREFIX_TYPES + 'SCENE'
-TYPE_FAN = PREFIX_TYPES + 'FAN'
-TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
-TYPE_LOCK = PREFIX_TYPES + 'LOCK'
-TYPE_BLINDS = PREFIX_TYPES + 'BLINDS'
-TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
-TYPE_DOOR = PREFIX_TYPES + 'DOOR'
-TYPE_MEDIA = PREFIX_TYPES + 'TV'
-TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
-TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
-
-# Error codes used for SmartHomeError class
-# https://developers.google.com/actions/smarthome/create-app#error_responses
-ERR_DEVICE_OFFLINE = "deviceOffline"
-ERR_DEVICE_NOT_FOUND = "deviceNotFound"
-ERR_VALUE_OUT_OF_RANGE = "valueOutOfRange"
-ERR_NOT_SUPPORTED = "notSupported"
-ERR_PROTOCOL_ERROR = 'protocolError'
-ERR_UNKNOWN_ERROR = 'unknownError'
-ERR_FUNCTION_NOT_SUPPORTED = 'functionNotSupported'
-ERR_CHALLENGE_NEEDED = 'challengeNeeded'
-ERR_WRONG_PIN = 'pinIncorrect'
-ERR_ALREADY_IN_STATE = 'alreadyInState'
-
-groupDOMAIN = 'Group'
-sceneDOMAIN = 'Scene'
-lightDOMAIN = 'Light/Switch'
-switchDOMAIN = 'Switch'
-outletDOMAIN = 'Outlet'
-blindsDOMAIN = 'Blinds'
-screenDOMAIN = 'Screen'
-climateDOMAIN = 'Thermostat'
-tempDOMAIN = 'Temp'
-lockDOMAIN = 'Door Lock'
-invlockDOMAIN = 'Door Lock Inverted'
-colorDOMAIN = 'Color Switch'
-mediaDOMAIN = 'Media'
-securityDOMAIN = 'Security'
-pushDOMAIN = 'Push'
-speakerDOMAIN = 'Speaker'
-
-ATTRS_BRIGHTNESS = 1
-ATTRS_THERMSTATSETPOINT = 1
-ATTRS_COLOR = 3
-ATTRS_COLOR_TEMP = 2
-ATTRS_VOLUME_SET = 1
-
-#Todo... dynamic tokens handling/generation if needed
-Auth = {
-    'clients': {
-        SMARTHOMEPROVIDERGOOGLECLIENTID: {
-          'clientId':       SMARTHOMEPROVIDERGOOGLECLIENTID,
-          'clientSecret':   SMARTHOMEPROVIDEGOOGLECLIENTSECRET,
-        },
-    },
-    'tokens': {
-        'ZsokmCwKjdhk7qHLeYd2': {
-            'uid': '1234',
-            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'userAgentId': '1234',
-        },
-    },
-    'users': {
-        '1234': {
-            'uid': '1234',
-            'name': U_NAME,
-            'password': U_PASSWD,
-            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
-        },
-    },
-    'usernames': {
-        U_NAME: '1234',
-    }
-}
-
