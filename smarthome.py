@@ -15,7 +15,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth,DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
-    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_VOLUME_SET)
+    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTR_COLOR_TEMP)
   
 from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge
  
@@ -91,10 +91,8 @@ def getAog(device):
         aog.attributes = ATTRS_BRIGHTNESS
     if outletDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if speakerDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
-        aog.attributes = ATTRS_VOLUME_SET
-    if colorDOMAIN == aog.domain and "Color Switch" == device["Type"]:
-        aog.attributes = ATTRS_COLOR
+    if colorDOMAIN == aog.domain and "RGBWW" == device["SubType"]:
+        aog.attributes = ATTRS_COLOR_TEMP
     if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
         
