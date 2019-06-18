@@ -6,7 +6,7 @@ from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_S
     
 from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
-    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_VOLUME_SET,
+    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
 
 from helpers import SmartHomeError
@@ -468,7 +468,8 @@ class ColorSettingTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         if domain == colorDOMAIN:
-            return features & ATTRS_COLOR
+            return (features & ATTRS_COLOR or
+                    features & ATTRS_COLOR_TEMP)
 
         return False
 
@@ -605,10 +606,7 @@ class VolumeTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain in (speakerDOMAIN):
-            return features & ATTRS_VOLUME_SET
- 
-        return False
+        return domain in speakerDOMAIN
 
     def sync_attributes(self):
         """Return volume attributes for a sync request."""
