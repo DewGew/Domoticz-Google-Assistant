@@ -119,7 +119,7 @@ class OnOffTrait(_Trait):
         if domain == pushDOMAIN:
             response['on'] = False
         else:
-            response['on'] = self.state != 'Off'
+            response['on'] = self.state.state != 'Off'
         if self.state.battery <= LOW_BATTERY_LIMIT:
             response['exceptionCode'] = 'lowBattery'
         
