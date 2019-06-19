@@ -100,7 +100,16 @@ python3 Domoticz-Google-Assistant
 - Tap Set up a device
 - Tap Have something already set up?
 - Select your device app e.g: "[test]Your Appname"
-- Follow the steps to complete setup
+- Login with Oauth credentials from config.py
+
+## Share devices
+If you want to allow other household users to control the devices:
+- Go to the settings for the project you created in the [Actions on Google Console](https://console.actions.google.com/).
+- Click `Test -> Simulator`, then click Share icon in the right top corner. Follow the on-screen instruction:
+  - Add team members: Got to `Settings -> Permission`, click Add, type the new user’s e-mail address and choose `Project -> Viewer role`.
+  - Copy and share the link with the new user.
+  - When the new user opens the link with their own Google account, it will enable your draft test app under their account.
+- Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py
 
 ## Useful commands
 With `'ack' : True`:
