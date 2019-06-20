@@ -105,6 +105,8 @@ def getAog(device):
         aog.attributes = ATTRS_PERCENTAGE
     if blindsDOMAIN == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
+    if cameraDOMAIN == aog.domain:       
+        getCameras(aog.entity_id, aog.camera)
         
     desc = getDesc(aog)
     
