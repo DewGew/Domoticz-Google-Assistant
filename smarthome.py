@@ -30,8 +30,8 @@ def AogGetDomain(device):
             return invlockDOMAIN
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
             return pushDOMAIN
-        elif True == device["UsedByCamera"]:
-            return cameraDOMAIN
+        # elif True == device["UsedByCamera"]:
+            # return cameraDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
         elif device["Image"] in IMAGE_LIGHT:
