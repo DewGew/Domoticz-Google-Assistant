@@ -6,7 +6,7 @@ from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_S
     
 from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
-    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP,
+    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
 
 from helpers import SmartHomeError
@@ -270,8 +270,7 @@ class OpenCloseTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in (blindsDOMAIN,
-                            screenDOMAIN)
+        return domain in blindsDOMAIN
 
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
@@ -280,11 +279,18 @@ class OpenCloseTrait(_Trait):
 
     def query_attributes(self):
         """Return OpenClose query attributes."""
+        features = self.state.attributes
         response = {}
-        if self.state.state == 'Open':
-            response['openPercent'] = 100
+        
+        if features & ATTRS_PERCENTAGE:
+            print(self.state.attributes)
+            response['openPercent'] = self.state.level
         else:
-            response['openPercent'] = 0
+            if self.state.state == 'Open':
+                response['openPercent'] = 100
+            else:
+                response['openPercent'] = 0
+                
         if self.state.battery <= LOW_BATTERY_LIMIT:
             response['exceptionCode'] = 'lowBattery'
             
@@ -292,20 +298,24 @@ class OpenCloseTrait(_Trait):
 
     def execute(self, command, params):
         """Execute a OpenClose command."""
+        features = self.state.attributes
         protected = self.state.protected
-        p = params.get('openPercent', 50)
-        
-        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
-        
-        if p == 100:
-            #open
-            url += 'Off'
-        elif p == 0:
-            #close
-            url += 'On'
+        if features & ATTRS_PERCENTAGE:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(params['openPercent'])
         else:
-            #stop
-            url += 'Stop'
+            p = params.get('openPercent', 50)
+            
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
+            
+            if p == 100:
+                #open
+                url += 'Off'
+            elif p == 0:
+                #close
+                url += 'On'
+            else:
+                #stop
+                url += 'Stop'
             
         if protected:
             url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
