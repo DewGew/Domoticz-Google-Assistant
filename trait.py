@@ -283,7 +283,6 @@ class OpenCloseTrait(_Trait):
         response = {}
         
         if features & ATTRS_PERCENTAGE:
-            print(self.state.attributes)
             response['openPercent'] = self.state.level
         else:
             if self.state.state == 'Open':
