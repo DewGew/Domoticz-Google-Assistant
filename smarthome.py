@@ -15,14 +15,14 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth,DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
-    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP)
+    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE)
   
 from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge
  
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
-        if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US'] :
+        if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US', 'Blinds Percentage', 'Blinds Percentage Inverted'] :
             return blindsDOMAIN
         elif 'Door Lock' == device["SwitchType"]:
             return lockDOMAIN
@@ -97,6 +97,10 @@ def getAog(device):
         aog.attributes = ATTRS_COLOR_TEMP
     if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
+    if blindsDOMAIN == aog.domain and "Blinds Percentage" == device["SwitchType"]:
+        aog.attributes = ATTRS_PERCENTAGE
+    if blindsDOMAIN == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
+        aog.attributes = ATTRS_PERCENTAGE
         
     desc = getDesc(aog)
     
