@@ -26,6 +26,7 @@ TRAIT_MODES = PREFIX_TRAITS + 'Modes'
 TRAIT_OPEN_CLOSE = PREFIX_TRAITS + 'OpenClose'
 TRAIT_ARM_DISARM = PREFIX_TRAITS + 'ArmDisarm'
 TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
+TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -47,6 +48,7 @@ COMMAND_OPEN_CLOSE = PREFIX_COMMANDS + 'OpenClose'
 COMMAND_ARM_DISARM = PREFIX_COMMANDS + 'ArmDisarm'
 COMMAND_SET_VOLUME = PREFIX_COMMANDS + 'setVolume'
 COMMAND_VOLUME_RELATIVE = PREFIX_COMMANDS + 'volumeRelative'
+COMMAND_GET_CAMERA_STREAM = PREFIX_COMMANDS + 'GetCameraStream'
 
 TRAITS = []
 
@@ -654,3 +656,45 @@ class VolumeTrait(_Trait):
         else:
             raise SmartHomeError(ERR_NOT_SUPPORTED,
                 'Unable to execute {} for {} '.format(command, self.state.entity_id))
+
+@register_trait
+class CameraStreamTrait(_Trait):
+    """Trait to stream from cameras.
+    https://developers.google.com/actions/smarthome/traits/camerastream
+    """
+
+    name = TRAIT_CAMERA_STREAM
+    commands = [
+        COMMAND_GET_CAMERA_STREAM
+    ]
+
+    stream_info = None
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in cameraDOMAIN
+            
+    def sync_attributes(self):
+        """Return stream attributes for a sync request."""
+        return {
+            'cameraStreamSupportedProtocols': [
+                "hls",
+            ],
+            'cameraStreamNeedAuthToken': False,
+            'cameraStreamNeedDrmEncryption': False,
+        }
+
+    def query_attributes(self):
+        """Return camera stream attributes."""
+        entity_id = self.state.entity_id
+        cams = self.state.cameras
+        #print (cams[entity_id])
+        url = 'http://' + cams[entity_id]
+        #self.stream_info = {'cameraStreamAccessUrl': 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8'}
+        self.stream_info = {'cameraStreamAccessUrl': url}
+        return self.stream_info or {}
+
+    def execute(self, command, params):
+        """Execute a get camera stream command."""
+        return

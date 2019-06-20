@@ -14,6 +14,7 @@ DOMOTICZ_GET_ALL_DEVICES_URL = DOMOTICZ_URL + '/json.htm?type=devices&plan=' + D
 DOMOTICZ_GET_ONE_DEVICE_URL = DOMOTICZ_URL + '/json.htm?type=devices&rid='
 DOMOTICZ_GET_SCENES_URL = DOMOTICZ_URL + '/json.htm?type=scenes'
 DOMOTICZ_GET_SETTINGS_URL = DOMOTICZ_URL + '/json.htm?type=settings'
+DOMOTICZ_GET_CAMERAS_URL = DOMOTICZ_URL + '/json.htm?type=cameras'
 
 #https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
@@ -31,6 +32,7 @@ TYPE_DOOR = PREFIX_TYPES + 'DOOR'
 TYPE_MEDIA = PREFIX_TYPES + 'TV'
 TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
 TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
+TYPE_CAMERA = PREFIX_TYPES + 'CAMERA'
 
 # Error codes used for SmartHomeError class
 # https://developers.google.com/actions/smarthome/create-app#error_responses
@@ -61,6 +63,7 @@ mediaDOMAIN = 'Media'
 securityDOMAIN = 'Security'
 pushDOMAIN = 'Push'
 speakerDOMAIN = 'Speaker'
+cameraDOMAIN = 'Camera'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -85,6 +88,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     securityDOMAIN: TYPE_SECURITY,
     pushDOMAIN: TYPE_SWITCH,
     speakerDOMAIN: TYPE_SPEAKER,
+    cameraDOMAIN: TYPE_CAMERA,
 }
 
 #Todo... dynamic tokens handling/generation if needed
