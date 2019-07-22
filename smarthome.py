@@ -15,7 +15,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth,DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE)
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE)
   
 from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge
  
@@ -30,6 +30,8 @@ def AogGetDomain(device):
             return invlockDOMAIN
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
             return pushDOMAIN
+        elif 'Motion Sensor' == device["SwitchType"]:
+            return sensorDOMAIN
         # elif True == device["UsedByCamera"]:
             # return cameraDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
