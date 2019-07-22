@@ -61,7 +61,7 @@ class OAuthReqHandler(ReqHandler):
         authCode = self.generateAuthCode(user['uid'], s.form.get("client_id", None));
         
         if authCode != None:
-            s.redirect('%s?code=%s&state=%s' % (urllib.parse.unquote(s.form.get("redirect_uri", None)), authCode, s.form.get("state", None)), 301)
+            s.redirect('%s?code=%s&state=%s' % (urllib.parse.unquote(urllib.parse.unquote(s.form.get("redirect_uri", None))), authCode, s.form.get("state", None)), 301)
             return
             
         s.send_message(500, "Internal server error")
