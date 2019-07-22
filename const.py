@@ -33,6 +33,7 @@ TYPE_MEDIA = PREFIX_TYPES + 'TV'
 TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
 TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
 TYPE_CAMERA = PREFIX_TYPES + 'CAMERA'
+TYPE_SENSOR = PREFIX_TYPES + 'SENSOR'
 
 # Error codes used for SmartHomeError class
 # https://developers.google.com/actions/smarthome/create-app#error_responses
@@ -64,6 +65,7 @@ securityDOMAIN = 'Security'
 pushDOMAIN = 'Push'
 speakerDOMAIN = 'Speaker'
 cameraDOMAIN = 'Camera'
+sensorDOMAIN = 'Sensor'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -89,6 +91,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     pushDOMAIN: TYPE_SWITCH,
     speakerDOMAIN: TYPE_SPEAKER,
     cameraDOMAIN: TYPE_CAMERA,
+    sensorDOMAIN: TYPE_SENSOR,
 }
 
 #Todo... dynamic tokens handling/generation if needed
