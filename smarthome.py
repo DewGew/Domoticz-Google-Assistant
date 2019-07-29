@@ -32,8 +32,8 @@ def AogGetDomain(device):
             return pushDOMAIN
         elif 'Motion Sensor' == device["SwitchType"]:
             return sensorDOMAIN
-        # elif True == device["UsedByCamera"]:
-            # return cameraDOMAIN
+        elif True == device["UsedByCamera"]:
+            return cameraDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
         elif device["Image"] in IMAGE_LIGHT:
