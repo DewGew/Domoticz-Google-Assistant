@@ -14,7 +14,8 @@ Domoticz-Google-Assistant delivers:
 - Two-factor authentication pin for domoticz protected devices (works best with english language)
 - Acknowledgement with Yes or No. (works best with english language)
 - Arm Disarm Securitypanel (works best with english language)
-- OnOff, Brightness, Thermostat, ColorSetting, speaker volume, LockUnlock, Scene and OpenClose traits, rest to be done...
+- On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close
+- Stream surveillance camera to chromecast
 
 Please feel free to modify it, extend and improve
 
@@ -111,6 +112,20 @@ If you want to allow other household users to control the devices:
   - When the new user opens the link with their own Google account, it will enable your draft test app under their account.
 - Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py
 
+## Stream camera to chromecast
+Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls. More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats. You need a to convert your video url to one of above. Try with ffmpeg or with a surveillance software system. Try out http://shinobi.video.  
+In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)
+
+In config.py:
+```
+CAMERA_STREAM = True
+
+DOMOTICZ_IDX_CAMERAURL = {
+    '396' : 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8', 
+    '392' : 'http://user:password@192.168.1.102:8080/mp4/cctv/camera2/s.mp4',
+    }
+```
+
 ## Useful commands
 With `'ack' : True`:
 >**User:** Turn on the dining room light.  
@@ -136,7 +151,11 @@ Speaker volume:
 
 When a device has low battery:
 >**User**: Lock front door.  
->**Google Assistant:** The front door lock has low battery. Locking the front door.  
+>**Google Assistant:** The front door lock has low battery. Locking the front door.
+
+Stream front door camera to TV.
+>**User**: Show front door camera on [Chromecast device name].  
+>**Google**: Streaming front door on  [Chromecast device name].
 
 ## Force devices sync
 ```

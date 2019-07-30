@@ -2,7 +2,7 @@
 
 import requests
 import json
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, LOW_BATTERY_LIMIT, ARMHOME, ARMAWAY)
+from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, LOW_BATTERY_LIMIT, ARMHOME, ARMAWAY, DOMOTICZ_IDX_CAMERAURL)
     
 from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
@@ -670,6 +670,7 @@ class CameraStreamTrait(_Trait):
         COMMAND_GET_CAMERA_STREAM
     ]
 
+    url = DOMOTICZ_IDX_CAMERAURL
     stream_info = None
 
     @staticmethod
@@ -689,11 +690,8 @@ class CameraStreamTrait(_Trait):
 
     def query_attributes(self):
         """Return camera stream attributes."""
-        entity_id = self.state.entity_id
-        cams = self.state.cameras
-        #print (cams[entity_id])
-        url = 'http://' + cams[entity_id]
-        #self.stream_info = {'cameraStreamAccessUrl': 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8'}
+        idx = self.state.id
+        url = self.url[idx]
         self.stream_info = {'cameraStreamAccessUrl': url}
         return self.stream_info or {}
 

@@ -9,7 +9,7 @@ import trait
 from collections.abc import Mapping
 
 from config import (U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, SMARTHOMEPROVIDERAPIKEY, DEVICE_CONFIG, SCENE_CONFIG,
-    IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET, IMAGE_SPEAKER)
+    IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET, IMAGE_SPEAKER, CAMERA_STREAM)
     
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth,DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
@@ -32,8 +32,8 @@ def AogGetDomain(device):
             return pushDOMAIN
         elif 'Motion Sensor' == device["SwitchType"]:
             return sensorDOMAIN
-        # elif True == device["UsedByCamera"]:
-            # return cameraDOMAIN
+        elif True == device["UsedByCamera"] and True == CAMERA_STREAM:
+            return cameraDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
             return switchDOMAIN
         elif device["Image"] in IMAGE_LIGHT:
@@ -90,8 +90,6 @@ def getAog(device):
     aog.seccode = settings.get("SecPassword")
     aog.tempunit = settings.get("TempUnit")
     aog.battery = device.get("BatteryLevel")
-    aog.camera = device.get("CameraIdx")
-    aog.cameras = cameras
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -107,8 +105,6 @@ def getAog(device):
         aog.attributes = ATTRS_PERCENTAGE
     if blindsDOMAIN == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
-    if cameraDOMAIN == aog.domain:       
-        getCameras(aog.entity_id, aog.camera)
         
     desc = getDesc(aog)
     
@@ -167,20 +163,7 @@ def getSettings():
         devs = r.json()
         settings['SecPassword'] = devs['SecPassword']
         settings['TempUnit'] = devs['TempUnit']
-        
-cameras = {}
-def getCameras(device, camid):
-    """Get domoticz settings."""
-    global cameras
-    
-    url = DOMOTICZ_GET_CAMERAS_URL
-    r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-    if r.status_code == 200:
-        devs = r.json()['result']
-        for d in devs:
-            if camid == str(d["idx"]):
-                cameras[device] = str(d["Address"])+':'+ str(d["Port"]) + '/' + str(d["ImageURL"])
-        
+                
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
 

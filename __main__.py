@@ -17,15 +17,12 @@ def startServer():
         #incoming request
         server = ThreadingSimpleServer(('', PORT_NUMBER), AogServer)
         print ('Started httpserver on port ' , PORT_NUMBER)
-        
-        current_dir = Path(__file__).parent.absolute()
-        command = 'python3 ' + str(current_dir) + '/sync.py'
-        os.popen(command)
 
         #Wait forever for incoming htto requests
         server.serve_forever()
 
     except (KeyboardInterrupt, SystemExit):
+        print()
         print ('^C received, shutting down the web server')
         server.socket.close()
 
