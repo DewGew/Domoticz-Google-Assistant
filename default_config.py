@@ -74,6 +74,7 @@ ARMAWAY = {
 # More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats
 # You need a to convert your video url to one of above. Try with ffmpeg or with 
 # a surveillance software system. Try out http://shinobi.video
+# In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)
 CAMERA_STREAM = False
 
 DOMOTICZ_IDX_CAMERAURL = {
