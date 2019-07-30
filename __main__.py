@@ -26,6 +26,7 @@ def startServer():
         server.serve_forever()
 
     except (KeyboardInterrupt, SystemExit):
+        print()
         print ('^C received, shutting down the web server')
         server.socket.close()
 
