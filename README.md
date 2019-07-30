@@ -14,7 +14,8 @@ Domoticz-Google-Assistant delivers:
 - Two-factor authentication pin for domoticz protected devices (works best with english language)
 - Acknowledgement with Yes or No. (works best with english language)
 - Arm Disarm Securitypanel (works best with english language)
-- OnOff, Brightness, Thermostat, ColorSetting, speaker volume, LockUnlock, Scene and OpenClose traits, rest to be done...
+- On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close
+- Stream surveillance camera to chromecast
 
 Please feel free to modify it, extend and improve
 
