@@ -137,7 +137,11 @@ Speaker volume:
 
 When a device has low battery:
 >**User**: Lock front door.  
->**Google Assistant:** The front door lock has low battery. Locking the front door.  
+>**Google Assistant:** The front door lock has low battery. Locking the front door.
+
+Stream front door camera to TV.
+>**User**: Show front door camera on [Chromecast device name].
+>**Google**: Streaming front door on  [Chromecast device name].
 
 ## Force devices sync
 ```
