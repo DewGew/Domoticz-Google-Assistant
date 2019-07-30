@@ -69,3 +69,13 @@ ARMAWAY = {
     "level_synonym": ["hög säkerhet", "Level 2", "bortaläge", "SL2"], # Custom levelnames
     "lang": "sv" # language
     }
+
+# Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls.
+# More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats
+# You need a to convert your video url to one of above. Try out http://shinobi.video
+CAMERA_STREAM = False
+
+DOMOTICZ_IDX_CAMERAURL = {
+    '382' : 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8', 
+    '392' : 'http://user:password@192.168.1.102:8080/mp4/cctv/camera2/s.mp4',
+    }
