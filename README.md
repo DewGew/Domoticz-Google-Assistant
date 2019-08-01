@@ -128,7 +128,7 @@ ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
 ```
 ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -c:a aac \
-  -vcodec copy\
+  -vcodec copy \
   -f mp4 \
   -y \
   /var/www/html/cam/cam.mp4
