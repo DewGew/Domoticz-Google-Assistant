@@ -130,7 +130,7 @@ In config.py:
 CAMERA_STREAM = True
 
 DOMOTICZ_IDX_CAMERAURL = {
-    .398' : 'http://your.web.server/cam/cam.m3u8',
+    '398' : 'http://your.web.server/cam/cam.m3u8',
     '396' : 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8', 
     '392' : 'http://user:password@192.168.1.102:8080/mp4/cctv/camera2/s.mp4',
     }
