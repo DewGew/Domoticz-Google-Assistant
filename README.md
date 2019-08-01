@@ -116,7 +116,7 @@ If you want to allow other household users to control the devices:
 Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls. More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats. You need a to convert your video url to one of above. Try with ffmpeg or with a surveillance software system. Try out http://shinobi.video.  
 In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)
 
-Example convert rtsp to hls using ffmpeg:
+Example convert rtsp to hls or mp4 using ffmpeg:
 ```
 ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -acodec copy \
@@ -125,6 +125,14 @@ ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -flags -global_header \
   /var/www/html/cam/cam.m3u8
 ```
+```
+ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
+  -c:a aac \
+  -vcodec copy\
+  -f mp4 \
+  -y \
+  /var/www/html/cam/cam.mp4
+```   
 In config.py:
 ```
 CAMERA_STREAM = True
