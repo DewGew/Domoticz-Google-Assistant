@@ -131,6 +131,7 @@ ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -vcodec copy \
   -f mp4 \
   -y \
+  -flags -global_header \
   /var/www/html/cam/cam.mp4
 ```   
 In config.py:
