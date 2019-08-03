@@ -498,15 +498,16 @@ class ColorSettingTrait(_Trait):
     def query_attributes(self):
         """Return color setting query attributes."""
         response = {}
-
-        color_rgb = json.loads(self.state.color)
-        
-        if color_rgb is not None:
+        try:
+          color_rgb = json.loads(self.state.color)
+          if color_rgb is not None:
             #Convert RGB to decimal
             color_decimal = color_rgb["r"] * 65536 + color_rgb["g"] * 256 + color_rgb["b"]
-            
+          
             response['color'] = {'spectrumRGB': color_decimal}
-
+        except ValueError:
+          response['color'] = ()
+       
         return response
 
     def can_execute(self, command, params):
