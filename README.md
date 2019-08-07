@@ -81,7 +81,7 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protecti
   - On the top menu click Develop, then on the left navigation menu click on Actions.
     Enter the URL for fulfillment, e.g. `https://[YOUR REVERSE PROXY URL]/smarthome`, click Done.
   - On the left navigation menu under Account Linking.
-  - Select No, I only want to allow account creation on my website. Click Next.
+  - Select No, I only want to allow account creation on my website.
   - For Linking Type, select OAuth.
   - For Grant Type, select 'Authorization Code' for Grant Type.
   - Under Client Information, enter the client ID and secret from earlier.
