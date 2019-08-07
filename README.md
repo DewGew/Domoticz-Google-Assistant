@@ -54,7 +54,7 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protecti
 ##  Setup Actions on Google Console Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
   - Click Home Control, then click Smart Home.
-  - On the left navigation menu under SETUP, click on Invocation.
+  - On the top menu click Develop, then on the left navigation menu click on Invocation.
   - Add your App's name. Click Save.
   - Click 'Save'.
 
@@ -78,9 +78,9 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protecti
   - Copy the API key shown and insert it in `SMARTHOMEPROVIDERAPIKEY` in config.py.
 
 - Navigate back to the [Actions on Google Console](https://console.actions.google.com/).
-  - On the left navigation menu under BUILD, click on Actions. Click on Add Your First Action and choose your app's language(s).
+  - On the top menu click Develop, then on the left navigation menu click on Actions.
     Enter the URL for fulfillment, e.g. `https://[YOUR REVERSE PROXY URL]/smarthome`, click Done.
-  - On the left navigation menu under ADVANCED OPTIONS, click on Account Linking.
+  - On the left navigation menu under Account Linking.
   - Select No, I only want to allow account creation on my website. Click Next.
   - For Linking Type, select OAuth.
   - For Grant Type, select 'Authorization Code' for Grant Type.
