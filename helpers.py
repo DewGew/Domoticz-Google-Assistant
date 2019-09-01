@@ -36,3 +36,4 @@ class AogState:
         self.seccode = ''
         self.tempunit = None
         self.battery = 0
+        self.ack = False
