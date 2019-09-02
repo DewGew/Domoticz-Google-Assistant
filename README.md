@@ -146,7 +146,7 @@ DOMOTICZ_IDX_CAMERAURL = {
 ```
 
 ## Device Settings
-Nicknames, rooms and ack can be set from a browser in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
+Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
 ```
 <voicecontrol>
 nicknames = Kitchen Blind One, Left Blind, Blue Blind
