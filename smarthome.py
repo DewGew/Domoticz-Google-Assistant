@@ -7,6 +7,7 @@ import hashlib
 from itertools import product
 import trait
 from collections.abc import Mapping
+import re
 
 from config import (U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, SMARTHOMEPROVIDERAPIKEY, DEVICE_CONFIG, SCENE_CONFIG,
     IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET, IMAGE_SPEAKER, CAMERA_STREAM)
@@ -67,7 +68,37 @@ def AogGetDomain(device):
 def getDesc(state):
     desc = SCENE_CONFIG.get(state.id, None) if state.domain == sceneDOMAIN or state.domain == groupDOMAIN else DEVICE_CONFIG.get(state.id, None)    
     return desc
-        
+    
+def getDeviceConfig(descstr):
+    ISLIST = ['nicknames']
+    rawconfig = re.findall(r'<voicecontrol>(.*?)</voicecontrol>',descstr,re.DOTALL)
+    if len(rawconfig) > 0:
+        try:
+            lines = rawconfig[0].strip().splitlines()
+            cfgdict = {}
+            for l in lines:
+                assign = l.split('=')
+                varname = assign[0].strip().lower()
+                if varname != "":
+                    if varname in ISLIST:
+                        allvalues = assign[1].split(',')
+                        varvalues = []
+                        for val in allvalues:
+                            varvalues.append(val.strip())
+                        cfgdict[varname]=varvalues
+                    else:
+                        varvalue = assign[1].strip()
+                        if varvalue.lower() == "true":
+                            varvalue = True
+                        elif varvalue.lower() == "false":
+                            varvalue = False
+                        cfgdict[varname]=varvalue
+        except:
+            print('Error parsing device configuration from Domoticz device description:', rawconfig[0])
+            return None
+        return cfgdict
+    return None
+            
 def getAog(device):
     getSettings()
     domain = AogGetDomain(device)
@@ -105,16 +136,26 @@ def getAog(device):
         aog.attributes = ATTRS_PERCENTAGE
     if blindsDOMAIN == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
-        
-    desc = getDesc(aog)
+    
+    # Try to get device specific voice control configuration from Domoticz first
+    # Read it from the configuration file if not in Domoticz (for backward compatibility)
+    desc = getDeviceConfig(device.get("Description"))
+    if desc == None:
+        desc = getDesc(aog)
     
     if desc != None:
         n = desc.get('nicknames', None)
         if n != None:
+            print(aog.name, 'nicknames:', n)
             aog.nicknames = n
         r = desc.get('room', None)
         if r != None:
+            print(aog.name,  'room:', r)
             aog.room = r
+        ack = desc.get('ack', False)
+        if ack:
+            print(aog.name,  'ack:', ack)
+            aog.ack = ack
     return aog;
  
  
@@ -252,11 +293,8 @@ class _GoogleEntity:
         for trt in self.traits():
             if trt.can_execute(command, params):
  
-                ack = False
+                ack = self.state.ack #ack is now stored in state
                 pin = False
-                desc = getDesc(self.state)
-                if desc != None:
-                    ack = desc.get('ack', False)
                 
                 if DOMOTICZ_SWITCH_PROTECTION_PASSWD != False:
                     protect = self.state.protected
