@@ -356,10 +356,19 @@ class TemperatureSettingTrait(_Trait):
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""       
+        domain = self.state.domain
+        response = {}
         if self.state.tempunit:
-            return {'thermostatTemperatureUnit': 'F'}
+            response["thermostatTemperatureUnit"] = "F"
         else:
-            return {'thermostatTemperatureUnit': 'C'}
+            response["thermostatTemperatureUnit"] = "C"
+        if domain == tempDOMAIN:
+            response["queryOnlyTemperatureSetting"] = True
+        else:
+            response["queryOnlyTemperatureSetting"] = False
+            response["availableThermostatModes"] = 'heat'
+            
+        return response
 
     def query_attributes(self):
         """Return temperature point and modes query attributes."""
