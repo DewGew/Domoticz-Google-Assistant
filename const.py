@@ -66,6 +66,7 @@ pushDOMAIN = 'Push'
 speakerDOMAIN = 'Speaker'
 cameraDOMAIN = 'Camera'
 sensorDOMAIN = 'Sensor'
+doorDOMAIN = 'DoorSensor'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -92,6 +93,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     speakerDOMAIN: TYPE_SPEAKER,
     cameraDOMAIN: TYPE_CAMERA,
     sensorDOMAIN: TYPE_SENSOR,
+    doorDOMAIN: TYPE_DOOR,  
 }
 
 #Todo... dynamic tokens handling/generation if needed
