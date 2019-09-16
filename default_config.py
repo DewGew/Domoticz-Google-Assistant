@@ -34,29 +34,13 @@ IMAGE_OUTLET = ['WallSocket']
 IMAGE_SPEAKER = ['Speaker']
 
 #Additional nicknames and room configuration
-DEVICE_CONFIG = {
-    '135' : {
-        'nicknames' : ['Kitchen Blind One'],
-        'room' : 'Kitchen' ,
-        'ack' : True,
-        },
-    '150' : {
-        'nicknames' : ['Dining Room Light'],
-        'room' : 'Dining Room',
-        },
-    '180' : {
-        'nicknames' : ['Simon Printer'],
-        'room' : 'Simon',
-        'ack' : False,
-        },          
-}
-
-SCENE_CONFIG = {
-    '3' : {
-        'nicknames' : ['Blinders']},
-    '5' : {
-        'nicknames' : ['Test']},    
-}
+#Nicknames, rooms and ack can be set in the Domoticz user interface.
+#Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
+# <voicecontrol>
+# nicknames = Kitchen Blind One, Left Blind, Blue Blind
+# room = Kitchen
+# ack = True
+# </voicecontrol>
 
 # User-friendly name for the level in your language..
 # See: https://developers.google.com/actions/smarthome/traits/#supported-languages
