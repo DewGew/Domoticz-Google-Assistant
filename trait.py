@@ -2,7 +2,12 @@
 
 import requests
 import json
-from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, LOW_BATTERY_LIMIT, ARMHOME, ARMAWAY, DOMOTICZ_IDX_CAMERAURL)
+
+try:
+    from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, LOW_BATTERY_LIMIT, ARMHOME, ARMAWAY, DOMOTICZ_IDX_CAMERAURL)
+except Exception as e:
+    print(e, 'Please check config.py')
+    exit()
     
 from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
