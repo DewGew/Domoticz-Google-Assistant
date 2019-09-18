@@ -405,7 +405,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return
     
         message = json.loads(s.body)
-        print(message)
+        print("Request: -->")
+        print(json.dumps(message, indent=2, sort_keys=False))
         response = self.smarthome_process(message, token)
         
         try:
@@ -414,6 +415,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         except:
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
+        
+        print("Response: -->")
+        print(json.dumps(self.smarthome_process(message, token), indent=2, sort_keys=False))
     
     def smarthome(self, s):
         s.send_message(500, "not supported")
