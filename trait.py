@@ -559,7 +559,7 @@ class ArmDisarmTrait(_Trait):
     def sync_attributes(self):
         """Return ArmDisarm attributes for a sync request."""
         return {
-          "availableArmLevels": {
+        "availableArmLevels": {
             "levels": [{
               "level_name": "Arm Home",
               "level_values": [{
@@ -577,18 +577,22 @@ class ArmDisarmTrait(_Trait):
             }],
             "ordered": True
           }
-        }
+         }
 
     def query_attributes(self):
         """Return ArmDisarm query attributes."""
         response = {}
         state = self.state.state
+        delay = self.state.secondelay
         
-        if state != 'Normal':
-            response['isArmed'] = True
-            response['currentArmLevel'] = state
-        else:
-            response['isArmed'] = False
+        response["isArmed"] = state != "Normal"
+
+        if state == "Arm Home":
+            response["currentArmLevel"] = "Arm Home"
+            response['exitAllowance'] = delay
+        elif state == "Arm Away":
+            response["currentArmLevel"] = "Arm Away"
+            response['exitAllowance'] = delay
             
         return response
         
@@ -596,26 +600,29 @@ class ArmDisarmTrait(_Trait):
         """Execute an ArmDisarm command."""
         state = self.state.state
         seccode = self.state.seccode
-        
-        if params['arm'] ==  False:
-            if state == 'Normal':
-                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+       
+        if params["arm"]:
+            if params["armLevel"] == "Arm Home":
+                if state == "Arm Home":
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
                     'Unable to execute {} for {} '.format(command, self.state.entity_id))
-            else:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=' + seccode
-        elif params['arm'] ==  True:
-            if params['armLevel'] == 'Arm Home':
-                if state == 'Arm Home':
+                else:    
+                    self.state.state = "Arm Home"
+                    url = DOMOTICZ_URL + "/json.htm?type=command&param=setsecstatus&secstatus=1&seccode=" + seccode
+            if params["armLevel"] == "Arm Away":
+                if state == "Arm Away":
                     raise SmartHomeError(ERR_ALREADY_IN_STATE,
-                        'Unable to execute {} for {} '.format(command, self.state.entity_id))
-                else:
-                    url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=1&seccode=' + seccode
-            elif params['armLevel'] == 'Arm Away':
-                if state == 'Arm Away':
-                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
-                        'Unable to execute {} for {} '.format(command, self.state.entity_id))
-                else:
-                    url = DOMOTICZ_URL + '/json.htm?type=command&param=setsecstatus&secstatus=2&seccode=' + seccode  
+                    'Unable to execute {} for {} '.format(command, self.state.entity_id))
+                else:    
+                    self.state.state = "Arm Away"
+                    url = DOMOTICZ_URL + "/json.htm?type=command&param=setsecstatus&secstatus=2&seccode=" + seccode
+        else:
+            if state == "Normal":
+                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                'Unable to execute {} for {} '.format(command, self.state.entity_id))
+            else:  
+                self.state.state = "Normal"
+                url = DOMOTICZ_URL + "/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=" + seccode
                 
         r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
 

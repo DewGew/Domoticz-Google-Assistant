@@ -135,6 +135,7 @@ def getAog(device):
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")
     aog.seccode = settings.get("SecPassword")
+    aog.secondelay = settings.get("SecOnDelay")
     aog.tempunit = settings.get("TempUnit")
     aog.battery = device.get("BatteryLevel")
     
@@ -219,6 +220,7 @@ def getSettings():
     if r.status_code == 200:
         devs = r.json()
         settings['SecPassword'] = devs['SecPassword']
+        settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
                 
 class _GoogleEntity:
