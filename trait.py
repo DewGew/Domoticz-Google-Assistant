@@ -570,7 +570,7 @@ class ArmDisarmTrait(_Trait):
             },{
               "level_name": "Arm Away",
               "level_values": [{
-                "level_synonym": ["armed away", "low security", "home and guarding", "level 2", "away", "SL2"],
+                "level_synonym": ["armed away", "high security", "away and guarding", "level 2", "away", "SL2"],
                 "lang": "en"
                 }, ARMAWAY
               ]
