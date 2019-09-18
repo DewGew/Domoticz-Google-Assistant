@@ -586,13 +586,10 @@ class ArmDisarmTrait(_Trait):
         delay = self.state.secondelay
         
         response["isArmed"] = state != "Normal"
-
-        if state == "Arm Home":
-            response["currentArmLevel"] = "Arm Home"
-            response['exitAllowance'] = int(delay)
-        elif state == "Arm Away":
-            response["currentArmLevel"] = "Arm Away"
-            response['exitAllowance'] = int(delay)
+        response['exitAllowance'] = int(delay)
+        
+        if state in ["Arm Home", "Arm Away"]:
+            response["currentArmLevel"] = state
             
         return response
         
