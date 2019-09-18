@@ -589,10 +589,10 @@ class ArmDisarmTrait(_Trait):
 
         if state == "Arm Home":
             response["currentArmLevel"] = "Arm Home"
-            response['exitAllowance'] = delay
+            response['exitAllowance'] = int(delay)
         elif state == "Arm Away":
             response["currentArmLevel"] = "Arm Away"
-            response['exitAllowance'] = delay
+            response['exitAllowance'] = int(delay)
             
         return response
         
