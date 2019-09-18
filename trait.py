@@ -563,19 +563,19 @@ class ArmDisarmTrait(_Trait):
             "levels": [{
               "level_name": "Arm Home",
               "level_values": [{
-                "level_synonym": ["home", "level 1","SL1"],
+                "level_synonym": ["armed home", "low security", "home and guarding", "level 1", "home", "SL1"],
                 "lang": "en"
                 }, ARMHOME
               ]
             },{
               "level_name": "Arm Away",
               "level_values": [{
-                "level_synonym": ["away", "level 2", "SL2"],
+                "level_synonym": ["armed away", "low security", "home and guarding", "level 2", "away", "SL2"],
                 "lang": "en"
                 }, ARMAWAY
               ]
             }],
-            "ordered": False
+            "ordered": True
           }
          }
 
