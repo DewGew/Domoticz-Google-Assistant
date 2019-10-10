@@ -21,12 +21,12 @@ Please feel free to modify it, extend and improve
 
 ## Installation with git
 NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
-```
+```bash
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
 ```
 Rename default_config.py to config.py:
-```
+```bash
 cd /home/${USER}/Domoticz-Google-Assistant
 mv default_config.py config.py
 ```
@@ -91,7 +91,7 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protecti
   - Click 'Save' at the top right corner, then click 'Test' to generate a new draft version of the Test App.
   
 ## Starting Domoticz-Google-Assistant server:
-```
+```bash
 cd /home/${USER}/
 python3 Domoticz-Google-Assistant
 ```
@@ -117,7 +117,7 @@ Stream security camera to chromecast. Supports hls, dash, smooth streaming, Prog
 In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)
 
 Example convert rtsp to hls or mp4 using ffmpeg:
-```
+```bash
 ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -acodec copy \
   -vcodec copy \
@@ -125,7 +125,7 @@ ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -flags -global_header \
   /var/www/html/cam/cam.m3u8
 ```
-```
+```bash
 ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -c:a aac \
   -vcodec copy \
@@ -135,7 +135,7 @@ ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   /var/www/html/cam/cam.mp4
 ```   
 In config.py:
-```
+```python
 CAMERA_STREAM = True
 
 DOMOTICZ_IDX_CAMERAURL = {
@@ -147,7 +147,7 @@ DOMOTICZ_IDX_CAMERAURL = {
 
 ## Device Settings
 Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
-```
+```html
 <voicecontrol>
 nicknames = Kitchen Blind One, Left Blind, Blue Blind
 room = Kitchen
@@ -195,12 +195,12 @@ https://[YOUR REVERSE PROXY URL]/sync
 ```
 ## Run as service for autorun at startup
 Open terminal or putty.
-```
+```bash
 cd /etc/systemd/system/
 sudo nano dzga.service
 ```
 Add this in nano:
-```
+```bash
 
 [Unit]
 Description=Domoticz-Google-Assistant Service
@@ -217,17 +217,17 @@ WantedBy=multi-user.target
 ```
 Then ctrl-x save and close.
 Enable service:
-```
+```bash
  sudo systemctl enable dzga.service
  sudo systemctl start dzga.service
 ```
 ## Update
-```
+```bash
 cd /home/${USER}/Domoticz-Google-Assistant/
 git pull
 ```
 If needed, restart service:
-```
+```bash
 sudo systemctl restart dzga.service
 ```
 **Config.py will not be updated** but if there is any changes on the config file compare your file with default_config.py
