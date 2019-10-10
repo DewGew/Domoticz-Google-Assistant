@@ -32,7 +32,7 @@ mv default_config.py config.py
 ```
 
 Before first launch, [Actions on Google](https://github.com/DewGew/Domoticz-Google-Assistant/wiki/2.-Setup-Actions-on-Google) and config.py must be modified properly.
-```
+```python
 PORT_NUMBER = 3030 -> port number for the Domoticz-Google-Assistant server
 
 SMARTHOMEPROVIDERGOOGLECLIENTID = 'AxqqWpwYj4'                      # Client ID
