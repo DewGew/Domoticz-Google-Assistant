@@ -200,7 +200,7 @@ cd /etc/systemd/system/
 sudo nano dzga.service
 ```
 Add this in nano:
-```bash
+```powershell
 
 [Unit]
 Description=Domoticz-Google-Assistant Service
