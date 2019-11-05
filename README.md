@@ -196,28 +196,13 @@ https://[YOUR REVERSE PROXY URL]/sync
 ## Run as service for autorun at startup
 Open terminal or putty.
 ```bash
-cd /etc/systemd/system/
-sudo nano dzga.service
+cd /home/${USER}/
+sudo chmod +x ./Domoticz-Google-Assistant/scripts/service-installer.sh
+sudo ./GassistPi/scripts/service-installer.sh
 ```
-Add this in nano:
-```powershell
-
-[Unit]
-Description=Domoticz-Google-Assistant Service
-After=multi-user.target
-Conflicts=getty@tty1.service
-
-[Service]
-Type=simple
-ExecStart=/usr/bin/python3 /home/${USER}/Domoticz-Google-Assistant/
-StandardInput=tty-force
-
-[Install]
-WantedBy=multi-user.target
-```
-Then ctrl-x save and close.
 Enable service:
 ```bash
+ sudo systemctl daemon-reload
  sudo systemctl enable dzga.service
  sudo systemctl start dzga.service
 ```
