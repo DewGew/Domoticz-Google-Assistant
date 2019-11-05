@@ -25,31 +25,54 @@ NOTE: "${USER}" will automatically take your username. No need to change that. J
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
 ```
-Rename default_config.py to config.py:
+## Starting server
 ```bash
-cd /home/${USER}/Domoticz-Google-Assistant
-mv default_config.py config.py
+cd /home/${USER}/
+sudo chmod +x ./Domoticz-Google-Assistant/scripts/service-installer.sh
+sudo ./GassistPi/scripts/service-installer.sh
 ```
+Enable service:
+```bash
+ sudo systemctl daemon-reload
+ sudo systemctl enable dzga.service
+```
+Start/stop Domoticz-Google-Assistant server:
+```bash
+sudo systemctl start dzga.service
+sudo systemctl stop dzga.service
+```
+or manually (useful in troubleshooting)
+```bash
+cd /home/${USER}/
+python3 Domoticz-Google-Assistant
+```
+stop with ctrl-c
 
-Before first launch, [Actions on Google](https://github.com/DewGew/Domoticz-Google-Assistant/wiki/2.-Setup-Actions-on-Google) and config.py must be modified properly.
+## Configuration
+You can access the interface via http://localhost:3030. The default username is `admin` and the default password is `admin`.
+Configuration and [Actions on Google](https://github.com/DewGew/Domoticz-Google-Assistant/wiki/2.-Setup-Actions-on-Google) must be modified properly.
+You can also edit config.yaml to change the configuration. 
 ```python
-PORT_NUMBER = 3030 # Port number for the Domoticz-Google-Assistant server
+# Configuration:
+port_number: 3030
+# Login on Google Home app and configuration interface
+auth_user: 'admin'
+auth_pass: 'admin'
+  
+# Domoticz Settings:
+Domoticz:
+  ip: 'http://192.168.1.100'
+  port: '8080'
+  roomplan: '0'
+  username: 'username'
+  password: 'password'
+  switchProtectionPass: '1234' #Set this to false if ask for pin function is not needed
+  
+# Google Assistant Settings:
+ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
+ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
+Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 
-SMARTHOMEPROVIDERGOOGLECLIENTID = 'AxqqWpwYj4'                      # Client ID
-SMARTHOMEPROVIDEGOOGLECLIENTSECRET = '0KUYN5ExD62QOsWCO8zoFSS_'     # Client secret
-SMARTHOMEPROVIDERAPIKEY = 'zOzaSyBu5Y8W7EiHvO1eyPmOAtZRxM9GaLP_uLA' # Request Sync API
-
-#Oauth credentials -> required for app linking
-U_NAME = 'oauth_username'
-U_PASSWD = 'oauth_password'
-
-DOMOTICZ_URL='http://[DOMOTICZ_IP]:[PORT]'
-U_NAME_DOMOTICZ = 'domoticz_username'
-U_PASSWD_DOMOTICZ = 'domoticz_password'
-#Idx of Room plan. 0 is all devices.
-DOMOTICZ_ROOMPLAN = '0'
-# Set to 'DOMOTICZ_SWITCH_PROTECTION_PASSWD = False' if ask for pin function is not needed
-DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protection password in domoticz
 ```
 ##  Setup Actions on Google Console Instructions
 - Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
@@ -63,9 +86,9 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protecti
   - Click 'Create credentials'
   - Click 'OAuth client ID'
   - Choose 'other'
-  - Add name e.g. 'SMARTHOMEPROVIDERGOOGLECLIENTID'
-  - Copy the client ID shown and insert it in `SMARTHOMEPROVIDERGOOGLECLIENTID` in config.py
-  - Copy the client secret shown and insert it in `SMARTHOMEPROVIDEGOOGLECLIENTSECRET`in config.py
+  - Add name e.g. 'SmartHomeClientID'
+  - Copy the client ID shown and insert it in `ClientID` in config
+  - Copy the client secret shown and insert it in `ClientSectret`in config
 
 - Add Request Sync
 
@@ -75,7 +98,7 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protecti
   - Click Credentials
   - Click 'Create credentials'
   - Click 'API key'
-  - Copy the API key shown and insert it in `SMARTHOMEPROVIDERAPIKEY` in config.py.
+  - Copy the API key shown and insert it in `Homegraph_API_Key` in config.py.
 
 - Navigate back to the [Actions on Google Console](https://console.actions.google.com/).
   - On the top menu click Develop, then on the left navigation menu click on Actions.
@@ -90,11 +113,6 @@ DOMOTICZ_SWITCH_PROTECTION_PASSWD = '1234' # Only works with numbers as protecti
   - Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.
   - Click 'Save' at the top right corner, then click 'Test' to generate a new draft version of the Test App.
   
-## Starting Domoticz-Google-Assistant server:
-```bash
-cd /home/${USER}/
-python3 Domoticz-Google-Assistant
-```
 ## Connect smart home devices to your Google Home device
 - On your mobile device, open the Google Home app.
 - On the Home tab, tap the “Add” quick action .
@@ -117,7 +135,7 @@ Stream security camera to chromecast. Supports hls, dash, smooth streaming, Prog
 In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)
 
 Example convert rtsp to hls or mp4 using ffmpeg:
-```bash
+```
 ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -acodec copy \
   -vcodec copy \
@@ -125,7 +143,7 @@ ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -flags -global_header \
   /var/www/html/cam/cam.m3u8
 ```
-```bash
+```
 ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -c:a aac \
   -vcodec copy \
@@ -134,20 +152,24 @@ ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
   -flags -global_header \
   /var/www/html/cam/cam.mp4
 ```   
-In config.py:
+In config:
 ```python
-CAMERA_STREAM = True
-
-DOMOTICZ_IDX_CAMERAURL = {
-    '398' : 'http://your.web.server/cam/cam.m3u8',
-    '396' : 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8', 
-    '392' : 'http://user:password@192.168.1.102:8080/mp4/cctv/camera2/s.mp4',
-    }
+Camera_Stream:
+  Enabled: false
+  Cameras:
+    Idx:
+      - '123'
+      - '234'
+      - '345'
+    Camera_URL:
+      - 'http://your.web.server/cam/cam.m3u8'
+      - 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8'
+      - 'http://user:password@192.168.1.102:8080/mp4/cctv/camera2/s.mp4'
 ```
 
 ## Device Settings
 Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
-```html
+```
 <voicecontrol>
 nicknames = Kitchen Blind One, Left Blind, Blue Blind
 room = Kitchen
@@ -193,19 +215,6 @@ Stream front door camera to TV.
 ```
 https://[YOUR REVERSE PROXY URL]/sync
 ```
-## Run as service for autorun at startup
-Open terminal or putty.
-```bash
-cd /home/${USER}/
-sudo chmod +x ./Domoticz-Google-Assistant/scripts/service-installer.sh
-sudo ./GassistPi/scripts/service-installer.sh
-```
-Enable service:
-```bash
- sudo systemctl daemon-reload
- sudo systemctl enable dzga.service
- sudo systemctl start dzga.service
-```
 ## Update
 ```bash
 cd /home/${USER}/Domoticz-Google-Assistant/
@@ -215,4 +224,3 @@ If needed, restart service:
 ```bash
 sudo systemctl restart dzga.service
 ```
-**Config.py will not be updated** but if there is any changes on the config file compare your file with default_config.py
