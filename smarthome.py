@@ -27,7 +27,7 @@ logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Conn
 try:
     r = requests.get(logUrl, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
-    print('Connection to Domoticz refused!.')
+    print('Connection to Domoticz refused!. Check configuration')
 
 confJSON = json.dumps(configuration)
 
@@ -460,7 +460,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         try:
             getDevices()
         except Exception as e:
-            print(e)
+            print('Connection to Domoticz refused!. Check configuration')
             
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
