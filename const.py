@@ -26,7 +26,6 @@ try:
     with open(os.path.join(FILE_DIR,CONFIGFILE), 'r') as conf:
         configuration = yaml.safe_load(conf)      
 except yaml.YAMLError as exc:
-    print(exc)
     print('ERROR: Please check config.yaml')
 except FileNotFoundError as err:
     print('No config.yaml found...')
