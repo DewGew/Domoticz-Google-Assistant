@@ -423,7 +423,7 @@ TEMPLATE = """
 	
 <script>
 var config = {conf}
-var HTML = 'Camera Stream: <span class="mdl-color-text--light-green-900">' + config.Camera_Stream.Enabled + '</span>';
+var HTML = ''
 document.getElementById("info").innerHTML = HTML;
 
 var devicelist = {list}
