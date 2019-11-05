@@ -24,7 +24,11 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
 print ("The system uptime is:", uptime())
 
 logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v1.0'
-r = requests.get(logUrl, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+try:
+    r = requests.get(logUrl, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+except Exception as e:
+    print('Connection to Domoticz refused!.')
+
 confJSON = json.dumps(configuration)
 
 #some way to convert a domain type: Domoticz to google
