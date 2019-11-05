@@ -423,8 +423,7 @@ TEMPLATE = """
 	
 <script>
 var config = {conf}
-var HTML = 'Debug: <span class="mdl-color-text--light-green-900">' + config.debug + '</span></br>';
-HTML += 'Camera Stream: <span class="mdl-color-text--light-green-900">' + config.Camera_Stream.Enabled + '</span>';
+var HTML = 'Camera Stream: <span class="mdl-color-text--light-green-900">' + config.Camera_Stream.Enabled + '</span>';
 document.getElementById("info").innerHTML = HTML;
 
 var devicelist = {list}
