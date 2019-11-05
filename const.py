@@ -451,7 +451,7 @@ if (typeof x !== "undefined"){{
     document.getElementById("deviceList_state").innerHTML = w;
     document.getElementById("deviceList_room").innerHTML = v;
     document.getElementById("deviceList_nickname").innerHTML = q;
-    document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check your settings.";
+    document.getElementById("message").innerHTML = "Connection to Domoticz refused!. Check configuration.";
 }}
     
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
