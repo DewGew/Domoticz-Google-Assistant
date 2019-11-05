@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from auth import *
+from const import (configuration, FILE_DIR, CONFIGFILE)
 import requests
 import json
 import hashlib
@@ -8,32 +9,24 @@ from itertools import product
 import trait
 from collections.abc import Mapping
 import re
+import os
+import sys
+import time
 
-try: 
-    from config import (U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, SMARTHOMEPROVIDERAPIKEY,
-        IMAGE_SWITCH, IMAGE_LIGHT, IMAGE_MEDIA, IMAGE_OUTLET, IMAGE_SPEAKER, CAMERA_STREAM)    
-except Exception as e:
-    print(e, 'Please check config.py')
-    exit()
-
-try:
-    from config import DEVICE_CONFIG
-except Exception as e:
-    DEVICE_CONFIG = {}
-    
-try:
-    from config import SCENE_CONFIG
-except Exception as e:
-    SCENE_CONFIG = {}
-    
-from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
-    ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth,DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
+from helpers import (SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, readFile, saveFile)
+   
+from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE,
+    ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
     securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE)
-  
-from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge
- 
+      
+print ("The system uptime is:", uptime())
+
+logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v1.0'
+r = requests.get(logUrl, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+confJSON = json.dumps(configuration)
+
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -49,17 +42,17 @@ def AogGetDomain(device):
             return pushDOMAIN
         elif 'Motion Sensor' == device["SwitchType"]:
             return sensorDOMAIN
-        elif True == device["UsedByCamera"] and True == CAMERA_STREAM:
+        elif True == device["UsedByCamera"] and True == configuration['Camera_Stream']['Enabled']:
             return cameraDOMAIN
-        elif device["Image"] in IMAGE_SWITCH:
+        elif device["Image"] in configuration['Image_Override']['Switch']:
             return switchDOMAIN
-        elif device["Image"] in IMAGE_LIGHT:
+        elif device["Image"] in configuration['Image_Override']['Light']:
             return lightDOMAIN
-        elif device["Image"] in IMAGE_MEDIA:
+        elif device["Image"] in configuration['Image_Override']['Media']:
             return mediaDOMAIN
-        elif device["Image"] in IMAGE_OUTLET:
+        elif device["Image"] in configuration['Image_Override']['Outlet']:
             return outletDOMAIN
-        elif device["Image"] in IMAGE_SPEAKER:
+        elif device["Image"] in configuration['Image_Override']['Speaker']:
             return speakerDOMAIN
         else:
             return lightDOMAIN
@@ -80,11 +73,7 @@ def AogGetDomain(device):
     elif 'Security' == device["Type"]:
         return securityDOMAIN
     return None
-    
-def getDesc(state):
-    desc = SCENE_CONFIG.get(state.id, None) if state.domain == sceneDOMAIN or state.domain == groupDOMAIN else DEVICE_CONFIG.get(state.id, None)    
-    return desc
-    
+           
 def getDeviceConfig(descstr):
     ISLIST = ['nicknames']
     rawconfig = re.findall(r'<voicecontrol>(.*?)</voicecontrol>',descstr,re.DOTALL)
@@ -138,6 +127,7 @@ def getAog(device):
     aog.secondelay = settings.get("SecOnDelay")
     aog.tempunit = settings.get("TempUnit")
     aog.battery = device.get("BatteryLevel")
+    aog.hardware = device.get("HardwareName")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -154,31 +144,27 @@ def getAog(device):
     if blindsDOMAIN == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
     
-    # Try to get device specific voice control configuration from Domoticz first
-    # Read it from the configuration file if not in Domoticz (for backward compatibility)
+    # Try to get device specific voice control configuration from Domoticz
     desc = getDeviceConfig(device.get("Description"))
-    if desc == None:
-        desc = getDesc(aog)
     
     if desc != None:
         n = desc.get('nicknames', None)
         if n != None:
-            print(aog.name, 'nicknames:', n)
             aog.nicknames = n
         r = desc.get('room', None)
         if r != None:
-            print(aog.name,  'room:', r)
             aog.room = r
         ack = desc.get('ack', False)
         if ack:
-            print(aog.name,  'ack:', ack)
             aog.ack = ack
     return aog;
  
  
-aogDevs = {} 
+aogDevs = {}
+deviceList = {}
 def getDevices(type = "all", id = "0"):
     global aogDevs
+    global deviceList
 
     url = ""
     if "all" == type:  
@@ -188,7 +174,7 @@ def getDevices(type = "all", id = "0"):
     elif "id" == type:  
         url = DOMOTICZ_GET_ONE_DEVICE_URL + id
         
-    r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+    r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
     if r.status_code == 200:
         devs = r.json()['result']
         for d in devs:
@@ -197,9 +183,16 @@ def getDevices(type = "all", id = "0"):
                 continue
 
             aogDevs[aog.entity_id] = aog
+    
+    list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames) for d in aogDevs.values()]
+    list.sort(key=takeSecond)
+    deviceList = json.dumps(list)
+    # for y in list:
+        # print(y)
             
-    #print([(d.name.encode('utf-8', 'ignore'), d.id, d.domain) for d in aogDevs.values()])        
-        
+def takeSecond(elem):
+    return elem[1]
+    
 def deep_update(target, source):
     """Update a nested dictionary with another nested dictionary."""
     for key, value in source.items():
@@ -215,13 +208,21 @@ def getSettings():
     global settings
     
     url = DOMOTICZ_GET_SETTINGS_URL
-    r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+    r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
     
     if r.status_code == 200:
         devs = r.json()
         settings['SecPassword'] = devs['SecPassword']
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
+
+def restartServer():
+    """Restart.""" 
+    print()
+    print("Restart server")
+    print()
+
+    os.execv(sys.executable, ['python'] + sys.argv)
                 
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
@@ -270,6 +271,9 @@ class _GoogleEntity:
             'attributes': {},
             'traits': [trait.name for trait in traits],
             'willReportState': False,
+            'deviceInfo': {
+                'manufacturer': state.hardware
+              },
             'type': DOMOTICZ_TO_GOOGLE_TYPES[state.domain],
         }
 
@@ -314,13 +318,13 @@ class _GoogleEntity:
                 ack = self.state.ack #ack is now stored in state
                 pin = False
                 
-                if DOMOTICZ_SWITCH_PROTECTION_PASSWD != False:
+                if configuration['Domoticz']['switchProtectionPass'] != False:
                     protect = self.state.protected
                 else:
                     protect = False
 
                 if protect or self.state.domain == securityDOMAIN:
-                    pin = DOMOTICZ_SWITCH_PROTECTION_PASSWD
+                    pin = configuration['Domoticz']['switchProtectionPass']
                     if self.state.domain == securityDOMAIN:
                         pin = self.state.seccode 
                     ack = False
@@ -407,6 +411,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return
     
         message = json.loads(s.body)
+
         print("Request: -->")
         print(json.dumps(message, indent=2, sort_keys=False))
         response = self.smarthome_process(message, token)
@@ -418,6 +423,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
         
+
         print("Response: -->")
         print(json.dumps(self.smarthome_process(message, token), indent=2, sort_keys=False))
     
@@ -430,12 +436,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if userAgent == None:
             return 500 #internal error
         
-        url = REQUEST_SYNC_BASE_URL + '?key=' + SMARTHOMEPROVIDERAPIKEY
+        url = REQUEST_SYNC_BASE_URL + '?key=' + configuration['Homegraph_API_Key']
         j = {"agentUserId": userAgent}
         
         r = requests.post(url, json=j)
 
-        return r.status_code
+        return r.status_code == requests.codes.ok
 
     def syncDevices(self, s):
         user = self.getSessionUser()
@@ -443,16 +449,59 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.redirect('/login?redirect_uri={0}'.format('/sync'))
             return
         
-        # authCode = s.query_components.get("code", "")
-        # authCode = self.authCode(authCode)
-        # if authCode == None:
-            # s.send_message(400, "incorrect client data")
-            # return
-        
         r = self.forceDevicesSync()
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
-       
+        
+    def settings(self, s):
+        try:
+            getDevices()
+        except Exception as e:
+            print(e)
+            
+        user = self.getSessionUser()
+        if user == None or user.get('uid', '') == '':
+            s.redirect('/login?redirect_uri={0}'.format('/settings'))
+            return
+        message = ''
+        meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
+        code = readFile(CONFIGFILE)
+		
+        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
 
+        s.send_message(200, template)     
+
+    def settings_post(self, s):
+       
+        if (s.form.get("save")):
+            test = s.form.get("save", None)
+            textToSave = test.replace("+", " ")
+            saveFile(CONFIGFILE, textToSave)
+
+            message = 'Config saved'
+            meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
+            code = readFile(CONFIGFILE)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
+
+            s.send_message(200, template)
+        
+        if (s.form.get("restart")):
+            message = 'Restart Server, please wait!'
+            meta = '<meta http-equiv="refresh" content="5">'
+            code = ''
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
+
+            s.send_message(200, template)
+            restartServer()
+
+        if (s.form.get("sync")):
+            r = self.forceDevicesSync()
+            time.sleep(2)
+            message = 'Devices syncronized'
+            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
+            code = readFile(CONFIGFILE)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
+            s.send_message(200, template)
+   
     def smarthome_sync(self, payload, token):
         """Handle action.devices.SYNC request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
@@ -491,7 +540,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         for device in payload.get('devices', []):
             devid = device['id']
             state = aogDevs.get(devid, None)
-
+            
             if not state:
                 # If we can't find a state, the device is offline
                 devices[devid] = {'online': False}
@@ -500,7 +549,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             e = _GoogleEntity(state)
             e.async_update()
             devices[devid] = e.query_serialize()
-
+   
         return {'devices': devices} 
 
     def smarthome_exec(self, payload, token):
@@ -557,9 +606,12 @@ def turned_off_response(message):
 
 
 smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
-                        "/sync": SmartHomeReqHandler.syncDevices}
-
-smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post}
+                        "/sync": SmartHomeReqHandler.syncDevices,
+                        "/settings":SmartHomeReqHandler.settings,
+                        "/":SmartHomeReqHandler.settings}
+                        
+smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
+                         "/settings": SmartHomeReqHandler.settings_post}
 
 smarthomeControlMappings = {'action.devices.SYNC': SmartHomeReqHandler.smarthome_sync,
                             'action.devices.QUERY': SmartHomeReqHandler.smarthome_query,
