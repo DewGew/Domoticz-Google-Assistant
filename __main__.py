@@ -4,6 +4,7 @@ import socketserver
 from server import *
 from auth import *
 from smarthome import *
+from const import configuration
 
 class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     pass
@@ -15,8 +16,8 @@ def startServer():
     try:
         #Create a web server and define the handler to manage the
         #incoming request
-        server = ThreadingSimpleServer(('', PORT_NUMBER), AogServer)
-        print ('Started httpserver on port ' , PORT_NUMBER)
+        server = ThreadingSimpleServer(('', configuration['port_number']), AogServer)
+        print ('Started httpserver on port ' , configuration['port_number'])
 
         #Wait forever for incoming htto requests
         server.serve_forever()
