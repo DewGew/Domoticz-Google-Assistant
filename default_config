@@ -1,0 +1,63 @@
+# Configuration:
+port_number: 3030
+# Login on Google Home app and configuration interface
+auth_user: 'admin'
+auth_pass: 'admin'
+  
+# Domoticz Settings:
+Domoticz:
+  ip: 'http://192.168.1.100'
+  port: '8080'
+  roomplan: '0'
+  username: 'username'
+  password: 'password'
+  switchProtectionPass: '1234' #Set this to false if ask for pin function is not needed
+  
+# Google Assistant Settings:
+ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
+ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
+Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
+# Report low battry
+Low_battery_limit: 9
+# Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
+# So to differentiate them additionaly image names are used.
+Image_Override:
+  Switch:
+    - 'Generic'
+  Light:
+    - 'Light'
+  Media:
+    - 'Media'
+    - 'TV'
+  Outlet:
+    - 'WallSocket'
+  Speaker:
+    - 'Speaker'
+
+# Stream security Camera:
+Camera_Stream:
+  Enabled: false
+  Cameras:
+    Idx:
+      - '123'
+      - '234'
+      - '345'
+    Camera_URL:
+      - 'http://your.web.server/cam/cam.m3u8'
+      - 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8'
+      - 'http://user:password@192.168.1.102:8080/mp4/cctv/camera2/s.mp4'
+      
+# User-friendly name for the level in your language..
+# See: https://developers.google.com/actions/smarthome/traits/#supported-languages
+Armhome:
+  level_synonym:
+    - 'zuhause und bewachen'
+    - 'Level 1'
+    - 'SL1'
+  lang: 'de'
+Armaway:
+  level_synonym:
+    - 'weg und bewachen'
+    - 'Level 2'
+    - 'SL2'
+  lang: 'de'
