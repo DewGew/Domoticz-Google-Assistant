@@ -35,6 +35,7 @@ Image_Override:
     - 'Speaker'
 
 # Stream security Camera:
+# In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera).
 Camera_Stream:
   Enabled: false
   Cameras:
