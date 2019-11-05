@@ -5,7 +5,6 @@ from urllib.parse import urlparse
 import urllib.parse
 from smarthome import *
 #import cgi
-from config import PORT_NUMBER
 from const import Auth
 
 reqHandler = SmartHomeReqHandler()
