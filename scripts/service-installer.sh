@@ -39,3 +39,9 @@ for service in systemd/*.service; do
 	sed "s:/home/__USER__/Domoticz-Google-Assistant:${repo_path}:g;s:__USER__:${GIT_OWNER}:g" "$service" \
      > "/etc/systemd/system/$(basename "$service")"
 done
+
+sudo systemctl daemon-reload
+sudo systemctl enable dzga.service
+sudo ""
+echo "Starting Domoticz Google Assistant..."
+sudo systemctl start dzga.service
