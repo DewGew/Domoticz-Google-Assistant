@@ -22,6 +22,9 @@ if [[ $EUID -ne 0 ]]; then
    echo "This script must be run as root (use sudo)" 1>&2
    exit 1
 fi
+echo ""
+echo "Installing dzga.service..."
+echo ""
 
 #Get the checkout directory
 GIT_DIR="$(realpath $(dirname ${BASH_SOURCE[0]})/..)"
