@@ -197,7 +197,7 @@ https://[YOUR REVERSE PROXY URL]/sync
 Open terminal or putty.
 ```bash
 cd /home/${USER}/
-sudo chmod +x ./Domoticz-Google-Assistant/scripts/service-installer.sh
+sudo chmod +x ~/Domoticz-Google-Assistant/scripts/service-installer.sh
 sudo ./GassistPi/scripts/service-installer.sh
 ```
 Enable service:
