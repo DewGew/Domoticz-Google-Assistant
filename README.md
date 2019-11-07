@@ -28,7 +28,7 @@ git clone https://github.com/DewGew/Domoticz-Google-Assistant
 ## Starting server
 ```bash
 cd /home/${USER}/
-sudo chmod +x ./Domoticz-Google-Assistant/scripts/service-installer.sh
+sudo chmod +x ~/Domoticz-Google-Assistant/scripts/service-installer.sh
 sudo ./GassistPi/scripts/service-installer.sh
 ```
 Enable service:
