@@ -16,6 +16,7 @@ Domoticz-Google-Assistant delivers:
 - Arm Disarm Securitypanel (works best with english language)
 - On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close
 - Stream surveillance camera to chromecast
+- Toogle selector switches
 
 Please feel free to modify it, extend and improve
 
@@ -188,6 +189,10 @@ When a device has low battery:
 Stream front door camera to TV.
 >**User**: Show front door camera on [Chromecast device name].  
 >**Google**: Streaming front door on  [Chromecast device name].
+
+Selector switch:
+>**User:** Turn on [Level Name] on living room light.  
+>**Google Assistant:** Turning on [Level Name] on living room light?  
 
 ## Force devices sync
 ```
