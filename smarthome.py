@@ -23,7 +23,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
       
 print ("The system uptime is:", uptime())
 
-logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v1.0'
+logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v1.2.1'
 try:
     r = requests.get(logUrl, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
