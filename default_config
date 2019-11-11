@@ -33,6 +33,23 @@ Image_Override:
     - 'WallSocket'
   Speaker:
     - 'Speaker'
+    
+#Additional nicknames and room configuration
+Device_Config:
+  123:
+    ack: true
+    room: 'Livingroom'
+    nicknames:
+      - 'Celing light'
+      - 'Smart light'
+  234:
+    room: 'Bedroom'
+    
+Scene_Config:
+  3:
+    room: 'Kitchen'
+    nicknames:
+        - 'Cool scene'
 
 # Stream security Camera:
 # In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera).
