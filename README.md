@@ -16,6 +16,7 @@ Domoticz-Google-Assistant delivers:
 - Arm Disarm Securitypanel (works best with english language)
 - On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close
 - Stream surveillance camera to chromecast
+- Toggle Selector switches
 
 Please feel free to modify it, extend and improve
 
