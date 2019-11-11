@@ -30,7 +30,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth,DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE)
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE)
   
 from helpers import AogState, SmartHomeError, SmartHomeErrorNoChallenge
  
@@ -49,6 +49,8 @@ def AogGetDomain(device):
             return pushDOMAIN
         elif 'Motion Sensor' == device["SwitchType"]:
             return sensorDOMAIN
+        elif 'Selector' == device["SwitchType"]:
+            return selectorDOMAIN
         elif True == device["UsedByCamera"] and True == CAMERA_STREAM:
             return cameraDOMAIN
         elif device["Image"] in IMAGE_SWITCH:
@@ -138,6 +140,9 @@ def getAog(device):
     aog.secondelay = settings.get("SecOnDelay")
     aog.tempunit = settings.get("TempUnit")
     aog.battery = device.get("BatteryLevel")
+    aog.hardware = device.get("HardwareName")
+    aog.selectorLevelName = device.get("LevelNames")
+    aog.language = settings.get("Language")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -222,6 +227,7 @@ def getSettings():
         settings['SecPassword'] = devs['SecPassword']
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
+        settings['Language'] = devs['Language']
                 
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
@@ -270,6 +276,9 @@ class _GoogleEntity:
             'attributes': {},
             'traits': [trait.name for trait in traits],
             'willReportState': False,
+            'deviceInfo': {
+                'manufacturer': state.hardware
+              },
             'type': DOMOTICZ_TO_GOOGLE_TYPES[state.domain],
         }
 
