@@ -85,7 +85,6 @@ def getDesc(state):
         if state.domain == sceneDOMAIN or state.domain == groupDOMAIN:
             desc = configuration['Scene_Config'].get(state.id, None) 
     if 'Device_Config' in configuration:
-        if state.domain != sceneDOMAIN or state.domain != groupDOMAIN:
             desc = configuration['Device_Config'].get(state.id, None)    
     return desc
            
