@@ -79,6 +79,15 @@ def AogGetDomain(device):
     elif 'Security' == device["Type"]:
         return securityDOMAIN
     return None
+
+def getDesc(state):
+    if 'Scene_Config' in configuration:
+        if state.domain == sceneDOMAIN or state.domain == groupDOMAIN:
+            desc = configuration['Scene_Config'].get(state.id, None) 
+    if 'Device_Config' in configuration:
+        if state.domain != sceneDOMAIN or state.domain != groupDOMAIN:
+            desc = configuration['Device_Config'].get(state.id, None)    
+    return desc
            
 def getDeviceConfig(descstr):
     ISLIST = ['nicknames']
@@ -153,7 +162,10 @@ def getAog(device):
         aog.attributes = ATTRS_PERCENTAGE
     
     # Try to get device specific voice control configuration from Domoticz
+    # Read it from the configuration file if not in Domoticz (for backward compatibility)
     desc = getDeviceConfig(device.get("Description"))
+    if desc == None:
+        desc = getDesc(aog)
     
     if desc != None:
         n = desc.get('nicknames', None)
