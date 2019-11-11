@@ -53,22 +53,32 @@ DOMOTICZ_GET_CAMERAS_URL = DOMOTICZ_URL + '/json.htm?type=cameras'
 
 #https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
-TYPE_LIGHT = PREFIX_TYPES + 'LIGHT'
-TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
-TYPE_OUTLET = PREFIX_TYPES + 'OUTLET'
-TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
-TYPE_SCENE = PREFIX_TYPES + 'SCENE'
-TYPE_FAN = PREFIX_TYPES + 'FAN'
-TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
-TYPE_LOCK = PREFIX_TYPES + 'LOCK'
+TYPE_AC_UNIT = PREFIX_TYPES + 'AC_UNIT'
 TYPE_BLINDS = PREFIX_TYPES + 'BLINDS'
-TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
-TYPE_DOOR = PREFIX_TYPES + 'DOOR'
-TYPE_MEDIA = PREFIX_TYPES + 'TV'
-TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
-TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
 TYPE_CAMERA = PREFIX_TYPES + 'CAMERA'
+TYPE_COFFEE = PREFIX_TYPES + 'COFFEE_MAKER'
+TYPE_DISHWASHER = PREFIX_TYPES + 'DISHWASHER'
+TYPE_DOOR = PREFIX_TYPES + 'DOOR'
+TYPE_DRYER = PREFIX_TYPES + 'DRYER'
+TYPE_FAN = PREFIX_TYPES + 'FAN'
+TYPE_GATE = PREFIX_TYPES + 'GATE'
+TYPE_HEATER = PREFIX_TYPES + 'HEATER'
+TYPE_LIGHT = PREFIX_TYPES + 'LIGHT'
+TYPE_LOCK = PREFIX_TYPES + 'LOCK'
+TYPE_OUTLET = PREFIX_TYPES + 'OUTLET'
+TYPE_SCENE = PREFIX_TYPES + 'SCENE'
+TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
+TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
 TYPE_SENSOR = PREFIX_TYPES + 'SENSOR'
+TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
+TYPE_SPRINKLER = PREFIX_TYPES + 'SPRINKLER'
+TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
+TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
+TYPE_MEDIA = PREFIX_TYPES + 'TV'
+TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
+TYPE_WATERHEATER = PREFIX_TYPES + 'WATERHEATER'
+TYPE_WASHER = PREFIX_TYPES + 'WASHER'
+TYPE_WINDOW = PREFIX_TYPES + 'WINDOW'
 
 # Error codes used for SmartHomeError class
 # https://developers.google.com/actions/smarthome/create-app#error_responses
@@ -102,7 +112,7 @@ speakerDOMAIN = 'Speaker'
 cameraDOMAIN = 'Camera'
 sensorDOMAIN = 'Sensor'
 doorDOMAIN = 'DoorSensor'
-selectorDOMAIN = 'Selector'
+selectDOMAIN = 'Selector'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -130,7 +140,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     cameraDOMAIN: TYPE_CAMERA,
     sensorDOMAIN: TYPE_SENSOR,
     doorDOMAIN: TYPE_DOOR,
-    selectorDOMAIN: TYPE_SWITCH,
+    selectDOMAIN: TYPE_SWITCH,
 }
 
 #Todo... dynamic tokens handling/generation if needed
@@ -185,6 +195,17 @@ TEMPLATE = """
 
 </head>
 <body>
+    <dialog class="mdl-dialog">
+    <h4 class="mdl-dialog__title">Security Risk!</h4>
+    <div class="mdl-dialog__content">
+      <p>
+       Seems that you are using default username or/and password. Please change username and password.
+      </p>
+    </div>
+    <div class="mdl-dialog__actions">
+      <button type="button" class="mdl-button close">Close</button>
+    </div>
+    </dialog>
     <div class="mdl-layout mdl-js-layout mdl-layout--fixed-header mdl-color--grey-300 mdl-layout--fixed-tabs">
         <header class="mdl-layout__header">
             <!-- Title -->
@@ -223,7 +244,6 @@ TEMPLATE = """
                         </form></p>
                         <p class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--light-green-900" id="message">{message}</p>
                         <div class="mdl-card__supporting-text">Sytem Uptime:</br>{uptime}</div>
-						<div class="mdl-card__supporting-text" id="info"></div>
                     </div>
                     <div class="mdl-cell mdl-cell--4-col"></div>
                 </div>
@@ -424,8 +444,17 @@ TEMPLATE = """
 	
 <script>
 var config = {conf}
-var HTML = ''
-document.getElementById("info").innerHTML = HTML;
+var dialog = document.querySelector('dialog');
+var showDialogButton = document.querySelector('#show-dialog');
+if (! dialog.showModal) {{
+  dialogPolyfill.registerDialog(dialog);
+}}
+if (config.auth_user == 'admin' || config.auth_password == 'admin') {{
+  dialog.showModal();
+}};
+dialog.querySelector('.close').addEventListener('click', function() {{
+  dialog.close();
+}});
 
 var devicelist = {list}
 var x,y,z,w,v,q,i = "";
