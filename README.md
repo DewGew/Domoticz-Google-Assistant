@@ -198,7 +198,7 @@ Open terminal or putty.
 ```bash
 cd /home/${USER}/
 sudo chmod +x ~/Domoticz-Google-Assistant/scripts/service-installer.sh
-sudo ./GassistPi/scripts/service-installer.sh
+sudo ./Domoticz-Google-Assistant/scripts/service-installer.sh
 ```
 Enable service:
 ```bash
