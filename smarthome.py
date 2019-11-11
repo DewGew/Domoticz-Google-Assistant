@@ -83,10 +83,14 @@ def AogGetDomain(device):
 def getDesc(state):
     if 'Scene_Config' in configuration:
         if state.domain == sceneDOMAIN or state.domain == groupDOMAIN:
-            desc = configuration['Scene_Config'].get(state.id, None) 
-    if 'Device_Config' in configuration:
-            desc = configuration['Device_Config'].get(state.id, None)    
-    return desc
+            desc = configuration['Scene_Config'].get(state.id, None)
+            return desc
+        
+    elif 'Device_Config' in configuration:
+            desc = configuration['Device_Config'].get(state.id, None)
+            return desc
+    else:
+        return None
            
 def getDeviceConfig(descstr):
     ISLIST = ['nicknames']
