@@ -5,7 +5,7 @@ import json
 from const import configuration    
 from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN,  ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
 
 from helpers import SmartHomeError
@@ -28,6 +28,7 @@ TRAIT_OPEN_CLOSE = PREFIX_TRAITS + 'OpenClose'
 TRAIT_ARM_DISARM = PREFIX_TRAITS + 'ArmDisarm'
 TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
 TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
+TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -50,6 +51,7 @@ COMMAND_ARM_DISARM = PREFIX_COMMANDS + 'ArmDisarm'
 COMMAND_SET_VOLUME = PREFIX_COMMANDS + 'setVolume'
 COMMAND_VOLUME_RELATIVE = PREFIX_COMMANDS + 'volumeRelative'
 COMMAND_GET_CAMERA_STREAM = PREFIX_COMMANDS + 'GetCameraStream'
+COMMAND_TOGGLES = PREFIX_COMMANDS + 'SetToggles'
 
 TRAITS = []
 
@@ -554,6 +556,13 @@ class ArmDisarmTrait(_Trait):
 
     def sync_attributes(self):
         """Return ArmDisarm attributes for a sync request."""
+        Armhome = {}
+        if 'Armhome' in configuration:
+            Armhome = configuration['Armhome']
+            
+        Armaway = {}
+        if 'Armaway' in configuration:
+            Armhome = configuration['Armaway']
         return {
         "availableArmLevels": {
             "levels": [{
@@ -561,14 +570,14 @@ class ArmDisarmTrait(_Trait):
               "level_values": [{
                 "level_synonym": ["armed home", "low security", "home and guarding", "level 1", "home", "SL1"],
                 "lang": "en"
-                }, configuration['Armhome']
+                }, Armhome
               ]
             },{
               "level_name": "Arm Away",
               "level_values": [{
                 "level_synonym": ["armed away", "high security", "away and guarding", "level 2", "away", "SL2"],
                 "lang": "en"
-                }, configuration['Armaway']
+                }, Armaway
               ]
             }],
             "ordered": True
@@ -713,3 +722,76 @@ class CameraStreamTrait(_Trait):
     def execute(self, command, params):
         """Execute a get camera stream command."""
         return
+    
+@register_trait
+class TooglesTrait(_Trait):
+    """Trait to set toggles.
+    https://developers.google.com/actions/smarthome/traits/modes
+    """
+
+    name = TRAIT_TOGGLES
+    commands = [COMMAND_TOGGLES]
+    
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in selectorDOMAIN
+
+    def sync_attributes(self):
+        """Return mode attributes for a sync request."""
+        level_list = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+        modes = []    
+
+        if level_list:
+            for s in level_list:
+                modes.append(
+                    {
+                    "name": s,
+                    "name_values": [
+                        {"name_synonym": [s],
+                        "lang": "en"},
+                        {"name_synonym": [s],
+                        "lang": self.state.language},
+                        ],
+                    }
+                )
+
+        return {"availableToggles": modes}
+
+    def query_attributes(self):
+        """Return current modes."""
+        levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+        level = self.state.level
+        index = int(level/10)
+        response = {}
+        toggle_settings = {
+            levelName[index]: self.state.state != 'Off'}
+
+        if toggle_settings:
+            response["on"] = self.state.state != 'Off'
+            response["online"] = True
+            response["currentToggleSettings"] = toggle_settings
+
+        return response
+
+    def execute(self, command, params):
+        """Execute an SetModes command."""
+        levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+        protected = self.state.protected
+        for key in params['updateToggleSettings']:
+            if key in levelName:
+                level = str(levelName.index(key)*10)
+            
+        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + level
+
+        if protected:
+            url = url + '&passcode=' + configuration['switchProtectionPass']
+
+        # print(url)
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        if protected:
+            status = r.json()
+            err = status.get('status')
+            if err == 'ERROR':
+                raise SmartHomeError(ERR_WRONG_PIN,
+                    'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
