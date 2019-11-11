@@ -134,6 +134,8 @@ def getAog(device):
     aog.tempunit = settings.get("TempUnit")
     aog.battery = device.get("BatteryLevel")
     aog.hardware = device.get("HardwareName")
+    aog.selectorLevelName = device.get("LevelNames")
+    aog.language = settings.get("Language")
     
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -221,6 +223,7 @@ def getSettings():
         settings['SecPassword'] = devs['SecPassword']
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
+	settings['Language'] = devs['Language']
 
 def restartServer():
     """Restart.""" 
