@@ -419,7 +419,7 @@ TEMPLATE = """
                     <code>
                     cd /home/${{USER}}/<br />
                     sudo chmod +x ./Domoticz-Google-Assistant/scripts/service-installer.sh<br />
-                    sudo ./GassistPi/scripts/service-installer.sh<br />
+                    sudo ./Domoticz-Google-Assistant/scripts/service-installer.sh<br />
                     </code>
                     Enable service:<br />
                     <code>
