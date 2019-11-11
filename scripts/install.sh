@@ -21,16 +21,17 @@ GIT_DIR="$(realpath $(dirname ${BASH_SOURCE[0]})/..)"
 RUN_AS="$(ls -ld "$scripts_dir" | awk 'NR==1 {print $3}')"
 if [ "$USER" != "$RUN_AS" ]
 then
-    echo "This script must run as $RUN_AS, trying to change user..."
+    echo ""
+    echo " This script must run as $RUN_AS, trying to change user..."
     exec sudo -u $RUN_AS $0
 fi
-
-echo "Updating your system..."
+echo ""
+echo " Updating your system..."
 echo ""
 sudo apt-get update -y
 sed 's/#.*//' ${GIT_DIR}/requirements/system-requirements.txt | xargs sudo apt-get install -y
 cd /home/${USER}/
 echo ""
-echo "Installing python packages..."
+echo " Installing python packages..."
 echo ""
 pip install -r ${GIT_DIR}/requirements/pip-requirements.txt
