@@ -223,7 +223,7 @@ def getSettings():
         settings['SecPassword'] = devs['SecPassword']
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
-	settings['Language'] = devs['Language']
+        settings['Language'] = devs['Language']
 
 def restartServer():
     """Restart.""" 
