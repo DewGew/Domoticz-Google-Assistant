@@ -1,5 +1,7 @@
 # Configuration:
 port_number: 3030
+# Ngrok assigns random urls. When server restart the server gets a new url
+ngrok_tunnel: true
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
 auth_pass: 'admin'
