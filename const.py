@@ -246,7 +246,9 @@ TEMPLATE = """
                         <p class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--light-green-900" id="message">{message}</p>
                         <div class="mdl-card__supporting-text">Sytem Uptime:</br>{uptime}</div>
                     </div>
-                    <div class="mdl-cell mdl-cell--4-col">Visit the Actions on Google console at <a href="http://console.actions.google.com">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
+                    <div class="mdl-cell mdl-cell--4-col">
+		    <h5>Quick start</h5>
+		    Visit the Actions on Google console at <a href="http://console.actions.google.com">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
                     <a>{public_url}/smarthome</a><br><br>
                     In Account linking, set the Authorization URL to:<br>
                     <a>{public_url}/oauth</a><br><br>
