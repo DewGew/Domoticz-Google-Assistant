@@ -13,7 +13,7 @@ import os
 import sys
 import time
 
-from helpers import (SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, readFile, saveFile)
+from helpers import (SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, readFile, saveFile, getTunnelUrl)
    
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE,
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
@@ -30,7 +30,7 @@ except Exception as e:
     print('Connection to Domoticz refused!. Check configuration')
 
 confJSON = json.dumps(configuration)
-
+public_url = 'https://[YOUR REVERSE PROXY URL]'
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -477,10 +477,19 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
         
     def settings(self, s):
+        public_url = 'https://[YOUR REVERSE PROXY URL]'
         try:
-            getDevices()
+            getDevices()           
         except Exception as e:
             print('Connection to Domoticz refused!. Check configuration')
+            
+        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
+            tunnels = getTunnelUrl()
+            tunnel = tunnels[0].public_url
+            if 'https' not in tunnel:
+                public_url = tunnel.replace('http', 'https')
+            else:
+                public_url = tunnel
             
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
@@ -490,7 +499,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(CONFIGFILE)
 		
-        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
+        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
 
         s.send_message(200, template)     
 
@@ -504,7 +513,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Config saved'
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
 
             s.send_message(200, template)
         
@@ -512,7 +521,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Restart Server, please wait!'
             meta = '<meta http-equiv="refresh" content="5">'
             code = ''
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
 
             s.send_message(200, template)
             restartServer()
@@ -523,7 +532,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Devices syncronized'
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
             s.send_message(200, template)
    
     def smarthome_sync(self, payload, token):
@@ -631,8 +640,7 @@ def turned_off_response(message):
 
 smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
                         "/sync": SmartHomeReqHandler.syncDevices,
-                        "/settings":SmartHomeReqHandler.settings,
-                        "/":SmartHomeReqHandler.settings}
+                        "/settings":SmartHomeReqHandler.settings}
                         
 smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
                          "/settings": SmartHomeReqHandler.settings_post}
