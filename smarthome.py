@@ -521,7 +521,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             codeToSave = readFile(CONFIGFILE)
             saveFile('config.yaml.bak', codeToSave)
 
-            message = 'Config saved'
+            message = 'Backup saved'
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
