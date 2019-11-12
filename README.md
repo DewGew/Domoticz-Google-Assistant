@@ -99,15 +99,12 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
   - Click Credentials
   - Click 'Create credentials'
   - Click 'API key'
-  - Copy the API key shown and insert it in `Homegraph_API_Key` in config.py.
+  - Copy the API key shown and insert it in `Homegraph_API_Key` in config.
 
 - Navigate back to the [Actions on Google Console](https://console.actions.google.com/).
   - On the top menu click Develop, then on the left navigation menu click on Actions.
     Enter the URL for fulfillment, e.g. `https://[YOUR REVERSE PROXY URL]/smarthome`, click Done.
   - On the left navigation menu under Account Linking.
-  - Select No, I only want to allow account creation on my website.
-  - For Linking Type, select OAuth.
-  - For Grant Type, select 'Authorization Code' for Grant Type.
   - Under Client Information, enter the client ID and secret from earlier.
   - Change Authorization URL to `https://[YOUR REVERSE PROXY URL]/oauth` (replace with your actual URL).
   - Change Token URL to `https://[YOUR REVERSE PROXY URL]/token` (replace with your actual URL).  
@@ -120,7 +117,7 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 - Tap Set up a device
 - Tap Have something already set up?
 - Select your device app e.g: "[test]Your Appname"
-- Login with Oauth credentials from config.py
+- Login with auth credentials from config
 
 ## Share devices
 If you want to allow other household users to control the devices:
@@ -211,6 +208,10 @@ When a device has low battery:
 Stream front door camera to TV.
 >**User**: Show front door camera on [Chromecast device name].  
 >**Google**: Streaming front door on  [Chromecast device name].
+
+Selector switch:
+>**User:** Turn on [Level Name] on living room light.  
+>**Google Assistant:** Turning on [Level Name] on living room light?
 
 ## Force devices sync
 ```
