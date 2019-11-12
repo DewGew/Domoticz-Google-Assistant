@@ -50,7 +50,7 @@ python3 Domoticz-Google-Assistant
 stop with ctrl-c
 
 ## Configuration
-You can access the interface via http://localhost:3030. The default username is `admin` and the default password is `admin`.
+You can access the interface via http://localhost:3030/settings. The default username is `admin` and the default password is `admin`.
 Configuration and [Actions on Google](https://github.com/DewGew/Domoticz-Google-Assistant/wiki/2.-Setup-Actions-on-Google) must be modified properly.
 You can also edit config.yaml to change the configuration. 
 ```python
