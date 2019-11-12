@@ -300,7 +300,7 @@ TEMPLATE = """
                     <div class="mdl-cell mdl-cell--4-col">
                     <form action="/settings" method="post">
                         <button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" name="save" id="save">Save</button>
-			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" name="restart" value="backup">Backup Config</button>
+			<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" name="backup" value="backup">Backup Config</button>
                     	<button class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--colored" name="restart" value="restart">Restart Server</button>
 		    </form>
                     </div>
