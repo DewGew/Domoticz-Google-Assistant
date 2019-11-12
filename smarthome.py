@@ -506,9 +506,20 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def settings_post(self, s):
        
         if (s.form.get("save")):
-            test = s.form.get("save", None)
-            textToSave = test.replace("+", " ")
+            textToSave = s.form.get("save", None)
+            codeToSave = textToSave.replace("+", " ")
             saveFile(CONFIGFILE, textToSave)
+
+            message = 'Config saved'
+            meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
+            code = readFile(CONFIGFILE)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
+
+            s.send_message(200, template)
+
+        if (s.form.get("backup")):
+            codeToSave = readFile(CONFIGFILE)
+            saveFile('config.yaml.bak', textToSave)
 
             message = 'Config saved'
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
