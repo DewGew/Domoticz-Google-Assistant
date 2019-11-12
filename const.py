@@ -228,14 +228,15 @@ TEMPLATE = """
                     <div class="mdl-cell mdl-cell--4-col">
                     <p>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a> and the <a href="https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant">home assistant implementation</a></p>
                     <p>Domoticz-Google-Assistant delivers:<br />
-                    - the oauth authorization and smarthome endpoint for the google assistant<br />
-                    - Two-factor authentication pin for domoticz protected devices (works best with english language)<br />
-                    - Acknowledgement with Yes or No. (works best with english language)<br />
-                    - Arm Disarm Securitypanel (works best with english language)<br />
-                    - On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close<br />
-                    - Stream surveillance camera to chromecast</p>
-
+                    <ul>
+                    <li>the oauth authorization and smarthome endpoint for the google assistant</li>
+                    <li>Two-factor authentication pin for domoticz protected devices (works best with english language)</li>
+                    <li>Acknowledgement with Yes or No. (works best with english language)</li>
+                    <li>Arm Disarm Securitypanel (works best with english language)</li>
+                    <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close</li>
+                    <li>Stream surveillance camera to chromecast</li></p>
                     <p>Please feel free to modify it, extend and improve</p>
+                    <p>Report issues <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues">here</a></p>
                     </div>
                     <div class="mdl-cell mdl-cell--4-col mdl-typography--text-center">
                         <p><form action="/settings" method="post">
@@ -245,7 +246,14 @@ TEMPLATE = """
                         <p class="mdl-button mdl-js-button mdl-js-ripple-effect mdl-color-text--light-green-900" id="message">{message}</p>
                         <div class="mdl-card__supporting-text">Sytem Uptime:</br>{uptime}</div>
                     </div>
-                    <div class="mdl-cell mdl-cell--4-col"></div>
+                    <div class="mdl-cell mdl-cell--4-col">Visit the Actions on Google console at <a href="http://console.actions.google.com">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
+                    <a>{public_url}/smarthome</a><br><br>
+                    In Account linking, set the Authorization URL to:<br>
+                    <a>{public_url}/oauth</a><br><br>
+                    Then set the Token URL to:<br>
+                    <a>{public_url}/token</a><br><br>
+                    Finally press \'SAVE\' and then \'TEST\' button<br>
+                    </div>
                 </div>
                 </div>
             </section>
@@ -338,14 +346,11 @@ TEMPLATE = """
 
                 <ul>
                 <li>On the top menu click Develop, then on the left navigation menu click on Actions.
-                Enter the URL for fulfillment, e.g. <code>https://[YOUR REVERSE PROXY URL]/smarthome</code>, click Done.</li>
+                Enter the URL for fulfillment, e.g. <a>{public_url}/smarthome</a>, click Done.</li>
                 <li>On the left navigation menu under Account Linking.</li>
-                <li>Select No, I only want to allow account creation on my website.</li>
-                <li>For Linking Type, select OAuth.</li>
-                <li>For Grant Type, select 'Authorization Code' for Grant Type.</li>
                 <li>Under Client Information, enter the client ID and secret from earlier.</li>
-                <li>Change Authorization URL to <code>https://[YOUR REVERSE PROXY URL]/oauth</code> (replace with your actual URL).</li>
-                <li>Change Token URL to <code>https://[YOUR REVERSE PROXY URL]/token</code> (replace with your actual URL).  </li>
+                <li>Change Authorization URL to <a>{public_url}/oauth</a>.</li>
+                <li>Change Token URL to <a>{public_url}/token</a>.</li>
                 <li>Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.</li>
                 <li>Click 'Save' at the top right corner, then click 'Test' to generate a new draft version of the Test App.</li>
                 </ul></li>
@@ -355,25 +360,35 @@ TEMPLATE = """
             <section class="mdl-layout__tab-panel" id="fixed-tab-5">
                 <div class="page-content">
 					<h5>Help</h5>
-                    <h5>Connect smart home devices to your Google Home device</h5>
-                    <ul>
-                    <li>On your mobile device, open the Google Home app.</li>
-                    <li>On the Home tab, tap the “Add” quick action .</li>
-                    <li>Tap Set up a device</li>
-                    <li>Tap Have something already set up?</li>
-                    <li>Select your device app e.g: "[test]Your Appname"</li>
-                    <li>Login with Oauth credentials from config.py</li>
-                    </ul>
+                    
+                    <h5>Configuration Settings</h5>
 
-                    <h5>Share devices</h5>
+                    <p><b>port_settings:</b><br>Set the local port. Default is <code>port_number: 3030</code></p>                   
+                    <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b>Ngrok assigns random urls. When server restart the server gets a new url</p>                   
+                    <p><b>auth_user/auth_pass:</b><br>Set the authorization username and password.</p>
 
-                    <p>If you want to allow other household users to control the devices:<br />
-                    - Go to the settings for the project you created in the <a href="https://console.actions.google.com/">Actions on Google Console</a>.<br />
-                    - Click <code>Test -&gt; Simulator</code>, then click Share icon in the right top corner. Follow the on-screen instruction:<br />
-                      - Add team members: Got to <code>Settings -&gt; Permission</code>, click Add, type the new user’s e-mail address and choose <code>Project -&gt; Viewer role</code>.<br />
-                      - Copy and share the link with the new user.<br />
-                      - When the new user opens the link with their own Google account, it will enable your draft test app under their account.<br />
-                    - Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py</p>
+                    <p><b>Domoticz:</b><br>Add correct ipaddress, port and credientials to connect to domoticz. </br>You can assign devices in a room in domoticz then set the room idx in <code>roomplan:</code></br>
+                    <code>switchProtectionPass:</code> is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</p>
+                    <p><b>ClientID/ClientSectret:</b><br>Set the Google credientials.</p>
+                    <p><b>Homegraph_API_Key:</b><br>Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required</p>
+                    <p><b>Low_battery_limit:</b><br>Set threhold for report low battery.</p>
+                    <p><b>Image_Override:</b><br>Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</p>
+                    <p><b>Camera_Stream:</b><br>In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. Read more below.<p>
+                    <p><b>Armhome/Armaway:</b><br>User-friendly name for the arm level in your language.</p>
+                    
+                    <h5>Device Settings</h5>
+
+                    <p>Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
+                    <code><br />
+                    &lt;voicecontrol&gt;<br />
+                    nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
+                    room = Kitchen<br />
+                    ack = True<br />
+                    &lt;/voicecontrol&gt;<br />
+                    </code>
+                    Other parts of the description are ignored, so you can still leave other useful descriptions.
+                    Every variable should be on a separate line.
+                    If there is no such configuration in the Domoticz device it will still try the config.</p>
 
                     <h5>Stream camera to chromecast</h5>
 
@@ -399,35 +414,33 @@ TEMPLATE = """
                       /var/www/html/cam/cam.mp4
                     </code>
                     </p>
-
-                    <h5>Device Settings</h5>
-
-                    <p>Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
-                    <code><br />
-                    &lt;voicecontrol&gt;<br />
-                    nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
-                    room = Kitchen<br />
-                    ack = True<br />
-                    &lt;/voicecontrol&gt;<br />
-                    </code>
-                    Other parts of the description are ignored, so you can still leave other useful descriptions.
-                    Every variable should be on a separate line.
-                    If there is no such configuration in the Domoticz device it will still try the config.py.</p>
                     
-                    <h5>Run as service for autorun at startup</h5>
-                    <p>Open terminal or putty.<br />
-                    <code>
-                    cd /home/${{USER}}/<br />
-                    sudo chmod +x ./Domoticz-Google-Assistant/scripts/service-installer.sh<br />
-                    sudo ./Domoticz-Google-Assistant/scripts/service-installer.sh<br />
-                    </code>
-                    Enable service:<br />
-                    <code>
-                     sudo systemctl enable dzga.service<br />
-                     sudo systemctl start dzga.service
-                    </code></p>
+                    <h5>Other</h5>
+                    
+                    <h6>Connect smart home devices to your Google Home device</h6>
+                    <ul>
+                    <li>On your mobile device, open the Google Home app.</li>
+                    <li>On the Home tab, tap the “Add” quick action .</li>
+                    <li>Tap Set up a device</li>
+                    <li>Tap Have something already set up?</li>
+                    <li>Select your device app e.g: "[test]Your Appname"</li>
+                    <li>Login with auth credentials from config</li>
+                    </ul>
+                    
+                    <h6>Share devices</h6>
 
-                    <h5>Update</h5>
+                    <p>If you want to allow other household users to control the devices:<br />
+                    <ul>
+                    <li>Go to the settings for the project you created in the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</li>
+                    <li>Click <code>Test -&gt; Simulator</code>, then click Share icon in the right top corner. Follow the on-screen instruction:</li>
+                    <li>Add team members:</li>
+                    <li>Got to <code>Settings -&gt; Permission</code>, click Add, type the new user’s e-mail address and choose <code>Project -&gt; Viewer role</code>.</li>
+                    <li>Copy and share the link with the new user.</li>
+                    <li>When the new user opens the link with their own Google account, it will enable your draft test app under their account.</li>
+                    <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py</li>
+                    </ul></p>
+                    
+                    <h6>Update</h6>
 
                     <p><code>
                     cd /home/${{USER}}/Domoticz-Google-Assistant/<br />
