@@ -508,7 +508,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if (s.form.get("save")):
             textToSave = s.form.get("save", None)
             codeToSave = textToSave.replace("+", " ")
-            saveFile(CONFIGFILE, textToSave)
+            saveFile(CONFIGFILE, codeToSave)
 
             message = 'Config saved'
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
@@ -519,7 +519,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         if (s.form.get("backup")):
             codeToSave = readFile(CONFIGFILE)
-            saveFile('config.yaml.bak', textToSave)
+            saveFile('config.yaml.bak', codeToSave)
 
             message = 'Config saved'
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
