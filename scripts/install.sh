@@ -32,6 +32,9 @@ sudo apt-get update -y
 sed 's/#.*//' ${GIT_DIR}/requirements/system-requirements.txt | xargs sudo apt-get install -y
 cd /home/${USER}/
 
+echo ""
+echo " Create virtual enviroment..."
+echo ""
 python3 -m venv Domoticz-Google-Assistant/env
 Domoticz-Google-Assistant/env/bin/python -m pip install --upgrade pip setuptools wheel
 source Domoticz-Google-Assistant/env/bin/activate
