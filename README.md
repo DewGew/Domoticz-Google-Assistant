@@ -2,60 +2,71 @@
 
 Standalone implementation. It means that you can put this server wherever you want, even on another machine. You need to setup a project in Actions on Google Console. You find instructions below.
 
-Based on Pawcio's script at [domoticz forum](https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244) and the [home assistant implementation](https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant)
+Based on Pawcio's script at [domoticz forum](https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244)
 
 Required:
-- Public IP
+- public url
 - python >= 3.5
-- reverse proxy for establishing secure connection (Domoticz-Google-Assistant itself provides currently only unsecure one - http only)
+- reverse proxy for establishing secure connection (if not using Ngrok)
 
 Domoticz-Google-Assistant delivers: 
-- the oauth authorization and smarthome endpoint for the google assistant
-- Two-factor authentication pin for domoticz protected devices (works best with english language)
+- The oauth authorization and smarthome endpoint for the google assistant.
+- Two-factor authentication pin for domoticz protected devices. (works best with english language)
 - Acknowledgement with Yes or No. (works best with english language)
-- Arm Disarm Securitypanel (works best with english language)
-- On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close
-- Stream surveillance camera to chromecast
-- Toggle Selector switches
+- Arm Disarm Securitypanel. (works best with english language)
+- On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close.
+- Stream surveillance camera to chromecast.
+- Toggle Selector switches.
+- Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
 
 Please feel free to modify it, extend and improve
 
-## Installation with git
+## RPI/Ubuntu Installation with autostart
+```bash
+bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
+```
+Start/stop Domoticz-Google-Assistant server:
+```bash
+sudo systemctl start dzga
+sudo systemctl stop dzga
+```
+Check if service is running:
+```bash
+sudo systemctl status dzga
+```
+To update run installer again:
+```bash
+bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
+```
+## Manual Installation
 NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
 ```bash
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
+pip install -r ~/Domoticz-Google-Assistant/requirements/pip-requirements.txt
 ```
-## Starting server
-```bash
-cd /home/${USER}/
-sudo chmod +x ~/Domoticz-Google-Assistant/scripts/service-installer.sh
-sudo ./Domoticz-Google-Assistant/scripts/service-installer.sh
-```
-Enable service:
-```bash
- sudo systemctl daemon-reload
- sudo systemctl enable dzga.service
-```
-Start/stop Domoticz-Google-Assistant server:
-```bash
-sudo systemctl start dzga.service
-sudo systemctl stop dzga.service
-```
-or manually (useful in troubleshooting)
+Manual start (stop with 'ctrl-c'):
 ```bash
 cd /home/${USER}/
 python3 Domoticz-Google-Assistant
 ```
-stop with ctrl-c
-
+Update:
+```bash
+cd /home/${USER}/Domoticz-Google-Assistant/
+git pull
+```
 ## Configuration
 You can access the interface via http://localhost:3030/settings. The default username is `admin` and the default password is `admin`.
 Configuration and [Actions on Google](https://github.com/DewGew/Domoticz-Google-Assistant/wiki/2.-Setup-Actions-on-Google) must be modified properly.
-You can also edit config.yaml to change the configuration. 
+You can also edit config.yaml in Domoticz-Google-Assistant folder to change the configuration. 
 ```python
 # Configuration:
 port_number: 3030
+
+# Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
+# Ngrok assigns random urls. When server restart the server gets a new url
+ngrok_tunnel: false 
+
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
 auth_pass: 'admin'
@@ -216,13 +227,4 @@ Selector switch:
 ## Force devices sync
 ```
 https://[YOUR REVERSE PROXY URL]/sync
-```
-## Update
-```bash
-cd /home/${USER}/Domoticz-Google-Assistant/
-git pull
-```
-If needed, restart service:
-```bash
-sudo systemctl restart dzga.service
 ```
