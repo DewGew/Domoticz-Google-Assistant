@@ -75,21 +75,6 @@ def uptime():
         string += str(seconds) + " " + (seconds == 1 and "second" or "seconds" )
 
     return string;
-    
-def readFile(filename):
-    """Read file."""
-    file = open(os.path.join(FILE_DIR, filename), 'r+')
-    code = file.read()
-    file.close()
-    return code
-        
-def saveFile(filename, content):
-    """Read file."""
-    file = open(os.path.join(FILE_DIR, filename), 'w+')
-    code = file.read()
-    file.write(content)
-    file.close()
-    return code
             
 def getTunnelUrl():
     """Get ngrok tunnel url"""
