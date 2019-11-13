@@ -1,7 +1,10 @@
 # Configuration:
 port_number: 3030
+
+# Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
 # Ngrok assigns random urls. When server restart the server gets a new url
-ngrok_tunnel: true
+ngrok_tunnel: false
+
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
 auth_pass: 'admin'
@@ -19,8 +22,10 @@ Domoticz:
 ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
 ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
 Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
+
 # Report low battry
 Low_battery_limit: 9
+
 # Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
 # So to differentiate them additionaly image names are used.
 Image_Override:
