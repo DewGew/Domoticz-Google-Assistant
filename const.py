@@ -184,6 +184,7 @@ TEMPLATE = """
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css" />
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/python/python.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/yaml/yaml.js"></script>
 <script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
 
@@ -502,7 +503,7 @@ if (typeof x !== "undefined"){{
     
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
     lineNumbers: true,
-    mode: "python"
+    mode: "yaml"
 }});
 editor.setSize("100%", "80%");
 editor.on("change", function() {{
