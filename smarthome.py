@@ -641,13 +641,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
             
-        return {'commands': final_results}  
-           
-           
-def turned_off_response(message):
-    """Return a device turned off response."""
-    return {'requestId': message.get('requestId'), 'payload': {'errorCode': 'deviceTurnedOff'}}   
-
+        return {'commands': final_results}
+   
+    def smarthome_disconnect(self, payload, token):
+        """Handle action.devices.DISCONNECT request.
+        https://developers.google.com/assistant/smarthome/develop/process-intents#DISCONNECT
+        """
+        return None
 
 smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
                         "/sync": SmartHomeReqHandler.syncDevices,
@@ -658,5 +658,6 @@ smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
 
 smarthomeControlMappings = {'action.devices.SYNC': SmartHomeReqHandler.smarthome_sync,
                             'action.devices.QUERY': SmartHomeReqHandler.smarthome_query,
-                            'action.devices.EXECUTE': SmartHomeReqHandler.smarthome_exec}
+                            'action.devices.EXECUTE': SmartHomeReqHandler.smarthome_exec,
+                            'action.devices.DISCONNECT': SmartHomeReqHandler.smarthome_disconnect}
                             
