@@ -95,7 +95,7 @@ ERR_ALREADY_IN_STATE = 'alreadyInState'
 
 groupDOMAIN = 'Group'
 sceneDOMAIN = 'Scene'
-lightDOMAIN = 'Light/Switch'
+lightDOMAIN = 'Light'
 switchDOMAIN = 'Switch'
 outletDOMAIN = 'Outlet'
 blindsDOMAIN = 'Blinds'
