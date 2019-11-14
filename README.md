@@ -40,8 +40,7 @@ To update run installer again:
 bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
 ```
 ## Manual Installation
-NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
-Open a terminal window and execute those commands
+Open a terminal window and execute those commands. NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
 ```bash
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
