@@ -103,9 +103,9 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
   - Copy the client ID shown and insert it in `ClientID` in config
   - Copy the client secret shown and insert it in `ClientSectret`in config
 
-- Add Request Sync
+- Add Request Sync (optional but recomended)
 
-  The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.
+  The Request Sync feature updates devices without unlinking and relinking.
   - Navigate to the [Google Cloud Console API Manager](https://console.cloud.google.com/apis/credentials) for your project id.
   - Enable the HomeGraph API. This will be used to request a new sync and to report the state back to the HomeGraph.
   - Click Credentials
