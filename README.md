@@ -41,6 +41,7 @@ bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/in
 ```
 ## Manual Installation
 NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
+Open a terminal window and execute those commands
 ```bash
 cd /home/${USER}/
 git clone https://github.com/DewGew/Domoticz-Google-Assistant
