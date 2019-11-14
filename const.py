@@ -371,10 +371,9 @@ TEMPLATE = """
 
             <p><b>Domoticz:</b><br>Add correct ipaddress, port and credientials to connect to domoticz. </br>You can assign devices in a room in domoticz then set the room idx in <code>roomplan:</code></br>
             <code>switchProtectionPass:</code> is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</p>
-            <p><b>Google_Assistant:</b><br>
-             ClientID/ClientSectret:<br>Set the Google credientials.<br>
-             Homegraph_API_Key:<br>Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.<br>
-             By using <code>'Google_Assistant: !secret'</code>in config and then edit secret.yaml, you can remove any private information from your configuration file.</p>
+            <p><b>ClientID/ClientSectret:</b>Set the Google credientials.<br></p>
+            <p><b>Homegraph_API_Key:</b><br>Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.<br>
+            </p>
             <p><b>Low_battery_limit:</b><br>Set threhold for report low battery.</p>
             <p><b>Image_Override:</b><br>Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</p>
             <p><b>Camera_Stream:</b><br>In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. Read more below.<p>
