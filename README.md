@@ -22,6 +22,7 @@ Domoticz-Google-Assistant delivers:
 Please feel free to modify it, extend and improve
 
 ## RPI/Ubuntu Installation with autostart
+Just open a terminal window and execute this command. Thats it!
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
 ```
