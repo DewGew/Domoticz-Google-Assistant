@@ -254,6 +254,7 @@ TEMPLATE = """
                 <li>Arm Disarm Securitypanel (works best with english language)</li>
                 <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close</li>
                 <li>Stream surveillance camera to chromecast</li>
+                <li>Toogle selector switches</li>
                 </ul>
                 </p>
                 <p class="lead">Please feel free to modify it, extend and improve</p>
