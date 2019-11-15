@@ -204,7 +204,7 @@ TEMPLATE = """
               <span aria-hidden="true">&times;</span>
             </button>
           </div>
-          <div class="modal-body">
+          <div class="modal-body" id="message">
             Please change the default username and password and restart server!
           </div>
           <div class="modal-footer">
@@ -254,7 +254,6 @@ TEMPLATE = """
                 <li>Arm Disarm Securitypanel (works best with english language)</li>
                 <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close</li>
                 <li>Stream surveillance camera to chromecast</li>
-                <li>Toogle selector switches</li>
                 </ul>
                 </p>
                 <p class="lead">Please feel free to modify it, extend and improve</p>
@@ -267,7 +266,7 @@ TEMPLATE = """
                     <button class="btn btn-raised btn-primary" name="sync" value="sync">Sync Devices</button>
                 </form>
                 </p>
-                <p class="font-weight-bold text-success" id="message">{message}</p>
+                <p class="font-weight-bold text-success">{message}</p>
                 <small class="text-muted">
                     <p>Quick start<p>
                     Visit the Actions on Google console at <a href="http://console.actions.google.com">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
@@ -518,7 +517,9 @@ TEMPLATE = """
         document.getElementById("deviceList_name").innerHTML = y;
         document.getElementById("deviceList_type").innerHTML = z;
         document.getElementById("deviceList_state").innerHTML = w;
+        document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
         document.getElementById("message").innerHTML = "Connection to Domoticz refused!. Check configuration.";
+        $('#messageModal').modal('show')
     }}
         
     var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
