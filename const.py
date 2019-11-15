@@ -194,6 +194,25 @@ TEMPLATE = """
     <title>Domoticz Google Assistant</title>
   </head>
   <body>
+    <!-- Modal -->
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Security Risk</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            Please change the default username and password and restart server!
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+    </div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="#">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Assistant_logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -470,9 +489,15 @@ TEMPLATE = """
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/addon/display/autorefresh.js"></script>
     <script>
     $(document).ready(function() {{
+    
+        var config = {conf}
+        
         $('body').bootstrapMaterialDesign();
-    }});
-    var config = {conf}
+        
+        if (config.auth_user == 'admin' || config.auth_pass == 'admin'){{
+            $('#messageModal').modal('show')
+        }}
+    
 
     var devicelist = {list}
     var x,y,z,w,v,q,i = "";
@@ -502,13 +527,12 @@ TEMPLATE = """
     }});
     editor.on("change", function() {{
         textTosave = editor.getValue();
-        console.log(textTosave);
         document.getElementById("save").value = textTosave;
      }});
      
     document.getElementById("save").value = document.getElementById("code").value
 
-    </script>    
+    }});</script>    
   </body>
 </html>
 """
