@@ -324,9 +324,9 @@ TEMPLATE = """
             <li>On the top menu click Develop, then on the left navigation menu click on Invocation.</li>
             <li>Add your App's name. Click Save.</li>
             <li>Click 'Save'.</li>
-            </ul></li>
+            </ul></li><br>
+            
             <li><p>Add Credentials</p>
-
             <ul>
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
             <li>Click 'Create credentials'</li>
@@ -335,9 +335,9 @@ TEMPLATE = """
             <li>Add name e.g. 'SmartHomeClientID'</li>
             <li>Copy the client ID shown and insert it in <code>clientID</code> in config.yaml</li>
             <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
-            </ul></li>
+            </ul></li><br>
+            
             <li><p>Add Request Sync</p>
-
             <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</p>
 
             <ul>
@@ -347,9 +347,9 @@ TEMPLATE = """
             <li>Click 'Create credentials'</li>
             <li>Click 'API key'</li>
             <li>Copy the API key shown and insert it in <code>Homegraph_API_Key</code> in config.yaml.</li>
-            </ul></li>
+            </ul></li><br>
+            
             <li><p>Navigate back to the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</p>
-
             <ul>
             <li>On the top menu click Develop, then on the left navigation menu click on Actions.
             Enter the URL for fulfillment, e.g. <code>{public_url}/smarthome</code>, click Done.</li>
