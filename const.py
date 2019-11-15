@@ -371,7 +371,7 @@ TEMPLATE = """
 
             <p><b>Domoticz:</b><br>Add correct ipaddress, port and credientials to connect to domoticz. </br>You can assign devices in a room in domoticz then set the room idx in <code>roomplan:</code></br>
             <code>switchProtectionPass:</code> is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</p>
-            <p><b>ClientID/ClientSectret:</b>Set the Google credientials.<br></p>
+            <p><b>ClientID/ClientSectret:</b><br>Set the Google credientials.<br></p>
             <p><b>Homegraph_API_Key:</b><br>Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.<br>
             </p>
             <p><b>Low_battery_limit:</b><br>Set threhold for report low battery.</p>
