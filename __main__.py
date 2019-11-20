@@ -6,7 +6,7 @@ import socketserver
 from server import *
 from auth import *
 from smarthome import *
-from const import configuration
+from const import configuration, VERSION
 
 tunnel = ''
 class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
@@ -22,7 +22,7 @@ def startServer():
         #incoming request
         server = ThreadingSimpleServer(('', configuration['port_number']), AogServer)
         print ()
-        print ('Started DZGA server at port ' + str(configuration['port_number']))
+        print ('Started DZGA v' + VERSION + ' server at port ' + str(configuration['port_number']))
         print ()
         print ('   Visit http://localhost:' + str(configuration['port_number']) + '/settings to access the user inteface')
         print ()
