@@ -38,6 +38,7 @@ except FileNotFoundError as err:
     
                     
 """Constants for Google Assistant."""
+VERSION = '1.3.0'
 HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
 REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
 
@@ -191,7 +192,7 @@ TEMPLATE = """
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css" />
 
     
-    <title>Domoticz Google Assistant</title>
+    <title>Domoticz Google Assistant v""" + VERSION + """</title>
   </head>
   <body>
     <!-- Modal -->
@@ -214,7 +215,7 @@ TEMPLATE = """
       </div>
     </div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">
+    <a class="navbar-brand" href="#settings">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Assistant_logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
         Domoticz Google Assistant</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -280,7 +281,10 @@ TEMPLATE = """
               </div>
             </div>
             <div class="row">
-              <div class="col"><small class="text-muted">Sytem Uptime:<br>{uptime}</small></div>
+              <div class="col">
+              <small class="text-muted">Sytem Uptime:<br>{uptime}</small><br>
+              <small class="text-muted">DZGA Version:<br>v""" + VERSION + """</small>
+              </div>
               <div class="col">
                 <small class="text-muted"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">Source Code at Github</a></small><br>
                 <small class="text-muted"><a href="https://www.domoticz.com/wiki/Google_Assistant#Domoticz_Google_Assistant_Server_python">Domoticz wiki</a></small>
@@ -400,7 +404,7 @@ TEMPLATE = """
             
             <h5>Device Settings</h5>
 
-            <p>Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
+            <p>Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
             <code><br />
             &lt;voicecontrol&gt;<br />
             nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
