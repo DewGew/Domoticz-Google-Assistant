@@ -39,6 +39,7 @@ except FileNotFoundError as err:
                     
 """Constants for Google Assistant."""
 VERSION = '1.3.0'
+PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
 REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
 
