@@ -6,9 +6,9 @@ import socketserver
 from server import *
 from auth import *
 from smarthome import *
-from const import configuration, VERSION
+from const import configuration, VERSION, PUBLIC_URL
 
-tunnel = ''
+tunnel = PUBLIC_URL
 class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     pass
     
@@ -30,23 +30,25 @@ def startServer():
             try:
                 public_url = ngrok.connect(configuration['port_number'])
                 tunnel = public_url.replace("http", "https")
-                print ('=====')
-                print ('Visit the Actions on Google console at http://console.actions.google.com')
-                print ('Under Develop section, replace the fulfillment URL in Actions with:')
-                print ('   ' + tunnel + '/smarthome')
-                print ()
-                print ('In Account linking, set the Authorization URL to:')
-                print ('  ' + tunnel + '/oauth')
-                print ()
-                print ('Then set the Token URL to:')
-                print ('  ' + tunnel + '/token')
-                print ()
-                print ('Finally press \'SAVE\' and then \'TEST\' button')
-                print ('** NOTE: Ngrok assigns random urls. When server restart the server gets a new url')
-                print ()
             except Exception as e:
                 print ('Ngrok was unable to start')
                 print (e)
+                
+        print ('=====')
+        print ('Visit the Actions on Google console at http://console.actions.google.com')
+        print ('Under Develop section, replace the fulfillment URL in Actions with:')
+        print ('   ' + tunnel + '/smarthome')
+        print ()
+        print ('In Account linking, set the Authorization URL to:')
+        print ('  ' + tunnel + '/oauth')
+        print ()
+        print ('Then set the Token URL to:')
+        print ('  ' + tunnel + '/token')
+        print ()
+        print ('Finally press \'SAVE\' and then \'TEST\' button')
+        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
+            print ('** NOTE: Ngrok assigns random urls. When server restart the server gets a new url')
+        print ()
         #Wait forever for incoming http requests
         server.serve_forever()
 
