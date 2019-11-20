@@ -18,11 +18,11 @@ from const import (readFile, saveFile, configuration, FILE_DIR, CONFIGFILE, DOMO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE)
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
 
 print ("The system uptime is:", uptime())
 
-logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v1.3.0'
+logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION
 try:
     r = requests.get(logUrl, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
