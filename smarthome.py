@@ -18,7 +18,7 @@ from const import (readFile, saveFile, configuration, FILE_DIR, CONFIGFILE, DOMO
     ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
     screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, PUBLIC_URL)
 
 print ("The system uptime is:", uptime())
 
@@ -29,7 +29,7 @@ except Exception as e:
     print('Connection to Domoticz refused!. Check configuration')
 
 confJSON = json.dumps(configuration)
-public_url = 'https://[YOUR REVERSE PROXY URL]'
+public_url = PUBLIC_URL
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -180,7 +180,6 @@ def getAog(device):
         if ack:
             aog.ack = ack
     return aog;
- 
  
 aogDevs = {}
 deviceList = {}
@@ -476,7 +475,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
         
     def settings(self, s):
-        public_url = 'https://[YOUR REVERSE PROXY URL]'
+        public_url = PUBLIC_URL
         try:
             getDevices()           
         except Exception as e:
