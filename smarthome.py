@@ -428,7 +428,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
         
         print("Response: -->")
-        print(json.dumps(self.smarthome_process(message, token), indent=2, sort_keys=False))
+        print(json.dumps(response, indent=2, sort_keys=False))
     
     def smarthome(self, s):
         s.send_message(500, "not supported")
