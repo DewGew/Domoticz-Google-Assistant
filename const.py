@@ -298,28 +298,17 @@ TEMPLATE = """
             <br>
             <h5>Device list</h5>
             <small class="text-muted">List of devices the server recived from domoticz.<br>NOTE: If you don't see any device check your connection to domoticz.</small>
-            <div class="row">
-              <div class="col">
-                <br>
-                <h6>Idx</h6>
-                <code><div id="deviceList_idx"></div></code>
-              </div>
-              <div class="col">
-                <br>
-                <h6>Device Name</h6>
-                <code><div id="deviceList_name"></div></code>
-              </div>
-              <div class="col">
-                <br>
-                <h6>Device Type</h6>
-                <code><div id="deviceList_type"></div></code>
-              </div>
-              <div class="col">
-                <br>
-                <h6>State</h6>
-                <code><div id="deviceList_state"></div></code>
-                </div>
-            </div>
+            <table class="table">
+              <thead>
+                <tr>
+                  <th scope="col">Idx</th>
+                  <th scope="col">Name</th>
+                  <th scope="col">Type</th>
+                  <th scope="col">State</th>
+                </tr>
+              </thead>
+              <tbody id="deviceList_idx" ></tbody>
+            </table>
         </div>
         <div id="menu2" class="tab-pane fade" role="tabpanel">
             <br>
@@ -505,23 +494,15 @@ TEMPLATE = """
     
 
     var devicelist = {list}
-    var x,y,z,w,v,q,i = "";
+    var x,i = "";
     for (i in devicelist){{
-        x += devicelist[i][1] + "<br>";
-        y += devicelist[i][0] + "<br>";
-        z += devicelist[i][2] + "<br>";
-        w += devicelist[i][3] + "<br>";
+        x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td></tr>";
+
     }}
     if (typeof x !== "undefined"){{
         document.getElementById("deviceList_idx").innerHTML = x.replace('undefined','');
-        document.getElementById("deviceList_name").innerHTML = y.replace('undefined','');
-        document.getElementById("deviceList_type").innerHTML = z.replace('undefined','');
-        document.getElementById("deviceList_state").innerHTML = w.replace('undefined','');
     }}else{{
         document.getElementById("deviceList_idx").innerHTML = x;
-        document.getElementById("deviceList_name").innerHTML = y;
-        document.getElementById("deviceList_type").innerHTML = z;
-        document.getElementById("deviceList_state").innerHTML = w;
         document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
         document.getElementById("message").innerHTML = "Connection to Domoticz refused!. Check configuration.";
         $('#messageModal').modal('show')
