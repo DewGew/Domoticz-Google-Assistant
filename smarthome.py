@@ -26,7 +26,7 @@ try:
         auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
     logger.error('Connection to Domoticz refused!. Check configuration')
-
+    
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
 #some way to convert a domain type: Domoticz to google
@@ -470,7 +470,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
         r = self.forceDevicesSync()
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
-        
+         
     def settings(self, s):
         public_url = PUBLIC_URL
         try:
@@ -494,7 +494,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(CONFIGFILE)
         logs = readFile('dzga.log')
-		
+        
         template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
         s.send_message(200, template)     
@@ -661,13 +661,19 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/assistant/smarthome/develop/process-intents#DISCONNECT
         """
         return None
-
-smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
-                        "/sync": SmartHomeReqHandler.syncDevices,
-                        "/settings":SmartHomeReqHandler.settings}
+    
+if 'userinterface' in configuration and configuration['userinterface'] == True:
+    smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
+                            "/sync": SmartHomeReqHandler.syncDevices,
+                            "/settings":SmartHomeReqHandler.settings}
+                            
+    smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
+                             "/settings": SmartHomeReqHandler.settings_post}
+else:
+    smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
+                            "/sync": SmartHomeReqHandler.syncDevices}
                         
-smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
-                         "/settings": SmartHomeReqHandler.settings_post}
+    smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post}
 
 smarthomeControlMappings = {'action.devices.SYNC': SmartHomeReqHandler.smarthome_sync,
                             'action.devices.QUERY': SmartHomeReqHandler.smarthome_query,
