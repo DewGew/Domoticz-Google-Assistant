@@ -29,6 +29,7 @@ except Exception as e:
     
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
+
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:

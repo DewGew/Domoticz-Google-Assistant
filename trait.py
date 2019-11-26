@@ -733,11 +733,11 @@ class TooglesTrait(_Trait):
     def sync_attributes(self):
         """Return mode attributes for a sync request."""
         level_list = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
-        modes = []    
+        levels = []    
 
         if level_list:
             for s in level_list:
-                modes.append(
+                levels.append(
                     {
                     "name": s,
                     "name_values": [
@@ -749,7 +749,8 @@ class TooglesTrait(_Trait):
                     }
                 )
 
-        return {"availableToggles": modes}
+        return {"availableToggles": levels}
+
 
     def query_attributes(self):
         """Return current modes."""
@@ -781,6 +782,7 @@ class TooglesTrait(_Trait):
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        
         if protected:
             status = r.json()
             err = status.get('status')
