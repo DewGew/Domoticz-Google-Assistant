@@ -2,6 +2,8 @@
 port_number: 3030
 # Debug, Info or Error
 loglevel: 'Info'
+# Enable or disable UI
+userinterface: false
 
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
 # Ngrok assigns random urls. When server restart the server gets a new url
