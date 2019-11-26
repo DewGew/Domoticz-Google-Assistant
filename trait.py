@@ -2,19 +2,15 @@
 
 import requests
 import json
-import base64
-try:
-    from config import (DOMOTICZ_URL, U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ, DOMOTICZ_SWITCH_PROTECTION_PASSWD, LOW_BATTERY_LIMIT, ARMHOME, ARMAWAY, DOMOTICZ_IDX_CAMERAURL)
-except Exception as e:
-    print(e, 'Please check config.py')
-    exit()
-    
+import base64   
 from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN,  ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
 
-from helpers import SmartHomeError
+from helpers import SmartHomeError, configuration
+
+DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
     
 PREFIX_TRAITS = 'action.devices.traits.'
 TRAIT_ONOFF = PREFIX_TRAITS + 'OnOff'
@@ -125,6 +121,7 @@ class OnOffTrait(_Trait):
     def query_attributes(self):
         """Return OnOff query attributes."""
         domain = self.state.domain
+        
         response = {}
         if domain == pushDOMAIN:
             response['on'] = False
@@ -132,7 +129,7 @@ class OnOffTrait(_Trait):
             response['on'] = self.state.state != 'Off'
         if domain != groupDOMAIN and self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
-        
+
         return response
     
     def execute(self, command, params):
@@ -147,10 +144,9 @@ class OnOffTrait(_Trait):
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + ('On' if params['on'] else 'Off')
 
             if protected:
-                url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+                url = url + '&passcode=' + configuration['switchProtectionPass']
 
-            # print(url)
-            r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
             if protected:
                 status = r.json()
                 err = status.get('status')
@@ -190,10 +186,9 @@ class SceneTrait(_Trait):
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
         
         if protected:
-            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
             err = status.get('status')
@@ -235,7 +230,7 @@ class BrightnessTrait(_Trait):
         if domain == colorDOMAIN:
             brightness = self.state.level
             response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
-        if self.state.battery <= LOW_BATTERY_LIMIT:
+        if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
         return response
@@ -250,16 +245,14 @@ class BrightnessTrait(_Trait):
         
     def execute(self, command, params):
         """Execute a brightness command."""
-        #domain = self.state.domain
         protected = self.state.protected
                     
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(params['brightness'] * self.state.maxdimlevel / 100))
         
         if protected:
-            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
             err = status.get('status')
@@ -301,7 +294,7 @@ class OpenCloseTrait(_Trait):
             else:
                 response['openPercent'] = 0
                 
-        if self.state.battery <= LOW_BATTERY_LIMIT:
+        if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
             
         return response
@@ -328,10 +321,9 @@ class OpenCloseTrait(_Trait):
                 url += 'Stop'
             
         if protected:
-            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
             err = status.get('status')
@@ -381,7 +373,7 @@ class TemperatureSettingTrait(_Trait):
         """Return temperature point and modes query attributes."""
         domain = self.state.domain
         response = {}
-        if self.state.battery <= LOW_BATTERY_LIMIT:
+        if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
         
         if domain == tempDOMAIN:
@@ -411,9 +403,7 @@ class TemperatureSettingTrait(_Trait):
         if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(params['thermostatTemperatureSetpoint'])
 
-        # print(url)
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
-        # print(r.status_code)
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
           
 @register_trait
 class LockUnlockTrait(_Trait):
@@ -440,7 +430,7 @@ class LockUnlockTrait(_Trait):
     def query_attributes(self):
         """Return LockUnlock query attributes."""
         response = {}
-        if self.state.battery <= LOW_BATTERY_LIMIT:
+        if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
         
         response['isLocked'] = self.state.state == 'Locked'
@@ -471,10 +461,9 @@ class LockUnlockTrait(_Trait):
                     'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
         
         if protected:
-            url = url + '&passcode=' + DOMOTICZ_SWITCH_PROTECTION_PASSWD
+            url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
             err = status.get('status')
@@ -540,7 +529,7 @@ class ColorSettingTrait(_Trait):
         
         url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + str(color_hex)
         
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         
 @register_trait
 class ArmDisarmTrait(_Trait):
@@ -560,6 +549,13 @@ class ArmDisarmTrait(_Trait):
 
     def sync_attributes(self):
         """Return ArmDisarm attributes for a sync request."""
+        Armhome = {}
+        if 'Armhome' in configuration:
+            Armhome = configuration['Armhome']
+            
+        Armaway = {}
+        if 'Armaway' in configuration:
+            Armhome = configuration['Armaway']
         return {
         "availableArmLevels": {
             "levels": [{
@@ -567,14 +563,14 @@ class ArmDisarmTrait(_Trait):
               "level_values": [{
                 "level_synonym": ["armed home", "low security", "home and guarding", "level 1", "home", "SL1"],
                 "lang": "en"
-                }, ARMHOME
+                }, Armhome
               ]
             },{
               "level_name": "Arm Away",
               "level_values": [{
                 "level_synonym": ["armed away", "high security", "away and guarding", "level 2", "away", "SL2"],
                 "lang": "en"
-                }, ARMAWAY
+                }, Armaway
               ]
             }],
             "ordered": True
@@ -623,7 +619,7 @@ class ArmDisarmTrait(_Trait):
                 self.state.state = "Normal"
                 url = DOMOTICZ_URL + "/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=" + seccode
                 
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 
 @register_trait
 class VolumeTrait(_Trait):
@@ -660,7 +656,7 @@ class VolumeTrait(_Trait):
         level = params['volumeLevel']
 
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(level * self.state.maxdimlevel / 100))
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 
     def _execute_volume_relative(self, params):
         # This could also support up/down commands using relativeSteps
@@ -668,7 +664,7 @@ class VolumeTrait(_Trait):
         current = level = self.state.level
 
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(current + relative * self.state.maxdimlevel / 100))
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
       
     def execute(self, command, params):
         """Execute a volume command."""
@@ -691,7 +687,6 @@ class CameraStreamTrait(_Trait):
         COMMAND_GET_CAMERA_STREAM
     ]
 
-    url = DOMOTICZ_IDX_CAMERAURL
     stream_info = None
 
     @staticmethod
@@ -711,15 +706,16 @@ class CameraStreamTrait(_Trait):
 
     def query_attributes(self):
         """Return camera stream attributes."""
-        idx = self.state.id
-        url = self.url[idx]
+        for camUrl, idx in enumerate(configuration['Camera_Stream']['Cameras']['Idx']):
+            if idx in self.state.id:
+                url = configuration['Camera_Stream']['Cameras']['Camera_URL'][camUrl]
         self.stream_info = {'cameraStreamAccessUrl': url}
         return self.stream_info or {}
 
     def execute(self, command, params):
         """Execute a get camera stream command."""
         return
-
+    
 @register_trait
 class TooglesTrait(_Trait):
     """Trait to set toggles.
@@ -755,6 +751,7 @@ class TooglesTrait(_Trait):
 
         return {"availableToggles": levels}
 
+
     def query_attributes(self):
         """Return current modes."""
         levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
@@ -784,8 +781,8 @@ class TooglesTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
-        # print(url)
-        r = requests.get(url, auth=(U_NAME_DOMOTICZ, U_PASSWD_DOMOTICZ))
+        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        
         if protected:
             status = r.json()
             err = status.get('status')

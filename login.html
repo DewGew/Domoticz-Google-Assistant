@@ -1,55 +1,198 @@
 <html>
 
 <head>
+<title>Domoticz Google Assistant</title>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=0.86, maximum-scale=3.0, minimum-scale=0.86">
-<link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
-<link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.indigo-pink.min.css">
-<script defer src="https://code.getmdl.io/1.3.0/material.min.js"></script>
 
 <style>
-.mdl-layout {
-	align-items: center;
-  justify-content: center;
+body{
+	margin:0;
+	color:#fff;
+	background:#c8c8c8;
+	font:600 16px/18px 'Open Sans',sans-serif;
 }
-.mdl-layout__content {
-	padding: 24px;
-	flex: none;
+*,:after,:before{box-sizing:border-box}
+.clearfix:after,.clearfix:before{content:'';display:table}
+.clearfix:after{clear:both;display:block}
+a{color:inherit;text-decoration:none}
+
+.login-wrap{
+	width:100%;
+	margin:auto;
+	max-width:525px;
+	min-height:670px;
+	position:relative;
+	background:url(https://d1e0w1wydjks4d.cloudfront.net/wp-content/uploads/2018/11/26060521/google-home-ecosystem.jpg) no-repeat center;
+	box-shadow:0 12px 15px 0 rgba(0,0,0,.24),0 17px 50px 0 rgba(0,0,0,.19);
+}
+.login-html{
+	width:100%;
+	height:100%;
+	position:absolute;
+	padding:90px 70px 50px 70px;
+	background:rgba(0,150,136,.7);
+}
+.login-html .sign-in-htm,
+.login-html .sign-up-htm{
+	top:0;
+	left:0;
+	right:0;
+	bottom:0;
+	position:absolute;
+	transform:rotateY(180deg);
+	backface-visibility:hidden;
+	transition:all .4s linear;
+}
+.login-html .sign-in,
+.login-html .sign-up,
+.login-form .group .check{
+	display:none;
+}
+.login-html .tab,
+.login-form .group .label,
+.login-form .group .button{
+	text-transform:uppercase;
+}
+.login-html .tab{
+	font-size:22px;
+	margin-right:15px;
+	padding-bottom:5px;
+	margin:0 15px 10px 0;
+	display:inline-block;
+	border-bottom:2px solid transparent;
+}
+.login-html .sign-in:checked + .tab,
+.login-html .sign-up:checked + .tab{
+	color:#fff;
+	border-color:#009688;
+}
+.login-form{
+	min-height:345px;
+	position:relative;
+	perspective:1000px;
+	transform-style:preserve-3d;
+}
+.login-form .group{
+	margin-bottom:15px;
+}
+.login-form .group .label,
+.login-form .group .input,
+.login-form .group .button{
+	width:100%;
+	color:#fff;
+	display:block;
+}
+.login-form .group .input,
+.login-form .group .button{
+	border:none;
+	padding:15px 20px;
+	border-radius:25px;
+	background:rgba(255,255,255,.4);
+}
+.login-form .group input[data-type="password"]{
+	text-security:circle;
+	-webkit-text-security:circle;
+}
+.login-form .group .label{
+	color:#aaa;
+	font-size:12px;
+}
+.login-form .group .button{
+	background:#009688;
+}
+.login-form .group label .icon{
+	width:15px;
+	height:15px;
+	border-radius:2px;
+	position:relative;
+	display:inline-block;
+	background:rgba(255,255,255,.1);
+}
+.login-form .group label .icon:before,
+.login-form .group label .icon:after{
+	content:'';
+	width:10px;
+	height:2px;
+	background:#fff;
+	position:absolute;
+	transition:all .2s ease-in-out 0s;
+}
+.login-form .group label .icon:before{
+	left:3px;
+	width:5px;
+	bottom:6px;
+	transform:scale(0) rotate(0);
+}
+.login-form .group label .icon:after{
+	top:6px;
+	right:0;
+	transform:scale(0) rotate(0);
+}
+.login-form .group .check:checked + label{
+	color:#fff;
+}
+.login-form .group .check:checked + label .icon{
+	background:#009688;
+}
+.login-form .group .check:checked + label .icon:before{
+	transform:scale(1) rotate(45deg);
+}
+.login-form .group .check:checked + label .icon:after{
+	transform:scale(1) rotate(-45deg);
+}
+.login-html .sign-in:checked + .tab + .sign-up + .tab + .login-form .sign-in-htm{
+	transform:rotate(0);
+}
+.login-html .sign-up:checked + .tab + .login-form .sign-up-htm{
+	transform:rotate(0);
+}
+
+.hr{
+	height:2px;
+	margin:60px 0 50px 0;
+	background:rgba(255,255,255,.2);
+}
+.foot-lnk{
+	text-align:center;
 }
 </style>
 
 </head>
-
-<div class="mdl-layout mdl-js-layout mdl-color--grey-100">
-	<main class="mdl-layout__content">
-		<div class="mdl-card mdl-shadow--6dp">
-			<div class="mdl-card__title mdl-color--primary mdl-color-text--white">
-				<h2 class="mdl-card__title-text"><center>Domoticz Google Assistant Login page</center></h2>
+<div class="login-wrap">
+	<div class="login-html">
+        <h2 class="label">Domoticz Google Assistant</h2>
+		<input id="tab-1" type="radio" name="tab" class="sign-in" checked><label for="tab-1" class="tab">Sign In</label>
+		<input id="tab-2" type="radio" name="tab" class="sign-up"><label for="tab-2" class="tab"></label>
+		<div class="login-form">
+        <form action='/login' method='post' id='loginform'>
+			<div class="sign-in-htm">
+				<div class="group">
+					<label for="username" class="label">Username</label>
+					<input id="username" type="text" class="input">
+				</div>
+				<div class="group">
+					<label for="userpass" class="label">Password</label>
+					<input id="userpass" type="password" class="input" data-type="password">
+				</div>
+                        <input type="hidden" name="redirect"></input>
+                        <input type="hidden" name="client_id"></input>
+                        <input type="hidden" name="redirect_uri"></input>
+                        <input type="hidden" name="state"></input>
+                        <input type="hidden" name="username"></input>
+                        <input type="hidden" name="password"></input>
+				<div class="group">
+					<input type="submit" class="button" value="Sign In" OnClick="formSubmit()">
+				</div>
+				<div class="hr"></div>
+				<div class="foot-lnk">
+					<a href="https://github.com/DewGew/Domoticz-Google-Assistant">Google Assistant for Domoticz on Github</a>
+                    <p class="label">Version 1.3.0</p>
+				</div>
 			</div>
-	  	<div class="mdl-card__supporting-text">
-				<form action='/login' method='post' id='loginform'>
-					<div class="mdl-textfield mdl-js-textfield">
-						<input class="mdl-textfield__input" type="text" id="username" />
-						<label class="mdl-textfield__label" for="username">Username</label>
-					</div>
-					<div class="mdl-textfield mdl-js-textfield">
-						<input class="mdl-textfield__input" type="password" id="userpass" />
-						<label class="mdl-textfield__label" for="userpass">Password</label>
-					</div>
-                    
-                        <input type="hidden" name="redirect">
-                        <input type="hidden" name="client_id">
-                        <input type="hidden" name="redirect_uri">
-                        <input type="hidden" name="state" />
-                        <input type="hidden" name="username">
-                        <input type="hidden" name="password" />
-				</form>
-			</div>
-			<div class="mdl-card__actions mdl-card--border mdl-typography--text-right">
-				<button class="mdl-button mdl-button--colored mdl-js-button mdl-js-ripple-effect" OnClick="formSubmit()">Log in</button>
-			</div>
+            </form>
 		</div>
-	</main>
+	</div>
 </div>
 
 	<script>

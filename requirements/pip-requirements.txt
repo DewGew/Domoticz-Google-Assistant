@@ -1,0 +1,9 @@
+certifi>=2019.9.11
+chardet>=3.0.4
+future>=0.18.2
+idna>=2.8
+pkg-resources>=0.0.0
+pyngrok>=1.4.2
+PyYAML>=5.1.2
+requests>=2.22.0
+urllib3>=1.25.7
