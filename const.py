@@ -1,44 +1,8 @@
 # -*- coding: utf-8 -*-
-import os
-import yaml
-
-FILE_PATH = os.path.abspath(__file__)
-FILE_DIR = os.path.split(FILE_PATH)[0]
-CONFIGFILE = 'config.yaml'
-
-def readFile(filename):
-    """Read file."""
-    file = open(os.path.join(FILE_DIR, filename), 'r+')
-    code = file.read()
-    file.close()
-    return code
-        
-def saveFile(filename, content):
-    """Read file."""
-    file = open(os.path.join(FILE_DIR, filename), 'w+')
-    code = file.read()
-    file.write(content)
-    file.close()
-    return code
-
-try:
-    print('Loading configuration...')
-    with open(os.path.join(FILE_DIR,CONFIGFILE), 'r') as conf:
-        configuration = yaml.safe_load(conf)      
-except yaml.YAMLError as exc:
-    print('ERROR: Please check config.yaml')
-except FileNotFoundError as err:
-    print('No config.yaml found...')
-    print('Loading default configuration...')
-    content = readFile('default_config')
-    print('Create config.yaml...')
-    saveFile(CONFIGFILE, content)
-    with open(os.path.join(FILE_DIR,CONFIGFILE), 'r') as conf:
-        configuration = yaml.safe_load(conf)
-    
+from helpers import configuration
                     
 """Constants for Google Assistant."""
-VERSION = '1.3.0'
+VERSION = '1.3.1'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
 REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
@@ -238,6 +202,9 @@ TEMPLATE = """
       </li>
       <li class="nav-item">
         <a data-toggle="tab" class="nav-link" href="#menu4">Help</a>
+      </li>
+      <li class="nav-item">
+        <a data-toggle="tab" class="nav-link" href="#menu5">Log</a>
       </li>
     </ul>
     </div>
@@ -470,6 +437,20 @@ TEMPLATE = """
             sudo systemctl restart dzga.service
             </code><br /></p>
         </div>
+        <div id="menu5" class="tab-pane fade" role="tabpanel">
+            <br>
+            <h5>Logs</h5>
+            <textarea id="logs" rows="20" cols="150" style="font-size: 10pt">{logs}</textarea>
+            <br>
+            <div class="row">
+              <div class="col">
+              <form action="/settings" method="post">
+                <button class="btn btn-raised btn-primary" name="reload" value="backup">Reload log</button>
+               </form>
+               <p class="text-muted">Restart server to activate your changes</p>
+              </div>
+            </div>
+        </div>
     </div>
     </div>
     
@@ -500,9 +481,8 @@ TEMPLATE = """
 
     }}
     if (typeof x !== "undefined"){{
-        document.getElementById("deviceList_idx").innerHTML = x.replace('undefined','');
+        $('#deviceList_idx').append(x.replace('undefined',''));
     }}else{{
-        document.getElementById("deviceList_idx").innerHTML = x;
         document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
         document.getElementById("message").innerHTML = "Connection to Domoticz refused!. Check configuration.";
         $('#messageModal').modal('show')
@@ -519,7 +499,7 @@ TEMPLATE = """
      }});
      
     document.getElementById("save").value = document.getElementById("code").value
-
+    
     }});</script>    
   </body>
 </html>
