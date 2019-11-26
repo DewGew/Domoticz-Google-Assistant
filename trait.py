@@ -130,7 +130,7 @@ class OnOffTrait(_Trait):
             response['on'] = False
         else:
             response['on'] = self.state.state != 'Off'
-        if self.state.battery <= LOW_BATTERY_LIMIT:
+        if domain != groupDOMAIN and battLevel <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
         
         return response
