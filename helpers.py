@@ -9,6 +9,21 @@ FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
 CONFIGFILE = 'config.yaml'
 
+def readFile(filename):
+    """Read file."""
+    file = open(os.path.join(FILE_DIR, filename), 'r+')
+    code = file.read()
+    file.close()
+    return code
+        
+def saveFile(filename, content):
+    """Read file."""
+    file = open(os.path.join(FILE_DIR, filename), 'w+')
+    code = file.read()
+    file.write(content)
+    file.close()
+    return code
+
 try:
     print ('Loading configuration...')
     with open(os.path.join(FILE_DIR,CONFIGFILE), 'r') as conf:
@@ -124,18 +139,3 @@ def getTunnelUrl():
     """Get ngrok tunnel url"""
     tunnels = ngrok.get_tunnels()
     return tunnels
- 
-def readFile(filename):
-    """Read file."""
-    file = open(os.path.join(FILE_DIR, filename), 'r+')
-    code = file.read()
-    file.close()
-    return code
-        
-def saveFile(filename, content):
-    """Read file."""
-    file = open(os.path.join(FILE_DIR, filename), 'w+')
-    code = file.read()
-    file.write(content)
-    file.close()
-    return code 
