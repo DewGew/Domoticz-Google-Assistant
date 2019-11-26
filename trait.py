@@ -2,14 +2,13 @@
 
 import requests
 import json
-import base64
-from const import configuration    
+import base64   
 from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
     climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
     securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN,  ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
 
-from helpers import SmartHomeError
+from helpers import SmartHomeError, configuration
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
     
@@ -122,14 +121,15 @@ class OnOffTrait(_Trait):
     def query_attributes(self):
         """Return OnOff query attributes."""
         domain = self.state.domain
+        
         response = {}
         if domain == pushDOMAIN:
             response['on'] = False
         else:
             response['on'] = self.state.state != 'Off'
-        if self.state.battery <= configuration['Low_battery_limit']:
+        if domain != groupDOMAIN and self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
-        
+
         return response
     
     def execute(self, command, params):
@@ -146,7 +146,6 @@ class OnOffTrait(_Trait):
             if protected:
                 url = url + '&passcode=' + configuration['switchProtectionPass']
 
-            # print(url)
             r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
             if protected:
                 status = r.json()
@@ -189,7 +188,6 @@ class SceneTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
@@ -247,7 +245,6 @@ class BrightnessTrait(_Trait):
         
     def execute(self, command, params):
         """Execute a brightness command."""
-        #domain = self.state.domain
         protected = self.state.protected
                     
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(int(params['brightness'] * self.state.maxdimlevel / 100))
@@ -255,7 +252,6 @@ class BrightnessTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
@@ -327,7 +323,6 @@ class OpenCloseTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
@@ -408,9 +403,7 @@ class TemperatureSettingTrait(_Trait):
         if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(params['thermostatTemperatureSetpoint'])
 
-        # print(url)
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
-        # print(r.status_code)
           
 @register_trait
 class LockUnlockTrait(_Trait):
@@ -470,7 +463,6 @@ class LockUnlockTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
             
-        # print(url)
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
@@ -788,7 +780,6 @@ class TooglesTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
-        # print(url)
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         if protected:
             status = r.json()
