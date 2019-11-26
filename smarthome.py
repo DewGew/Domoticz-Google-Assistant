@@ -12,21 +12,20 @@ import os
 import sys
 import time
 
-from helpers import (SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl)
+from helpers import (configuration, CONFIGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
    
-from const import (readFile, saveFile, configuration, FILE_DIR, CONFIGFILE, DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE,
-    ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL, Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL,
-    DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN,
-    screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
+from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
+    Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN,
+    lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
     securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, PUBLIC_URL)
 
-print ("The system uptime is:", uptime())
+print("The system uptime is:", uptime())
 
-logUrl = DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION
 try:
-    r = requests.get(logUrl, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+    r = requests.get(DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
+        auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
-    print('Connection to Domoticz refused!. Check configuration')
+    logger.error('Connection to Domoticz refused!. Check configuration')
 
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
@@ -116,13 +115,13 @@ def getDeviceConfig(descstr):
                             varvalue = False
                         cfgdict[varname]=varvalue
         except:
-            print('Error parsing device configuration from Domoticz device description:', rawconfig[0])
+            logger.error('Error parsing device configuration from Domoticz device description:', rawconfig[0])
             return None
         return cfgdict
     return None
             
 def getAog(device):
-    getSettings()
+    
     domain = AogGetDomain(device)
     if domain == None:
         return None
@@ -190,7 +189,7 @@ def getDevices(type = "all", id = "0"):
     url = ""
     if "all" == type:  
         url = DOMOTICZ_GET_ALL_DEVICES_URL
-    elif "scene" == type:  
+    elif "scene" == type:
         url = DOMOTICZ_GET_SCENES_URL
     elif "id" == type:  
         url = DOMOTICZ_GET_ONE_DEVICE_URL + id
@@ -209,7 +208,7 @@ def getDevices(type = "all", id = "0"):
     list.sort(key=takeSecond)
     deviceList = json.dumps(list)
     # for y in list:
-        # print(y)
+        # logger.debug(y)
             
 def takeSecond(elem):
     return elem[1]
@@ -240,9 +239,9 @@ def getSettings():
 
 def restartServer():
     """Restart.""" 
-    print()
-    print("Restart server")
-    print()
+    logger.info(' ')
+    logger.info("Restart server")
+    logger.info(' ')
 
     os.execv(sys.executable, ['python'] + sys.argv)
                 
@@ -384,9 +383,10 @@ class _GoogleEntity:
 
         if self.state.domain == groupDOMAIN or self.state.domain == sceneDOMAIN:
             getDevices('scene')
+            getSettings()
         else:
             getDevices('id', self.state.id)
-        
+            getSettings()      
         
         
 class SmartHomeReqHandler(OAuthReqHandler):
@@ -416,7 +416,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return {'requestId': request_id, 'payload': {'errorCode': err.code}}
             
         except Exception as e:
-            print(e)
+            logger.error(e)
             return {'requestId': request_id, 'payload': {'errorCode': ERR_UNKNOWN_ERROR}}
         
         
@@ -434,20 +434,17 @@ class SmartHomeReqHandler(OAuthReqHandler):
     
         message = json.loads(s.body)
 
-        print("Request: -->")
-        print(json.dumps(message, indent=2, sort_keys=False))
+        logger.info("Request: " + json.dumps(message, indent=2, sort_keys=False))
         response = self.smarthome_process(message, token)
         
         try:
             if 'errorCode' in response['payload']:
-                print('Error handling message %s: %s' % (message, response['payload']))
+                logger.info('Error handling message %s: %s' % (message, response['payload']))
         except:
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
         
-
-        print("Response: -->")
-        print(json.dumps(response, indent=2, sort_keys=False))
+        logger.info("Response: " + json.dumps(response, indent=2, sort_keys=False))
     
     def smarthome(self, s):
         s.send_message(500, "not supported")
@@ -479,7 +476,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         try:
             getDevices()           
         except Exception as e:
-            print('Connection to Domoticz refused!. Check configuration')
+            logger.error('Connection to Domoticz refused!. Check configuration')
             
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
             tunnels = getTunnelUrl()
@@ -496,8 +493,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         message = ''
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(CONFIGFILE)
+        logs = readFile('dzga.log')
 		
-        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
+        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
         s.send_message(200, template)     
 
@@ -509,9 +507,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
             saveFile(CONFIGFILE, codeToSave)
 
             message = 'Config saved'
+            logger.info(message)
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
+            logs = readFile('dzga.log')
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
             s.send_message(200, template)
 
@@ -520,9 +520,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
             saveFile('config.yaml.bak', codeToSave)
 
             message = 'Backup saved'
+            logger.info(message)
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
+            logs = readFile('dzga.log')
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
             s.send_message(200, template)
         
@@ -530,18 +532,28 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Restart Server, please wait!'
             meta = '<meta http-equiv="refresh" content="5">'
             code = ''
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
+            logs = ''
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
             s.send_message(200, template)
             restartServer()
 
         if (s.form.get("sync")):
             r = self.forceDevicesSync()
-            time.sleep(2)
+            time.sleep(1)
             message = 'Devices syncronized'
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url)
+            logs = readFile('dzga.log')
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            s.send_message(200, template)
+        
+        if (s.form.get("reload")):
+            message = ''
+            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
+            code = readFile(CONFIGFILE)
+            logs = readFile('dzga.log')
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
             s.send_message(200, template)
    
     def smarthome_sync(self, payload, token):
@@ -550,6 +562,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         devices = []
         getDevices() #sync all devices
+        getSettings()
         
         for state in aogDevs.values():
             # if state.entity_id in CLOUD_NEVER_EXPOSED_ENTITIES:
@@ -578,6 +591,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         devices = {}
         getDevices()
+        getSettings()
         
         for device in payload.get('devices', []):
             devid = device['id']
@@ -613,6 +627,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 if entity_id not in entities:
                     if len(aogDevs) == 0:
                         getDevices()
+                        getSettings()
                      
                     state = aogDevs.get(entity_id, None)
                     if state is None:
@@ -626,10 +641,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     
                 except SmartHomeError as err:
                     results[entity_id] = {'ids': [entity_id], 'status': 'ERROR', 'errorCode': err.code}
-                    print(err)
+                    logger.error(err)
                 except SmartHomeErrorNoChallenge as err:
                     results[entity_id] = {'ids': [entity_id], 'status': 'ERROR', 'errorCode': err.code, 'challengeNeeded': {'type': err.desc}}
-                    print(err)
+                    logger.error(err)
                     
         final_results = list(results.values())
 
