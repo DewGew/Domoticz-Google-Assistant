@@ -6,9 +6,11 @@ import socketserver
 from server import *
 from auth import *
 from smarthome import *
-from const import configuration, VERSION, PUBLIC_URL
+from helpers import configuration
+from const import VERSION, PUBLIC_URL
 
 tunnel = PUBLIC_URL
+
 class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     pass
     
@@ -21,40 +23,40 @@ def startServer():
         #Create a web server and define the handler to manage the
         #incoming request
         server = ThreadingSimpleServer(('', configuration['port_number']), AogServer)
-        print ()
-        print ('Started DZGA v' + VERSION + ' server at port ' + str(configuration['port_number']))
-        print ()
-        print ('   Visit http://localhost:' + str(configuration['port_number']) + '/settings to access the user inteface')
-        print ()
+        logger.info ('========')
+        logger.info ('Started DZGA v' + VERSION + ' server at port ' + str(configuration['port_number']))
+        logger.info (' ')
+        logger.info ('   Visit http://localhost:' + str(configuration['port_number']) + '/settings to access the user inteface')
+        logger.info (' ')
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
             try:
                 public_url = ngrok.connect(configuration['port_number'])
                 tunnel = public_url.replace("http", "https")
             except Exception as e:
-                print ('Ngrok was unable to start')
-                print (e)
+                logger.error ('Ngrok was unable to start')
+                logger.error (e)
                 
-        print ('=====')
-        print ('Visit the Actions on Google console at http://console.actions.google.com')
-        print ('Under Develop section, replace the fulfillment URL in Actions with:')
-        print ('   ' + tunnel + '/smarthome')
-        print ()
-        print ('In Account linking, set the Authorization URL to:')
-        print ('  ' + tunnel + '/oauth')
-        print ()
-        print ('Then set the Token URL to:')
-        print ('  ' + tunnel + '/token')
-        print ()
-        print ('Finally press \'SAVE\' and then \'TEST\' button')
+        logger.info('=========')
+        logger.info ('Visit the Actions on Google console at http://console.actions.google.com')
+        logger.info ('Under Develop section, replace the fulfillment URL in Actions with:')
+        logger.info ('   ' + tunnel + '/smarthome')
+        logger.info (' ')
+        logger.info ('In Account linking, set the Authorization URL to:')
+        logger.info ('  ' + tunnel + '/oauth')
+        logger.info (' ')
+        logger.info ('Then set the Token URL to:')
+        logger.info ('  ' + tunnel + '/token')
+        logger.info (' ')
+        logger.info ('Finally press \'SAVE\' and then \'TEST\' button')
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
-            print ('** NOTE: Ngrok assigns random urls. When server restart the server gets a new url')
-        print ()
+            logger.info ('** NOTE: Ngrok assigns random urls. When server restart the server gets a new url')
+        logger.info ('=======')
         #Wait forever for incoming http requests
         server.serve_forever()
 
     except (KeyboardInterrupt, SystemExit):
         print()
-        print ('^C received, shutting down the web server')
+        logger.info ('^C received, shutting down the web server')
         server.socket.close()
 
 if __name__ == "__main__":
