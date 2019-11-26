@@ -26,7 +26,10 @@ def startServer():
         logger.info ('========')
         logger.info ('Started DZGA v' + VERSION + ' server at port ' + str(configuration['port_number']))
         logger.info (' ')
-        logger.info ('   Visit http://localhost:' + str(configuration['port_number']) + '/settings to access the user inteface')
+        if 'userinterface' in configuration and configuration['userinterface'] == True:
+            logger.info ('   Visit http://localhost:' + str(configuration['port_number']) + '/settings to access the user interface')
+        else:
+            logger.info ('   Configure your settings in config.yaml in Domoticz-Google-Assistant folder')
         logger.info (' ')
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
             try:
@@ -42,10 +45,10 @@ def startServer():
         logger.info ('   ' + tunnel + '/smarthome')
         logger.info (' ')
         logger.info ('In Account linking, set the Authorization URL to:')
-        logger.info ('  ' + tunnel + '/oauth')
+        logger.info ('   ' + tunnel + '/oauth')
         logger.info (' ')
         logger.info ('Then set the Token URL to:')
-        logger.info ('  ' + tunnel + '/token')
+        logger.info ('   ' + tunnel + '/token')
         logger.info (' ')
         logger.info ('Finally press \'SAVE\' and then \'TEST\' button')
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
