@@ -22,6 +22,8 @@ Domoticz-Google-Assistant delivers:
 Please feel free to modify it, extend and improve
 
 ## RPI/Ubuntu Installation with autostart
+This installs the dzga in a virual enviroment
+
 Just open a terminal window and execute this command. Thats it!
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
@@ -39,6 +41,14 @@ To update run installer again:
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
 ```
+To run manually
+```
+cd /home/${USER}/
+sudo systemctl stop dzga #If service is running
+source Domoticz-Google-Assistant/env/bin/activate
+python3 Domoticz-Google-Assistant
+```
+
 ## Manual Installation
 Open a terminal window and execute those commands. NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
 ```bash
