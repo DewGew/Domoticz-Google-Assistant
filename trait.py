@@ -481,6 +481,8 @@ class ColorSettingTrait(_Trait):
     commands = [
         COMMAND_COLOR_ABSOLUTE
     ]
+    kelvinTempMin = 1700
+    kelvinTempMax = 6500
 
     @staticmethod
     def supported(domain, features):
@@ -496,8 +498,8 @@ class ColorSettingTrait(_Trait):
         # Other colorModel is hsv
         return {'colorModel': 'rgb',
                 'colorTemperatureRange': {
-                    'temperatureMinK': 1700,
-                    'temperatureMaxK': 6500}
+                    'temperatureMinK': self.kelvinTempMin,
+                    'temperatureMaxK': self.kelvinTempMax}
                 ,}
 
     def query_attributes(self):
@@ -510,24 +512,31 @@ class ColorSettingTrait(_Trait):
             color_decimal = color_rgb["r"] * 65536 + color_rgb["g"] * 256 + color_rgb["b"]
           
             response['color'] = {'spectrumRGB': color_decimal}
+            
+            if color_rgb["m"] == 2:
+                colorTemp = (color_rgb["t"] * (255/100)) * 10
+                print("Color temp is " + str(round(colorTemp)))
+                response['color'] = {'temperatureK': round(colorTemp)}
         except ValueError:
-          response['color'] = ()
+          response['color'] = {}
        
         return response
 
-    def can_execute(self, command, params):
-        """Test if command can be executed."""
-        return (command in self.commands and
-                'spectrumRGB' in params.get('color', {}))
-
     def execute(self, command, params):
         """Execute a color setting command."""
-        
-        #Convert decimal to hex
-        setcolor = params['color']
-        color_hex = hex(setcolor['spectrumRGB'])[2:]
-        
-        url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + str(color_hex)
+        if "temperature" in params["color"]:
+            tempRange = self.kelvinTempMax - self.kelvinTempMin
+            kelvinTemp = params['color']['temperature']
+            setTemp = ((kelvinTemp - self.kelvinTempMin) / tempRange) * 100
+            
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=setkelvinlevel&idx=' + self.state.id + '&kelvin=' + str(round(setTemp))
+
+        elif "spectrumRGB" in params["color"]:      
+            #Convert decimal to hex
+            setcolor = params['color']
+            color_hex = hex(setcolor['spectrumRGB'])[2:]
+            
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + str(color_hex)
         
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         
