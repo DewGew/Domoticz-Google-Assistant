@@ -515,7 +515,6 @@ class ColorSettingTrait(_Trait):
             
             if color_rgb["m"] == 2:
                 colorTemp = (color_rgb["t"] * (255/100)) * 10
-                print("Color temp is " + str(round(colorTemp)))
                 response['color'] = {'temperatureK': round(colorTemp)}
         except ValueError:
           response['color'] = {}
