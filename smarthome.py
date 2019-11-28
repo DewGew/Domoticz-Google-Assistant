@@ -12,7 +12,7 @@ import os
 import sys
 import time
 
-from helpers import (configuration, CONFIGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
+from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
    
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
     Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN,
@@ -29,7 +29,6 @@ except Exception as e:
     
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
-
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -494,8 +493,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         message = ''
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(CONFIGFILE)
-        logs = readFile('dzga.log')
-        
+        logs = readFile(LOGFILE)
         template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
         s.send_message(200, template)     
@@ -511,7 +509,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.info(message)
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
-            logs = readFile('dzga.log')
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
             s.send_message(200, template)
@@ -524,7 +522,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.info(message)
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
-            logs = readFile('dzga.log')
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
 
             s.send_message(200, template)
@@ -545,7 +543,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Devices syncronized'
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
-            logs = readFile('dzga.log')
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
             s.send_message(200, template)
         
@@ -553,9 +551,23 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = ''
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
-            logs = readFile('dzga.log')
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
             s.send_message(200, template)
+            
+        if (s.form.get("deletelogs")):
+            logfile = os.path.join(FILE_DIR, LOGFILE)    
+            if os.path.exists(logfile):
+                f = open(logfile, 'w')
+                f.close()
+            logger.info('Logs removed by user')
+            message = ''
+            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
+            code = readFile(CONFIGFILE)
+            logs = readFile(LOGFILE)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            s.send_message(200, template)
+
    
     def smarthome_sync(self, payload, token):
         """Handle action.devices.SYNC request.
