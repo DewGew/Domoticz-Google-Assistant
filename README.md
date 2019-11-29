@@ -239,3 +239,32 @@ Selector switch:
 ```
 https://[YOUR REVERSE PROXY URL]/sync
 ```
+## Run as service for autorun at startup
+(If installation made manually)
+Open terminal or putty.
+```bash
+cd /etc/systemd/system/
+sudo nano dzga.service
+```
+Add this in nano ***(change 'pi' to match your user)***:
+```bash
+[Unit]
+Description=Domoticz-Google-Assistant Service
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/pi/Domoticz-Google-Assistant/
+StandardInput=tty-force
+User=pi
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+</syntaxhighlight>
+Then ctrl-x save and close. Enable service:
+<syntaxhighlight lang="bash">
+sudo systemctl enable dzga.service
+sudo systemctl start dzga.service
+```
