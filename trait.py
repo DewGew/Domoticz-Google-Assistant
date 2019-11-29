@@ -526,7 +526,7 @@ class ColorSettingTrait(_Trait):
         if "temperature" in params["color"]:
             tempRange = self.kelvinTempMax - self.kelvinTempMin
             kelvinTemp = params['color']['temperature']
-            setTemp = ((kelvinTemp - self.kelvinTempMin) / tempRange) * 100
+            setTemp = 100 - (((kelvinTemp - self.kelvinTempMin) / tempRange) * 100)
             
             url = DOMOTICZ_URL + '/json.htm?type=command&param=setkelvinlevel&idx=' + self.state.id + '&kelvin=' + str(round(setTemp))
 
