@@ -22,7 +22,7 @@ Domoticz-Google-Assistant delivers:
 Please feel free to modify it, extend and improve
 
 ## RPI/Ubuntu Installation with autostart
-This installs the dzga in a virual enviroment
+This installs the dzga in a virtual enviroment.
 
 Just open a terminal window and execute this command. Thats it!
 ```bash
@@ -41,7 +41,7 @@ To update run installer again:
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
 ```
-To run manually
+To run manually:
 ```
 cd /home/${USER}/
 sudo systemctl stop dzga #If service is running
