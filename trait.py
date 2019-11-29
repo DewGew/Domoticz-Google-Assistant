@@ -502,6 +502,7 @@ class ColorSettingTrait(_Trait):
                     'temperatureMaxK': self.kelvinTempMax}
                 ,}
 
+
     def query_attributes(self):
         """Return color setting query attributes."""
         response = {}
@@ -520,7 +521,6 @@ class ColorSettingTrait(_Trait):
           response['color'] = {}
        
         return response
-
     def execute(self, command, params):
         """Execute a color setting command."""
         if "temperature" in params["color"]:
