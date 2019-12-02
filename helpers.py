@@ -2,7 +2,6 @@
 
 import os
 import yaml
-from pyngrok import ngrok
 import logging
 
 FILE_PATH = os.path.abspath(__file__)
@@ -73,6 +72,12 @@ if 'logtofile' not in configuration or configuration['logtofile'] == False:
     if os.path.exists(logfile):
         logger.info('Delete log file')
         os.remove(logfile)
+if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
+    try:
+        from pyngrok import ngrok
+    except ImportError:
+        logger.info('Installing package pyngrok')
+        os.system('pip3 install pyngrok')
         
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
