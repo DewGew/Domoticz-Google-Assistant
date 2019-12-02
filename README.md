@@ -1,5 +1,7 @@
 # Domoticz-Google-Assistant
 
+<img src="dzga_UI.png" alt="drawing" width="600"/>
+
 Standalone implementation. It means that you can put this server wherever you want, even on another machine. You need to setup a project in Actions on Google Console. You find instructions below.
 
 Based on Pawcio's script at [domoticz forum](https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244)
@@ -22,7 +24,7 @@ Domoticz-Google-Assistant delivers:
 Please feel free to modify it, extend and improve
 
 ## RPI/Ubuntu Installation with autostart
-This installs the dzga in a virual enviroment
+This installs the dzga in a virtual enviroment.
 
 Just open a terminal window and execute this command. Thats it!
 ```bash
@@ -41,7 +43,7 @@ To update run installer again:
 ```bash
 bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
 ```
-To run manually
+To run manually:
 ```
 cd /home/${USER}/
 sudo systemctl stop dzga #If service is running
@@ -238,4 +240,33 @@ Selector switch:
 ## Force devices sync
 ```
 https://[YOUR REVERSE PROXY URL]/sync
+```
+## Run as service for autorun at startup
+(If installation made manually)
+Open terminal or putty.
+```bash
+cd /etc/systemd/system/
+sudo nano dzga.service
+```
+Add this in nano ***(change 'pi' to match your user)***:
+```bash
+[Unit]
+Description=Domoticz-Google-Assistant Service
+After=multi-user.target
+Conflicts=getty@tty1.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/python3 /home/pi/Domoticz-Google-Assistant/
+StandardInput=tty-force
+User=pi
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
+</syntaxhighlight>
+Then ctrl-x save and close. Enable service:
+<syntaxhighlight lang="bash">
+sudo systemctl enable dzga.service
+sudo systemctl start dzga.service
 ```

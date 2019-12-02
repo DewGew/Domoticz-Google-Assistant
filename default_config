@@ -2,6 +2,8 @@
 port_number: 3030
 # Debug, Info or Error
 loglevel: 'Info'
+# Write log to file: If 'false' logs will not show in the LOG tab.
+logtofile: false
 # Enable or disable UI
 userinterface: true
 

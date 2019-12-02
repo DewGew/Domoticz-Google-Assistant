@@ -2,7 +2,7 @@
 from helpers import configuration
                     
 """Constants for Google Assistant."""
-VERSION = '1.3.2'
+VERSION = '1.3.3'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
 REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
@@ -180,7 +180,7 @@ TEMPLATE = """
       </div>
     </div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="#settings">
+    <a class="navbar-brand" href="/settings">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Assistant_logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
         Domoticz Google Assistant</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -189,22 +189,22 @@ TEMPLATE = """
     <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="nav nav-tabs bg-primary">
       <li class="nav-item">
-        <a data-toggle="tab" class="nav-link active" href="#home">Control Panel</a>
+        <a data-toggle="tab" class="nav-link active" href="#home">Home</a>
       </li>
       <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu1">Device List</a>
+        <a data-toggle="tab" class="nav-link" href="#menu1">Devices</a>
       </li>
       <li class="nav-item">
         <a data-toggle="tab" class="nav-link" href="#menu2">Configuration</a>
       </li>
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu3">Setup Actions on Google</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Setup Actions on Google">
+        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">info</i></a>
       </li>
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu4">Help</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Help">
+        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">help</i></a>
       </li>
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu5">Log</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Log">
+        <a data-toggle="tab" class="nav-link" href="#menu5"><i class="material-icons">notes</i></a>
       </li>
     </ul>
     </div>
@@ -217,7 +217,7 @@ TEMPLATE = """
                 <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a> and the <a href="https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant">home assistant implementation</a></p>
                 <p class="lead">Domoticz-Google-Assistant delivers:<br />
                 <ul>
-                <li>the oauth authorization and smarthome endpoint for the google assistant</li>
+                <li>The oauth authorization and smarthome endpoint for the google assistant</li>
                 <li>Two-factor authentication pin for domoticz protected devices (works best with english language)</li>
                 <li>Acknowledgement with Yes or No. (works best with english language)</li>
                 <li>Arm Disarm Securitypanel (works best with english language)</li>
@@ -226,13 +226,14 @@ TEMPLATE = """
                 </ul>
                 </p>
                 <p class="lead">Please feel free to modify it, extend and improve</p>
+                <p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p>
                 <p class="lead">Report issues <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues">here</a></p>            
               </div>
               <div class="col-4">
                 <p>
                 <form action="/settings" method="post">
-                    <button class="btn btn-raised btn-primary" name="restart" value="restart">Restart Server</button>
-                    <button class="btn btn-raised btn-primary" name="sync" value="sync">Sync Devices</button>
+                    <button class="btn btn-raised btn-primary" name="restart" value="restart"><i class="material-icons" style="vertical-align: middle;">replay</i> Restart Server</button>
+                    <button class="btn btn-raised btn-primary" name="sync" value="sync"><i class="material-icons" style="vertical-align: middle;">sync</i> Sync Devices</button>
                 </form>
                 </p>
                 <p class="font-weight-bold text-success">{message}</p>
@@ -250,14 +251,16 @@ TEMPLATE = """
             </div>
             <div class="row">
               <div class="col">
-              <small class="text-muted">Sytem Uptime:<br>{uptime}</small><br>
-              <small class="text-muted">DZGA Version:<br>v""" + VERSION + """</small>
+                <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> Sytem Uptime:<br>{uptime}</small>
+              </div>
+              <div class="col">
+                <small class="text-muted">DZGA Version:<br>V""" + VERSION + """</small>
+              </div>
+              <div class="col">
               </div>
               <div class="col">
                 <small class="text-muted"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">Source Code at Github</a></small><br>
                 <small class="text-muted"><a href="https://www.domoticz.com/wiki/Google_Assistant#Domoticz_Google_Assistant_Server_python">Domoticz wiki</a></small>
-              </div>
-              <div class="col">
               </div>
             </div>
         </div>
@@ -280,14 +283,14 @@ TEMPLATE = """
         <div id="menu2" class="tab-pane fade" role="tabpanel">
             <br>
             <h5>Configuration</h5>
-            <textarea id="code">{code}</textarea>
+            <textarea id="code" style="width: 100%;">{code}</textarea>
             <br>
             <div class="row">
               <div class="col">
               <form action="/settings" method="post">
-                <button class="btn btn-raised btn-primary" name="save" id="save">Save</button>
-                <button class="btn btn-raised btn-primary" name="backup" value="backup">Backup Config</button>
-                <button class="btn btn-raised btn-primary" name="restart" value="restart">Restart Server</button>
+                <button class="btn btn-raised btn-primary" name="save" id="save"><i class="material-icons" style="vertical-align: middle;">save</i> Save</button>
+                <button class="btn btn-raised btn-primary" name="backup" value="backup"><i class="material-icons" style="vertical-align: middle;">save_alt</i> Backup Config</button>
+                <button class="btn btn-raised btn-primary" name="restart" value="restart"><i class="material-icons" style="vertical-align: middle;">replay</i> Restart Server</button>
                 </form>
                 <p class="text-muted">Restart server to activate your changes</p>
               </div>
@@ -344,9 +347,19 @@ TEMPLATE = """
         </div>
         <div id="menu4" class="tab-pane fade" role="tabpanel">
             <br>
-            <h5>Configuration Settings</h5>
+            <h5 id="top">Help</h5>
+            <p>
+            <a href="#C1">Configuration Settings</a><br>
+            <a href="#C2">Device Settings</a><br>
+            <a href="#C3">Stream camera to chromecast</a><br>
+            <a href="#C4">Other</a><br>
+            </p>
+            <h5 id="C1">Configuration Settings</h5>
+            
             <p><b>port_settings:</b><br>Set the local port. Default is <code>port_number: 3030</code></p>
             <p><b>loglevel:</b><br>Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></p> 
+            <p><b>logtofile:</b><br>Enable or disable write log to file. If 'false' logs will not show in the LOG tab.</p>
+            <p><b>userinterface:</b><br>Enable or disable UI</p>
             <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b>Ngrok assigns random urls. When server restart the server gets a new url</p>                   
             <p><b>auth_user/auth_pass:</b><br>Set the authorization username and password.</p>
 
@@ -360,7 +373,7 @@ TEMPLATE = """
             <p><b>Camera_Stream:</b><br>In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. Read more below.<p>
             <p><b>Armhome/Armaway:</b><br>User-friendly name for the arm level in your language.</p>
             
-            <h5>Device Settings</h5>
+            <h5 id="C2">Device Settings</h5>
 
             <p>Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
             <code><br />
@@ -374,7 +387,7 @@ TEMPLATE = """
             Every variable should be on a separate line.
             If there is no such configuration in the Domoticz device it will still try the config.</p>
 
-            <h5>Stream camera to chromecast</h5>
+            <h5 id="C3">Stream camera to chromecast</h5>
 
             <p>Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls. More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats. You need a to convert your video url to one of above. Try with ffmpeg or with a surveillance software system. Try out http://shinobi.video. <br />
             In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)</p>
@@ -399,7 +412,7 @@ TEMPLATE = """
             </code>
             </p>
             
-            <h5>Other</h5>
+            <h5 id="C4">Other</h5>
             
             <h6>Connect smart home devices to your Google Home device</h6>
             <ul>
@@ -437,18 +450,20 @@ TEMPLATE = """
             <code>
             sudo systemctl restart dzga.service
             </code><br /></p>
+            <p><a href="#top">Goto Top</a></p>
         </div>
         <div id="menu5" class="tab-pane fade" role="tabpanel">
             <br>
             <h5>Logs</h5>
-            <textarea id="logs" rows="20" cols="150" style="font-size: 10pt">{logs}</textarea>
+            <textarea id="logs" rows="20" style="font-size: 10pt; width: 100%;">{logs}</textarea>
             <br>
             <div class="row">
               <div class="col">
               <form action="/settings" method="post">
-                <button class="btn btn-raised btn-primary" name="reload" value="backup">Reload log</button>
+                <button class="btn btn-raised btn-primary" name="reload" value="reload"><i class="material-icons" style="vertical-align: middle;">sync</i> Reload logs</button>
+                <button class="btn btn-raised btn-primary" name="deletelogs" value="deletelogs"><i class="material-icons" style="vertical-align: middle;">delete</i> Remove logs</button>
                </form>
-               <p class="text-muted">Restart server to activate your changes</p>
+               <p class="text-muted">Log file will be overwrite when dzga server restarts</p>
               </div>
             </div>
         </div>
@@ -469,37 +484,40 @@ TEMPLATE = """
         var config = {conf}
         
         $('body').bootstrapMaterialDesign();
+        $(function () {{
+          $('[data-toggle="tooltip"]').tooltip()
+        }})
         
         if (config.auth_user == 'admin' || config.auth_pass == 'admin'){{
             $('#messageModal').modal('show')
         }}
-    
-
-    var devicelist = {list}
-    var x,i = "";
-    for (i in devicelist){{
-        x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td></tr>";
-
-    }}
-    if (typeof x !== "undefined"){{
-        $('#deviceList_idx').append(x.replace('undefined',''));
-    }}else{{
-        document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
-        document.getElementById("message").innerHTML = "Connection to Domoticz refused!. Check configuration.";
-        $('#messageModal').modal('show')
-    }}
         
-    var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
-        lineNumbers: true,
-        mode: "yaml",
-        autoRefresh:true
-    }});
-    editor.on("change", function() {{
-        textTosave = editor.getValue();
-        document.getElementById("save").value = textTosave;
-     }});
-     
-    document.getElementById("save").value = document.getElementById("code").value
+
+        var devicelist = {list}
+        var x,i = "";
+        for (i in devicelist){{
+            x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td></tr>";
+
+        }}
+        if (typeof x !== "undefined"){{
+            $('#deviceList_idx').append(x.replace('undefined',''));
+        }}else{{
+            document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
+            document.getElementById("message").innerHTML = "Connection to Domoticz refused!. Check configuration.";
+            $('#messageModal').modal('show')
+        }}
+            
+        var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
+            lineNumbers: true,
+            mode: "yaml",
+            autoRefresh:true
+        }});
+        editor.on("change", function() {{
+            textTosave = editor.getValue();
+            document.getElementById("save").value = textTosave;
+         }});
+         
+        document.getElementById("save").value = document.getElementById("code").value
     
     }});</script>    
   </body>

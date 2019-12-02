@@ -2,19 +2,23 @@
 
 import os
 import yaml
-from pyngrok import ngrok
 import logging
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
 CONFIGFILE = 'config.yaml'
+LOGFILE = 'dzga.log'
 
 def readFile(filename):
     """Read file."""
-    file = open(os.path.join(FILE_DIR, filename), 'r+')
-    code = file.read()
-    file.close()
-    return code
+    try:
+        file = open(os.path.join(FILE_DIR, filename), 'r+')
+        content = file.read()
+        file.close()
+        return content
+    except:
+        content = " ** If you want to show the logs here, set 'logtofile: true' in configuration **"
+        return content
         
 def saveFile(filename, content):
     """Read file."""
@@ -57,12 +61,24 @@ ch = logging.StreamHandler()
 ch.setLevel(loglevel)
 logger.addHandler(ch)
 # Log to file
-formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', "%Y-%m-%d %H:%M:%S")
-fh = logging.FileHandler(os.path.join(FILE_DIR, 'dzga.log'), mode='w')
-fh.setLevel(loglevel)
-fh.setFormatter(formatter)
-logger.addHandler(fh)
-
+if 'logtofile' in configuration and configuration['logtofile'] == True:
+    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', "%Y-%m-%d %H:%M:%S")
+    fh = logging.FileHandler(os.path.join(FILE_DIR, LOGFILE), mode='w')
+    fh.setLevel(loglevel)
+    fh.setFormatter(formatter)
+    logger.addHandler(fh)
+if 'logtofile' not in configuration or configuration['logtofile'] == False:
+    logfile = os.path.join(FILE_DIR, LOGFILE)
+    if os.path.exists(logfile):
+        logger.info('Delete log file')
+        os.remove(logfile)
+if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
+    try:
+        from pyngrok import ngrok
+    except ImportError:
+        logger.info('Installing package pyngrok')
+        os.system('pip3 install pyngrok')
+        
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
     https://developers.google.com/actions/smarthome/create-app#error_responses
