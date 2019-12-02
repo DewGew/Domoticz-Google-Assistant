@@ -1,13 +1,14 @@
 import os
 import sys
 from pathlib import Path
-from pyngrok import ngrok
 import socketserver
 from server import *
 from auth import *
 from smarthome import *
 from helpers import configuration
 from const import VERSION, PUBLIC_URL
+if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
+    from pyngrok import ngrok
 
 tunnel = PUBLIC_URL
 
