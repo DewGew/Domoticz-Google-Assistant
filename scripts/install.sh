@@ -42,4 +42,4 @@ source Domoticz-Google-Assistant/env/bin/activate
 echo ""
 echo " Installing python packages..."
 echo ""
-pip install -r ${GIT_DIR}/requirements/pip-requirements.txt
+pip3 install -r ${GIT_DIR}/requirements/pip-requirements.txt
