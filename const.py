@@ -267,14 +267,15 @@ TEMPLATE = """
         <div id="menu1" class="tab-pane fade" role="tabpanel">
             <br>
             <h5>Device list</h5>
-            <small class="text-muted">List of devices the server recived from domoticz.<br>NOTE: If you don't see any device check your connection to domoticz.</small>
+            <small class="text-muted">List of devices the server recived from domoticz. Room and Nicknames added in configuration<br>NOTE: If you don't see any device check your connection to domoticz.</small>
             <table class="table">
               <thead>
                 <tr>
                   <th scope="col">Idx</th>
-                  <th scope="col">Name</th>
+                  <th scope="col">Name <small><i>(Nicknames)</i></small></th>
                   <th scope="col">Type</th>
                   <th scope="col">State</th>
+                  <th scope="col">Room</th>
                 </tr>
               </thead>
               <tbody id="deviceList_idx" ></tbody>
@@ -491,12 +492,18 @@ TEMPLATE = """
         if (config.auth_user == 'admin' || config.auth_pass == 'admin'){{
             $('#messageModal').modal('show')
         }}
-        
 
         var devicelist = {list}
-        var x,i = "";
+        
+        var x,i, nicknames = "";
         for (i in devicelist){{
-            x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td></tr>";
+            if (devicelist[i][4] == undefined) {{
+                devicelist[i][4] = " "
+            }}
+            if (devicelist[i][5] == undefined) {{
+                nicknames = " ";
+            }}else{{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}}
+            x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] +  nicknames + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td><td>" + devicelist[i][4] + "</td></tr>";
 
         }}
         if (typeof x !== "undefined"){{
