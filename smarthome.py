@@ -27,7 +27,7 @@ try:
 except Exception as e:
     logger.error('Connection to Domoticz refused!. Check configuration')
     
-update = False   
+update = 0   
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
 
@@ -36,14 +36,15 @@ def checkupdate():
         r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/master/const.py')
         text = r.text
         if VERSION not in text:
-            update = True
+            update = 1
             logger.info("========")
             logger.info("   New version is availible on Github!")
+            return update
     except Exception as e:
         logger.error('Connection to Github refused!. Check configuration')
          
 if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:        
-    checkupdate()         
+    update = checkupdate()         
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
