@@ -2,7 +2,7 @@
 from helpers import configuration
                     
 """Constants for Google Assistant."""
-VERSION = '1.3.3'
+VERSION = '1.3.4'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
 REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
@@ -511,6 +511,12 @@ TEMPLATE = """
             lineNumbers: true,
             mode: "yaml",
             autoRefresh:true
+        }});
+        editor.setOption("extraKeys", {{
+          Tab: function(cm) {{
+            var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+            cm.replaceSelection(spaces);
+          }}
         }});
         editor.on("change", function() {{
             textTosave = editor.getValue();
