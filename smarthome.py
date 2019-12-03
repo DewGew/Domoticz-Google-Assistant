@@ -39,7 +39,9 @@ def checkupdate():
             update = 1
             logger.info("========")
             logger.info("   New version is availible on Github!")
-            return update
+        else:
+            update = 0
+        return update
     except Exception as e:
         logger.error('Connection to Github refused!. Check configuration')
          
