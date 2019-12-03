@@ -587,7 +587,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.send_message(200, template)
             
         if (s.form.get("update")):
-            os.system('sudo bash ~/Domoticz-Google-Assistant/scripts/update.sh')
+            os.system('bash ~/Domoticz-Google-Assistant/scripts/update.sh')
             message = ''
             meta = '<meta http-equiv="refresh" content="5">'
             code = readFile(CONFIGFILE)
