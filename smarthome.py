@@ -512,7 +512,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(CONFIGFILE)
         logs = readFile(LOGFILE)
-        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
         s.send_message(200, template)     
 
@@ -528,7 +528,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
             logs = readFile(LOGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
 
@@ -541,7 +541,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
             code = readFile(CONFIGFILE)
             logs = readFile(LOGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
         
@@ -550,19 +550,19 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<meta http-equiv="refresh" content="5">'
             code = ''
             logs = ''
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
             restartServer()
 
         if (s.form.get("sync")):
             r = self.forceDevicesSync()
-            time.sleep(1)
+            time.sleep(0.5)
             message = 'Devices syncronized'
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
             logs = readFile(LOGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
         
         if (s.form.get("reload")):
@@ -570,7 +570,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
             logs = readFile(LOGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             
         if (s.form.get("deletelogs")):
@@ -583,7 +583,16 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
             logs = readFile(LOGFILE)
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
+            s.send_message(200, template)
+            
+        if (s.form.get("update")):
+            os.system('sudo bash ~/Domoticz-Google-Assistant/scripts/update.sh')
+            message = ''
+            meta = '<meta http-equiv="refresh" content="5">'
+            code = readFile(CONFIGFILE)
+            logs = readFile(LOGFILE)
+            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
 
    
