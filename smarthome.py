@@ -591,12 +591,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
             
         if (s.form.get("update")):
             os.system('bash ~/Domoticz-Google-Assistant/scripts/update.sh')
-            message = ''
+            message = 'Updated, Restarting Server, please wait!'
             meta = '<meta http-equiv="refresh" content="5">'
             code = readFile(CONFIGFILE)
             logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
+            restartServer()
 
    
     def smarthome_sync(self, payload, token):
