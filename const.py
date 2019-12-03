@@ -2,7 +2,7 @@
 from helpers import configuration
                     
 """Constants for Google Assistant."""
-VERSION = '1.3.3'
+VERSION = '1.3.4'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
 REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
@@ -254,9 +254,11 @@ TEMPLATE = """
                 <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> Sytem Uptime:<br>{uptime}</small>
               </div>
               <div class="col">
-                <small class="text-muted">DZGA Version:<br>V""" + VERSION + """</small>
+                <small class="text-muted">DZGA Version:<br>V""" + VERSION + """</small><br>
+                <small class="text-muted" id="updates"></small>
               </div>
-              <div class="col">
+              <div class="col" id="buttonUpdate">
+              
               </div>
               <div class="col">
                 <small class="text-muted"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">Source Code at Github</a></small><br>
@@ -555,6 +557,11 @@ TEMPLATE = """
     $(document).ready(function() {{
     
         var config = {conf}
+        var updates = {update}
+        if (updates) {{
+            document.getElementById("updates").innerHTML = "Updates are Availible.";
+            $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
+            }}
         
         $('body').bootstrapMaterialDesign();
         $(function () {{
@@ -590,6 +597,12 @@ TEMPLATE = """
             lineNumbers: true,
             mode: "yaml",
             autoRefresh:true
+        }});
+        editor.setOption("extraKeys", {{
+          Tab: function(cm) {{
+            var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+            cm.replaceSelection(spaces);
+          }}
         }});
         editor.on("change", function() {{
             textTosave = editor.getValue();
