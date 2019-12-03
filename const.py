@@ -363,6 +363,7 @@ TEMPLATE = """
             <p><b>loglevel:</b><br>Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></p> 
             <p><b>logtofile:</b><br>Enable or disable write log to file. If 'false' logs will not show in the LOG tab.</p>
             <p><b>userinterface:</b><br>Enable or disable UI</p>
+            <p><b>CheckForUpates:</b><br>Enable or disable check for updates</p>
             <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b>Ngrok assigns random urls. When server restart the server gets a new url</p>                   
             <p><b>auth_user/auth_pass:</b><br>Set the authorization username and password.</p>
 
