@@ -72,8 +72,11 @@ def AogGetDomain(device):
         return tempDOMAIN
     elif 'Temp + Humidity + Baro' == device['Type']:
         return tempDOMAIN
-    elif 'Color Switch' == device["Type"]:
+    elif 'Color Switch' == device["Type"] and "Dimmer" == device["SwitchType"]:
         return colorDOMAIN
+    elif 'Color Switch' == device["Type"] and "On/Off" == device["SwitchType"]:
+        logger.info(device["Name"] + " (Idx: " + device["idx"] + ") is a color switch. To get all functions, set this device as Dimmer in Domoticz")
+        return lightDOMAIN
     elif 'Security' == device["Type"]:
         return securityDOMAIN
     return None
