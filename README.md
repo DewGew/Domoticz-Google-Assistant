@@ -25,6 +25,8 @@ Domoticz-Google-Assistant delivers:
 
 Please feel free to modify it, extend and improve
 
+[Installation and configuration](https://github.com/DewGew/Domoticz-Google-Assistant/wiki)
+
 ## RPI/Ubuntu Installation with autostart
 This installs the dzga in a virtual enviroment.
 
