@@ -9,7 +9,9 @@ Based on Pawcio's script at [domoticz forum](https://www.domoticz.com/forum/view
 Required:
 - public url
 - python >= 3.5
-- reverse proxy for establishing secure connection (if not using Ngrok)
+- Make local deployment available trough HTTPS with valid certificate:
+  - Use ngrok for a secure SSL tunnel with valid public HTTPS URL
+  - Configure reverse proxy with domain name and valid certificate using Lets Encrypt
 
 Domoticz-Google-Assistant delivers: 
 - The oauth authorization and smarthome endpoint for the google assistant.
