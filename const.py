@@ -254,9 +254,11 @@ TEMPLATE = """
                 <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> Sytem Uptime:<br>{uptime}</small>
               </div>
               <div class="col">
-                <small class="text-muted">DZGA Version:<br>V""" + VERSION + """</small>
+                <small class="text-muted">DZGA Version:<br>V""" + VERSION + """</small><br>
+                <small class="text-muted" id="updates"></small>
               </div>
-              <div class="col">
+              <div class="col" id="buttonUpdate">
+              
               </div>
               <div class="col">
                 <small class="text-muted"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">Source Code at Github</a></small><br>
@@ -267,14 +269,15 @@ TEMPLATE = """
         <div id="menu1" class="tab-pane fade" role="tabpanel">
             <br>
             <h5>Device list</h5>
-            <small class="text-muted">List of devices the server recived from domoticz.<br>NOTE: If you don't see any device check your connection to domoticz.</small>
-            <table class="table">
+            <small class="text-muted">List of devices the server recived from domoticz. Room and Nicknames added in configuration. <b>Click on Header to sort asc or desc</b><br><b>NOTE:</b> If you don't see any device check your connection to domoticz.</small>
+            <table class="table" id="deviceTable">
               <thead>
                 <tr>
-                  <th scope="col">Idx</th>
-                  <th scope="col">Name</th>
-                  <th scope="col">Type</th>
-                  <th scope="col">State</th>
+                  <th scope="col" onclick="sortIdxTable(0)">Idx</th>
+                  <th scope="col" onclick="sortTable(0)">Name <small><i>(Nicknames)</i></small></th>
+                  <th scope="col" onclick="sortTable(1)">Type</th>
+                  <th scope="col" onclick="sortTable(2)">State</th>
+                  <th scope="col" onclick="sortTable(3)">Room</th>
                 </tr>
               </thead>
               <tbody id="deviceList_idx" ></tbody>
@@ -360,6 +363,7 @@ TEMPLATE = """
             <p><b>loglevel:</b><br>Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></p> 
             <p><b>logtofile:</b><br>Enable or disable write log to file. If 'false' logs will not show in the LOG tab.</p>
             <p><b>userinterface:</b><br>Enable or disable UI</p>
+            <p><b>CheckForUpates:</b><br>Enable or disable check for updates</p>
             <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b>Ngrok assigns random urls. When server restart the server gets a new url</p>                   
             <p><b>auth_user/auth_pass:</b><br>Set the authorization username and password.</p>
 
@@ -463,7 +467,7 @@ TEMPLATE = """
                 <button class="btn btn-raised btn-primary" name="reload" value="reload"><i class="material-icons" style="vertical-align: middle;">sync</i> Reload logs</button>
                 <button class="btn btn-raised btn-primary" name="deletelogs" value="deletelogs"><i class="material-icons" style="vertical-align: middle;">delete</i> Remove logs</button>
                </form>
-               <p class="text-muted">Log file will be overwrite when dzga server restarts</p>
+               <p class="text-muted">Log file will be overwritten when dzga server restarts</p>
               </div>
             </div>
         </div>
@@ -479,9 +483,86 @@ TEMPLATE = """
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/yaml/yaml.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/addon/display/autorefresh.js"></script>
     <script>
+    function sortTable(n) {{
+      var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+      table = document.getElementById("deviceTable");
+      switching = true;
+      dir = "asc";
+      while (switching) {{
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {{
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TD")[n];
+          y = rows[i + 1].getElementsByTagName("TD")[n];
+          if (dir == "asc") {{
+            if (x.innerHTML.toLowerCase() > y.innerHTML.toLowerCase()) {{
+              shouldSwitch = true;
+              break;
+            }}
+          }} else if (dir == "desc") {{
+            if (x.innerHTML.toLowerCase() < y.innerHTML.toLowerCase()) {{
+              shouldSwitch = true;
+              break;
+            }}
+          }}
+        }}
+        if (shouldSwitch) {{
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          switchcount ++;
+        }} else {{
+          if (switchcount == 0 && dir == "asc") {{
+            dir = "desc";
+            switching = true;
+          }}
+        }}
+      }}
+    }}
+    function sortIdxTable(n) {{
+      var table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+      table = document.getElementById("deviceTable");
+      switching = true;
+      dir = "asc";
+      while (switching) {{
+        switching = false;
+        rows = table.rows;
+        for (i = 1; i < (rows.length - 1); i++) {{
+          shouldSwitch = false;
+          x = rows[i].getElementsByTagName("TH")[n];
+          y = rows[i + 1].getElementsByTagName("TH")[n];
+          if (dir == "asc") {{
+            if (Number(x.innerHTML) > Number(y.innerHTML)) {{
+              shouldSwitch = true;
+              break;
+            }}
+          }} else if (dir == "desc") {{
+            if (Number(x.innerHTML) < Number(y.innerHTML)) {{
+              shouldSwitch = true;
+              break;
+            }}
+          }}
+        }}
+        if (shouldSwitch) {{
+          rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+          switching = true;
+          switchcount ++;
+        }} else {{
+          if (switchcount == 0 && dir == "asc") {{
+            dir = "desc";
+            switching = true;
+          }}
+        }}
+      }}
+    }}
     $(document).ready(function() {{
     
         var config = {conf}
+        var updates = {update}
+        if (updates) {{
+            document.getElementById("updates").innerHTML = "Updates are Availible.";
+            $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
+            }}
         
         $('body').bootstrapMaterialDesign();
         $(function () {{
@@ -491,12 +572,18 @@ TEMPLATE = """
         if (config.auth_user == 'admin' || config.auth_pass == 'admin'){{
             $('#messageModal').modal('show')
         }}
-        
 
         var devicelist = {list}
-        var x,i = "";
+        
+        var x,i, nicknames = "";
         for (i in devicelist){{
-            x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td></tr>";
+            if (devicelist[i][4] == undefined) {{
+                devicelist[i][4] = " "
+            }}
+            if (devicelist[i][5] == undefined) {{
+                nicknames = " ";
+            }}else{{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}}
+            x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] +  nicknames + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td><td>" + devicelist[i][4] + "</td></tr>";
 
         }}
         if (typeof x !== "undefined"){{

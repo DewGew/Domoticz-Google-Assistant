@@ -6,6 +6,8 @@ loglevel: 'Info'
 logtofile: false
 # Enable or disable UI
 userinterface: true
+# Check for updates
+CheckForUpdates: true
 
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
 # Ngrok assigns random urls. When server restart the server gets a new url
