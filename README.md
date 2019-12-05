@@ -104,7 +104,8 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 
 ```
 ##  Setup Actions on Google Console Instructions
-- Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
+- Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click
+  - Create Project.
   - Click Home Control, then click Smart Home.
   - On the top menu click Develop, then on the left navigation menu click on Invocation.
   - Add your App's name. Click Save.
