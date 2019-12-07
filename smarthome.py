@@ -25,7 +25,6 @@ try:
         auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
     logger.error('Connection to Domoticz refused with error: %s' % (e))
-    sys.exit(1)
     
 update = 0   
 confJSON = json.dumps(configuration)

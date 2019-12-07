@@ -2,3 +2,4 @@
 /config.yaml
 env/
 /__pycache__
+/dzga.log

@@ -28,7 +28,6 @@ def startServer():
             tunnel = public_url.replace("http", "https")
         except Exception as e:
             logger.error ('Ngrok was unable to start. Error: %s' % (e))
-            sys.exit(1)
     try:
         # Create a web server and define the handler to manage the
         # incoming request
