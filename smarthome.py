@@ -19,13 +19,13 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
     securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, PUBLIC_URL)
 
-print("The system uptime is:", uptime())
-
 try:
+    logger.info("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
     r = requests.get(DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
         auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
-    logger.error('Connection to Domoticz refused!. Check configuration')
+    logger.error('Connection to Domoticz refused with error: %s' % (e))
+    sys.exit(1)
     
 update = 0   
 confJSON = json.dumps(configuration)
@@ -43,7 +43,7 @@ def checkupdate():
             update = 0
         return update
     except Exception as e:
-        logger.error('Connection to Github refused!. Check configuration')
+        logger.error('Connection to Github refused! Check configuration.')
          
 if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:        
     update = checkupdate()         
@@ -499,7 +499,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         except Exception as e:
             logger.error('Connection to Domoticz refused!. Check configuration')
             
-        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
+        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
             tunnels = getTunnelUrl()
             tunnel = tunnels[0].public_url
             if 'https' not in tunnel:
