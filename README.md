@@ -81,8 +81,10 @@ You can also edit config.yaml in Domoticz-Google-Assistant folder to change the 
 port_number: 3030
 
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
-# Ngrok assigns random urls. When server restart the server gets a new url
-ngrok_tunnel: false 
+# When ngrok_tunnel set to True the auth token is required to keep the tunnel alive.
+# Create account at ngrok.com and paste the token in this file.
+ngrok_tunnel: false
+ngrok_auth_token: 'auth_token'
 
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
