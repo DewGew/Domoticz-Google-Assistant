@@ -505,15 +505,16 @@ class SmartHomeReqHandler(OAuthReqHandler):
         try:
             getDevices()           
         except Exception as e:
-            logger.error('Connection to Domoticz refused!. Check configuration')
+            logger.error('Connection to Domoticz refused! Check configuration.')
             
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
             tunnels = getTunnelUrl()
-            tunnel = tunnels[0].public_url
-            if 'https' not in tunnel:
-                public_url = tunnel.replace('http', 'https')
-            else:
-                public_url = tunnel
+            if tunnels != []:
+               tunnel = tunnels[0].public_url
+               if 'https' not in tunnel:
+                   public_url = tunnel.replace('http', 'https')
+               else:
+                   public_url = tunnel
             
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
