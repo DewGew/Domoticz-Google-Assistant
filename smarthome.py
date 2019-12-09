@@ -11,7 +11,6 @@ import re
 import os
 import sys
 import time
-import git
 
 from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
    
@@ -26,6 +25,13 @@ try:
         auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
     logger.error('Connection to Domoticz refused with error: %s' % (e))
+      
+try:
+    import git
+except ImportError:
+    logger.info('Installing package GitPython')
+    os.system('pip3 install GitPython')
+    import git
     
 update = 0   
 confJSON = json.dumps(configuration)
