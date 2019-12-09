@@ -365,7 +365,7 @@ TEMPLATE = """
             <p><b>userinterface:</b><br>Enable or disable UI</p>
             <p><b>CheckForUpates:</b><br>Enable or disable check for updates</p>
             <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b>When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.
-            </br><b>ngrok_auth_:</b><br>Create account at ngrok.com and paste the token.</p>
+            </br><b>ngrok_auth_:</b><br>Create account at <a href="https://dashboard.ngrok.com/signup">ngrok.com</a> and paste the token.</p>
             <p><b>auth_user/auth_pass:</b><br>Set the authorization username and password.</p>
 
             <p><b>Domoticz:</b><br>Add correct ipaddress, port and credientials to connect to domoticz. </br>You can assign devices in a room in domoticz then set the room idx in <code>roomplan:</code></br>
