@@ -11,6 +11,7 @@ import re
 import os
 import sys
 import time
+import git
 
 from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
    
@@ -29,10 +30,12 @@ except Exception as e:
 update = 0   
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
+repo = git.Repo(FILE_DIR)
+branch = repo.active_branch
 
 def checkupdate():  
     try:
-        r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/master/const.py')
+        r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch.name + '/const.py')
         text = r.text
         if VERSION not in text:
             update = 1
@@ -589,7 +592,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.send_message(200, template)
             
         if (s.form.get("update")):
-            os.system('bash ~/Domoticz-Google-Assistant/scripts/update.sh')
+            repo.git.reset('--hard')
+            repo.remotes.origin.pull()
             message = 'Updated, Restarting Server, please wait!'
             meta = '<meta http-equiv="refresh" content="5">'
             code = readFile(CONFIGFILE)
