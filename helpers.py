@@ -61,12 +61,16 @@ ch = logging.StreamHandler()
 ch.setLevel(loglevel)
 logger.addHandler(ch)
 # Log to file
-if 'logtofile' in configuration and configuration['logtofile'] == True:
-    formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', "%Y-%m-%d %H:%M:%S")
-    fh = logging.FileHandler(os.path.join(FILE_DIR, LOGFILE), mode='w')
-    fh.setLevel(loglevel)
-    fh.setFormatter(formatter)
-    logger.addHandler(fh)
+if 'logtofile' in configuration:
+    if configuration['logtofile'] == True or configuration['logtofile'] == 'Overwrite' or configuration['logtofile'] == 'Append':
+        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', "%Y-%m-%d %H:%M:%S")
+        if configuration['logtofile'] == 'Append':
+            fh = logging.FileHandler(os.path.join(FILE_DIR, LOGFILE), mode='a')
+        else:
+            fh = logging.FileHandler(os.path.join(FILE_DIR, LOGFILE), mode='w')
+        fh.setLevel(loglevel)
+        fh.setFormatter(formatter)
+        logger.addHandler(fh)
 if 'logtofile' not in configuration or configuration['logtofile'] == False:
     logfile = os.path.join(FILE_DIR, LOGFILE)
     if os.path.exists(logfile):
