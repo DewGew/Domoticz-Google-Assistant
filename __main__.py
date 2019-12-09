@@ -23,11 +23,14 @@ def startServer():
     # Create tunnel if ngrok_tunnel set to true
     if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         try:
-            ngrok.set_auth_token(configuration['ngrok_auth_token'])
+            if 'ngrok_auth_token' in configuration and configuration['ngrok_auth_token'] != 'auth_token':
+                ngrok.set_auth_token(configuration['ngrok_auth_token'])
+            else:
+                logger.info('If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours')
             public_url = ngrok.connect(configuration['port_number'])
             tunnel = public_url.replace("http", "https")
         except Exception as e:
-            logger.error ('Ngrok was unable to start. Error: %s' % (e))
+            logger.error ('Ngrok was unable to start. Error: %s is not valid' % (e))
     try:
         # Create a web server and define the handler to manage the
         # incoming request
