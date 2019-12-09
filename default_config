@@ -2,7 +2,8 @@
 port_number: 3030
 # Debug, Info or Error
 loglevel: 'Info'
-# Write log to file: If 'false' logs will not show in the LOG tab.
+# Set logtofile: 'false' logs will not show in the LOG tab. Set logtofile: 'Overwrite' or true Log file will be overwritten when dzga server restarts
+# Set logtofile: 'Append' Logs will append to logfile when dzga server restarts
 logtofile: false
 # Enable or disable UI
 userinterface: true
