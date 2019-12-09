@@ -304,7 +304,7 @@ class OpenCloseTrait(_Trait):
         features = self.state.attributes
         protected = self.state.protected
         if features & ATTRS_PERCENTAGE:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(params['openPercent'])
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(100-params['openPercent'])
         else:
             p = params.get('openPercent', 50)
             
