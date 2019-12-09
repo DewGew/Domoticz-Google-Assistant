@@ -359,45 +359,54 @@ TEMPLATE = """
             </p>
             <h5 id="C1">Configuration Settings</h5>
             
-            <p><b>port_settings:</b><br>Set the local port. Default is <code>port_number: 3030</code></p>
-            <p><b>loglevel:</b><br>Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></p> 
-            <p><b>logtofile:</b><br>Enable or disable write log to file. Set logtofile to <code>false</code> logs will not show in the LOG tab. Set logtofile to <code>Overwrite</code> or <code>true</code> Log file will be overwritten when dzga server restarts. Set logtofile to <code>Append</code> Logs will append to logfile if dzga server restarts.</p>
-            <p><b>userinterface:</b><br>Enable or disable UI</p>
-            <p><b>CheckForUpates:</b><br>Enable or disable check for updates</p>
-            <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b>When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.
-            </br><b>ngrok_auth_:</b><br>If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup">ngrok.com</a> and paste the token.</p>
-            <p><b>auth_user/auth_pass:</b><br>Set the authorization username and password.</p>
-
-            <p><b>Domoticz:</b><br>Add correct ipaddress, port and credientials to connect to domoticz. </br>You can assign devices in a room in domoticz then set the room idx in <code>roomplan:</code></br>
-            <code>switchProtectionPass:</code> is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</p>
-            <p><b>ClientID/ClientSectret:</b><br>Set the Google credientials.<br></p>
-            <p><b>Homegraph_API_Key:</b><br>Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.<br>
+            <p><code><b>port_settings:</b> 3030</code><br><small class="text-muted">Set the local port. Default is 3030</small></p>
+            <p><code><b>loglevel:</b> 'Info'</code><br><small class="text-muted">Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></small></br> 
+            <code><b>logtofile:</b> false</code><br><small class="text-muted">Enable or disable write log to file. Set logtofile to <code>false</code> logs will not show in the LOG tab. Set logtofile to <code>'Overwrite'</code> or <code>true</code> Log file will be overwritten when dzga server restarts. Set logtofile to <code>'Append'</code> Logs will append to logfile if dzga server restarts.</small></p>
+            <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
+            <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
+            <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.</small>
+            </br><code><b>ngrok_auth_:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup">ngrok.com</a> and paste the token.</small></p>
+            
+            <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small></br>
+            <code><b>auth_pass:</b> 'admin'</code><br><small class="text-muted">Set the authorization password.</small></p>
+            
+            <p><code><b>Domoticz:</code></b><br>
+            <code><b>ip:</b> 'http://192.168.1.100'</code></br>
+            <code><b>port:</b> '8080'</code></br><small class="text-muted">Add correct ipaddress, port connect to domoticz.</small><br>
+            <code><b>username:</b> 'user'</code></br>
+            <code><b>password:</b> 'password'</code></br><small class="text-muted">Domoticz credientials</small></br>
+            <code><b>roomplan:</b> '0'</code></br><small class="text-muted">You can assign devices in a room in domoticz then set the room idx</small></br>
+            <code><b>switchProtectionPass:</b> '1234'</code></br><small class="text-muted">Is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</small></p>
+            
+            <p><code><b>ClientID:</b> 'YOUR_CLIENT_ID'</code></br>
+            <code><b>ClientSectret:</b> 'YOUR_CLIENT_SECRET'</code><br><small class="text-muted">Set the Google credientials.</small><br>
+            <code><b>Homegraph_API_Key:</b> 'HOMEGRAPH_API_KEY'</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.</small><br>
             </p>
-            <p><b>Low_battery_limit:</b><br>Set threhold for report low battery.</p>
-            <p><b>Image_Override:</b><br>Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</p>
-            <p><b>Camera_Stream:</b><br>In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. Read more below.<p>
-            <p><b>Armhome/Armaway:</b><br>User-friendly name for the arm level in your language.</p>
+            <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
+            <p><code><b>Image_Override:</b></code><br><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</small></p>
+            <p><code><b>Camera_Stream:</b></code><br><small class="text-muted">In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. Read more below.</small><p>
+            <p><code><b>Armhome/Armaway:</b></code><br><small class="text-muted">User-friendly name for the arm level in your language.</small></p>
             
             <h5 id="C2">Device Settings</h5>
 
-            <p>Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
-            <code><br />
+            <p><small class="text-muted">Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
+            <code></small><br />
             &lt;voicecontrol&gt;<br />
             nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             room = Kitchen<br />
             ack = True<br />
             &lt;/voicecontrol&gt;<br />
             </code>
-            Other parts of the description are ignored, so you can still leave other useful descriptions.
+            <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
             Every variable should be on a separate line.
-            If there is no such configuration in the Domoticz device it will still try the config.</p>
+            If there is no such configuration in the Domoticz device it will still try the config.</small></p>
 
             <h5 id="C3">Stream camera to chromecast</h5>
 
-            <p>Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls. More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats. You need a to convert your video url to one of above. Try with ffmpeg or with a surveillance software system. Try out http://shinobi.video. <br />
-            In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)</p>
+            <p><small class="text-muted">Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls. More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats. You need a to convert your video url to one of above. Try with ffmpeg or with a surveillance software system. Try out http://shinobi.video. <br />
+            In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)</small></p>
 
-            <p>Example convert rtsp to hls or mp4 using ffmpeg:<br />
+            <p><small class="text-muted">Example convert rtsp to hls or mp4 using ffmpeg:</small><br />
             <code>
             ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
               -acodec copy \
@@ -419,7 +428,7 @@ TEMPLATE = """
             
             <h5 id="C4">Other</h5>
             
-            <h6>Connect smart home devices to your Google Home device</h6>
+            <h6><small class="text-muted">Connect smart home devices to your Google Home device</h6>
             <ul>
             <li>On your mobile device, open the Google Home app.</li>
             <li>On the Home tab, tap the “Add” quick action .</li>
@@ -427,11 +436,11 @@ TEMPLATE = """
             <li>Tap Have something already set up?</li>
             <li>Select your device app e.g: "[test]Your Appname"</li>
             <li>Login with auth credentials from config</li>
-            </ul>
+            </ul></small>
             
             <h6>Share devices</h6>
 
-            <p>If you want to allow other household users to control the devices:<br />
+            <p><small class="text-muted">If you want to allow other household users to control the devices:<br />
             <ul>
             <li>Go to the settings for the project you created in the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</li>
             <li>Click <code>Test -&gt; Simulator</code>, then click Share icon in the right top corner. Follow the on-screen instruction:</li>
@@ -440,18 +449,18 @@ TEMPLATE = """
             <li>Copy and share the link with the new user.</li>
             <li>When the new user opens the link with their own Google account, it will enable your draft test app under their account.</li>
             <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py</li>
-            </ul></p>
+            </ul></small></p>
             
             <h6>Update</h6>
 
             <p>
             <kbd>bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)</kbd><br>
-            or <br>
+            <small class="text-muted">or</small><br>
             <code>
             cd /home/${{USER}}/Domoticz-Google-Assistant/<br>
             git pull
             </code><br />
-            If needed, restart service:<br />
+            <small class="text-muted">If needed, restart service:</small><br />
             <code>
             sudo systemctl restart dzga.service
             </code><br /></p>
@@ -468,7 +477,6 @@ TEMPLATE = """
                 <button class="btn btn-raised btn-primary" name="reload" value="reload"><i class="material-icons" style="vertical-align: middle;">sync</i> Reload logs</button>
                 <button class="btn btn-raised btn-primary" name="deletelogs" value="deletelogs"><i class="material-icons" style="vertical-align: middle;">delete</i> Remove logs</button>
                </form>
-               <p class="text-muted">Log file will be overwritten when dzga server restarts</p>
               </div>
             </div>
         </div>
