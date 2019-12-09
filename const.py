@@ -361,11 +361,11 @@ TEMPLATE = """
             
             <p><b>port_settings:</b><br>Set the local port. Default is <code>port_number: 3030</code></p>
             <p><b>loglevel:</b><br>Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></p> 
-            <p><b>logtofile:</b><br>Enable or disable write log to file. If 'false' logs will not show in the LOG tab.</p>
+            <p><b>logtofile:</b><br>Enable or disable write log to file. Set logtofile to <code>false</code> logs will not show in the LOG tab. Set logtofile to <code>Overwrite</code> or <code>true</code> Log file will be overwritten when dzga server restarts. Set logtofile to <code>Append</code> Logs will append to logfile if dzga server restarts.</p>
             <p><b>userinterface:</b><br>Enable or disable UI</p>
             <p><b>CheckForUpates:</b><br>Enable or disable check for updates</p>
-            <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b><br>When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.
-            </p>
+            <p><b>ngrok_tunnel:</b><br>Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b>When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.
+            </br><b>ngrok_auth_:</b><br>Create account at ngrok.com and paste the token.</p>
             <p><b>auth_user/auth_pass:</b><br>Set the authorization username and password.</p>
 
             <p><b>Domoticz:</b><br>Add correct ipaddress, port and credientials to connect to domoticz. </br>You can assign devices in a room in domoticz then set the room idx in <code>roomplan:</code></br>
