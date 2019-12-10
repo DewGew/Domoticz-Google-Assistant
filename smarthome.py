@@ -19,21 +19,29 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
     securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, PUBLIC_URL)
 
-print("The system uptime is:", uptime())
-
 try:
+    logger.info("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
     r = requests.get(DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
         auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
-    logger.error('Connection to Domoticz refused!. Check configuration')
+    logger.error('Connection to Domoticz refused with error: %s' % (e))
+      
+try:
+    import git
+except ImportError:
+    logger.info('Installing package GitPython')
+    os.system('pip3 install GitPython')
+    import git
     
 update = 0   
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
+repo = git.Repo(FILE_DIR)
+branch = repo.active_branch
 
 def checkupdate():  
     try:
-        r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/master/const.py')
+        r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch.name + '/const.py')
         text = r.text
         if VERSION not in text:
             update = 1
@@ -43,7 +51,7 @@ def checkupdate():
             update = 0
         return update
     except Exception as e:
-        logger.error('Connection to Github refused!. Check configuration')
+        logger.error('Connection to Github refused! Check configuration.')
          
 if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:        
     update = checkupdate()         
@@ -497,15 +505,16 @@ class SmartHomeReqHandler(OAuthReqHandler):
         try:
             getDevices()           
         except Exception as e:
-            logger.error('Connection to Domoticz refused!. Check configuration')
+            logger.error('Connection to Domoticz refused! Check configuration.')
             
-        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel']:
+        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
             tunnels = getTunnelUrl()
-            tunnel = tunnels[0].public_url
-            if 'https' not in tunnel:
-                public_url = tunnel.replace('http', 'https')
-            else:
-                public_url = tunnel
+            if tunnels != []:
+               tunnel = tunnels[0].public_url
+               if 'https' not in tunnel:
+                   public_url = tunnel.replace('http', 'https')
+               else:
+                   public_url = tunnel
             
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
@@ -590,7 +599,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.send_message(200, template)
             
         if (s.form.get("update")):
-            os.system('bash ~/Domoticz-Google-Assistant/scripts/update.sh')
+            repo.git.reset('--hard')
+            repo.remotes.origin.pull()
             message = 'Updated, Restarting Server, please wait!'
             meta = '<meta http-equiv="refresh" content="5">'
             code = readFile(CONFIGFILE)

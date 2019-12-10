@@ -2,7 +2,8 @@
 port_number: 3030
 # Debug, Info or Error
 loglevel: 'Info'
-# Write log to file: If 'false' logs will not show in the LOG tab.
+# Set logtofile: 'false' logs will not show in the LOG tab. Set logtofile: 'Overwrite' or true Log file will be overwritten when dzga server restarts
+# Set logtofile: 'Append' Logs will append to logfile when dzga server restarts
 logtofile: false
 # Enable or disable UI
 userinterface: true
@@ -10,8 +11,10 @@ userinterface: true
 CheckForUpdates: true
 
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
-# Ngrok assigns random urls. When server restart the server gets a new url
+# When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. 
+# Create account at ngrok.com and paste the token in this file.
 ngrok_tunnel: false
+ngrok_auth_token: 'auth_token'
 
 # Login on Google Home app and configuration interface
 auth_user: 'admin'

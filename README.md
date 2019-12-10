@@ -25,6 +25,8 @@ Domoticz-Google-Assistant delivers:
 
 Please feel free to modify it, extend and improve
 
+[Installation and configuration](https://github.com/DewGew/Domoticz-Google-Assistant/wiki)
+
 ## RPI/Ubuntu Installation with autostart
 This installs the dzga in a virtual enviroment.
 
@@ -79,8 +81,10 @@ You can also edit config.yaml in Domoticz-Google-Assistant folder to change the 
 port_number: 3030
 
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
-# Ngrok assigns random urls. When server restart the server gets a new url
-ngrok_tunnel: false 
+# When ngrok_tunnel set to True the auth token is required to keep the tunnel alive.
+# Create account at ngrok.com and paste the token in this file.
+ngrok_tunnel: false
+ngrok_auth_token: 'auth_token'
 
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
@@ -102,7 +106,8 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 
 ```
 ##  Setup Actions on Google Console Instructions
-- Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click     - Create Project.
+- Use the [Actions on Google Console](https://console.actions.google.com/) to add a new project with a name of your choosing and click
+  - Create Project.
   - Click Home Control, then click Smart Home.
   - On the top menu click Develop, then on the left navigation menu click on Invocation.
   - Add your App's name. Click Save.
