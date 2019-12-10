@@ -11,6 +11,7 @@ import re
 import os
 import sys
 import time
+from pip._internal import main as pip
 
 from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
    
@@ -30,7 +31,7 @@ try:
     import git
 except ImportError:
     logger.info('Installing package GitPython')
-    os.system('pip3 install GitPython')
+    pip.main(['install', 'gitpython'])
     import git
     
 update = 0   
