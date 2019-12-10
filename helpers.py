@@ -3,6 +3,7 @@
 import os
 import yaml
 import logging
+from pip._internal import main as pip
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
@@ -81,7 +82,8 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         from pyngrok import ngrok
     except ImportError:
         logger.info('Installing package pyngrok')
-        os.system('pip3 install pyngrok')
+        pip.main(['install', 'pyngrok'])
+        from pyngrok import ngrok
         
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
