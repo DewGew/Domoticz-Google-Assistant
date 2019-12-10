@@ -304,7 +304,7 @@ class OpenCloseTrait(_Trait):
         features = self.state.attributes
         protected = self.state.protected
         if features & ATTRS_PERCENTAGE:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(params['openPercent'])
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(100-params['openPercent'])
         else:
             p = params.get('openPercent', 50)
             
@@ -534,8 +534,13 @@ class ColorSettingTrait(_Trait):
             #Convert decimal to hex
             setcolor = params['color']
             color_hex = hex(setcolor['spectrumRGB'])[2:]
+            lost_zeros=6 - len(color_hex)
+            color_hex_str=""
+            for x in range(lost_zeros):
+            	color_hex_str+="0"
+            color_hex_str+= str(color_hex)
             
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + str(color_hex)
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + color_hex_str
         
         r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
         
