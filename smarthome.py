@@ -18,7 +18,7 @@ from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, Sma
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
     Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN,
     lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, PUBLIC_URL)
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
 
 try:
     logger.info("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
@@ -34,9 +34,6 @@ except ImportError:
     pip.main(['install', 'gitpython'])
     import git
     
-update = 0   
-confJSON = json.dumps(configuration)
-public_url = PUBLIC_URL
 repo = git.Repo(FILE_DIR)
 
 def checkupdate():
@@ -56,6 +53,8 @@ def checkupdate():
             return 0
     else:
         return 0
+      
+update = checkupdate()
                   
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
@@ -505,27 +504,20 @@ class SmartHomeReqHandler(OAuthReqHandler):
         r = self.forceDevicesSync()
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
          
-    def settings(self, s):
-        public_url = PUBLIC_URL       
-        update = checkupdate()
+    def settings(self, s):             
         try:
             getDevices()           
         except Exception as e:
             logger.error('Connection to Domoticz refused! Check configuration.')
-            
-        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
-            tunnels = getTunnelUrl()
-            if tunnels != []:
-               tunnel = tunnels[0].public_url
-               if 'https' not in tunnel:
-                   public_url = tunnel.replace('http', 'https')
-               else:
-                   public_url = tunnel
-            
+                
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
             s.redirect('/login?redirect_uri={0}'.format('/settings'))
             return
+            
+        update = checkupdate()
+        confJSON = json.dumps(configuration)
+        public_url = getTunnelUrl()            
         message = ''
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(CONFIGFILE)
@@ -536,6 +528,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
     def settings_post(self, s):
         update = checkupdate()
+        confJSON = json.dumps(configuration)
+        public_url = getTunnelUrl()
         logs = readFile(LOGFILE)
         code = readFile(CONFIGFILE)
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
