@@ -38,24 +38,25 @@ update = 0
 confJSON = json.dumps(configuration)
 public_url = PUBLIC_URL
 repo = git.Repo(FILE_DIR)
-branch = repo.active_branch
 
-def checkupdate():  
-    try:
-        r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch.name + '/const.py')
-        text = r.text
-        if VERSION not in text:
-            update = 1
-            logger.info("========")
-            logger.info("   New version is availible on Github!")
-        else:
-            update = 0
-        return update
-    except Exception as e:
-        logger.error('Connection to Github refused! Check configuration.')
-         
-if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:        
-    update = checkupdate()         
+def checkupdate():
+    if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
+        try:
+            r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + repo.active_branch.name + '/const.py')
+            text = r.text
+            if VERSION not in text:
+                update = 1
+                logger.info("========")
+                logger.info("   New version is availible on Github!")
+            else:
+                update = 0
+            return update
+        except Exception as e:
+            logger.error('Connection to Github refused! Check configuration.')
+            return 0
+    else:
+        return 0
+                  
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -505,7 +506,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
          
     def settings(self, s):
-        public_url = PUBLIC_URL
+        public_url = PUBLIC_URL       
+        update = checkupdate()
         try:
             getDevices()           
         except Exception as e:
@@ -533,17 +535,18 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, template)     
 
     def settings_post(self, s):
+        update = checkupdate()
+        logs = readFile(LOGFILE)
+        code = readFile(CONFIGFILE)
+        meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
        
         if (s.form.get("save")):
             textToSave = s.form.get("save", None)
             codeToSave = textToSave.replace("+", " ")
             saveFile(CONFIGFILE, codeToSave)
-
             message = 'Config saved'
-            logger.info(message)
-            meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+            logger.info(message) 
+            
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
@@ -551,12 +554,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if (s.form.get("backup")):
             codeToSave = readFile(CONFIGFILE)
             saveFile('config.yaml.bak', codeToSave)
-
             message = 'Backup saved'
             logger.info(message)
-            meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
@@ -566,8 +566,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<meta http-equiv="refresh" content="5">'
             code = ''
             logs = ''
+            
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
-
+            
             s.send_message(200, template)
             restartServer()
 
@@ -581,17 +582,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     message = 'Homegraph api key not valid!'
             else:
                 message = 'Add Homegraph api key to sync devices here!'
-            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
         
         if (s.form.get("reload")):
             message = ''
-            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             
@@ -602,9 +599,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 f.close()
             logger.info('Logs removed by user')
             message = ''
-            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             
@@ -613,8 +608,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             repo.remotes.origin.pull()
             message = 'Updated, Restarting Server, please wait!'
             meta = '<meta http-equiv="refresh" content="5">'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             restartServer()
