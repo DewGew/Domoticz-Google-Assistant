@@ -159,5 +159,15 @@ def uptime():
             
 def getTunnelUrl():
     """Get ngrok tunnel url"""
-    tunnels = ngrok.get_tunnels()
-    return tunnels
+    if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
+        tunnels = ngrok.get_tunnels()
+        if tunnels != []:
+           tunnel = tunnels[0].public_url
+           if 'https' not in tunnel:
+               public_url = tunnel.replace('http', 'https')
+           else:
+               public_url = tunnel
+    else:
+        public_url = 'https://[YOUR REVERSE PROXY URL]'
+        
+    return public_url
