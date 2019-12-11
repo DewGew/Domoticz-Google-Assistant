@@ -489,6 +489,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         j = {"agentUserId": userAgent}
         
         r = requests.post(url, json=j)
+      
+        if 'error' in r.text:
+            logger.error(r.text)
 
         return r.status_code == requests.codes.ok
 
@@ -569,9 +572,15 @@ class SmartHomeReqHandler(OAuthReqHandler):
             restartServer()
 
         if (s.form.get("sync")):
-            r = self.forceDevicesSync()
-            time.sleep(0.5)
-            message = 'Devices syncronized'
+            if configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
+                r = self.forceDevicesSync()
+                time.sleep(0.5)
+                if r == True:
+                    message = 'Devices syncronized'
+                else:
+                    message = 'Homegraph api key not valid!'
+            else:
+                message = 'Add Homegraph api key to sync devices here!'
             meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
             code = readFile(CONFIGFILE)
             logs = readFile(LOGFILE)
