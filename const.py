@@ -79,6 +79,7 @@ cameraDOMAIN = 'Camera'
 sensorDOMAIN = 'Sensor'
 doorDOMAIN = 'DoorSensor'
 selectorDOMAIN = 'Selector'
+fanDOMAIN = 'Fan'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -107,6 +108,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     sensorDOMAIN: TYPE_SENSOR,
     doorDOMAIN: TYPE_DOOR,
     selectorDOMAIN: TYPE_SWITCH,
+    fanDOMAIN: TYPE_FAN,
 }
 
 #Todo... dynamic tokens handling/generation if needed
