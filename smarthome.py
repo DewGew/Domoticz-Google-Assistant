@@ -11,13 +11,14 @@ import re
 import os
 import sys
 import time
+from pip._internal import main as pip
 
 from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
    
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
     Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN,
     lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, PUBLIC_URL)
+    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
 
 try:
     logger.info("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
@@ -30,31 +31,31 @@ try:
     import git
 except ImportError:
     logger.info('Installing package GitPython')
-    os.system('pip3 install GitPython')
+    pip.main(['install', 'gitpython'])
     import git
     
-update = 0   
-confJSON = json.dumps(configuration)
-public_url = PUBLIC_URL
 repo = git.Repo(FILE_DIR)
-branch = repo.active_branch
 
-def checkupdate():  
-    try:
-        r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch.name + '/const.py')
-        text = r.text
-        if VERSION not in text:
-            update = 1
-            logger.info("========")
-            logger.info("   New version is availible on Github!")
-        else:
-            update = 0
-        return update
-    except Exception as e:
-        logger.error('Connection to Github refused! Check configuration.')
-         
-if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:        
-    update = checkupdate()         
+def checkupdate():
+    if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
+        try:
+            r = requests.get('https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + repo.active_branch.name + '/const.py')
+            text = r.text
+            if VERSION not in text:
+                update = 1
+                logger.info("========")
+                logger.info("   New version is availible on Github!")
+            else:
+                update = 0
+            return update
+        except Exception as e:
+            logger.error('Connection to Github refused! Check configuration.')
+            return 0
+    else:
+        return 0
+      
+update = checkupdate()
+                  
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -490,6 +491,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         j = {"agentUserId": userAgent}
         
         r = requests.post(url, json=j)
+      
+        if 'error' in r.text:
+            logger.error(r.text)
 
         return r.status_code == requests.codes.ok
 
@@ -502,26 +506,20 @@ class SmartHomeReqHandler(OAuthReqHandler):
         r = self.forceDevicesSync()
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
          
-    def settings(self, s):
-        public_url = PUBLIC_URL
+    def settings(self, s):             
         try:
             getDevices()           
         except Exception as e:
             logger.error('Connection to Domoticz refused! Check configuration.')
-            
-        if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
-            tunnels = getTunnelUrl()
-            if tunnels != []:
-               tunnel = tunnels[0].public_url
-               if 'https' not in tunnel:
-                   public_url = tunnel.replace('http', 'https')
-               else:
-                   public_url = tunnel
-            
+                
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
             s.redirect('/login?redirect_uri={0}'.format('/settings'))
             return
+            
+        update = checkupdate()
+        confJSON = json.dumps(configuration)
+        public_url = getTunnelUrl()            
         message = ''
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(CONFIGFILE)
@@ -531,17 +529,20 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, template)     
 
     def settings_post(self, s):
+        update = checkupdate()
+        confJSON = json.dumps(configuration)
+        public_url = getTunnelUrl()
+        logs = readFile(LOGFILE)
+        code = readFile(CONFIGFILE)
+        meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
        
         if (s.form.get("save")):
             textToSave = s.form.get("save", None)
             codeToSave = textToSave.replace("+", " ")
             saveFile(CONFIGFILE, codeToSave)
-
             message = 'Config saved'
-            logger.info(message)
-            meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+            logger.info(message) 
+            
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
@@ -549,12 +550,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if (s.form.get("backup")):
             codeToSave = readFile(CONFIGFILE)
             saveFile('config.yaml.bak', codeToSave)
-
             message = 'Backup saved'
             logger.info(message)
-            meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
@@ -564,26 +562,29 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<meta http-equiv="refresh" content="5">'
             code = ''
             logs = ''
+            
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
-
+            
             s.send_message(200, template)
             restartServer()
 
         if (s.form.get("sync")):
-            r = self.forceDevicesSync()
-            time.sleep(0.5)
-            message = 'Devices syncronized'
-            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+            if configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
+                r = self.forceDevicesSync()
+                time.sleep(0.5)
+                if r == True:
+                    message = 'Devices syncronized'
+                else:
+                    message = 'Homegraph api key not valid!'
+            else:
+                message = 'Add Homegraph api key to sync devices here!'
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
         
         if (s.form.get("reload")):
             message = ''
-            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             
@@ -594,9 +595,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 f.close()
             logger.info('Logs removed by user')
             message = ''
-            meta = '<!-- <meta http-equiv="refresh" content="10"> -->'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             
@@ -605,8 +604,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             repo.remotes.origin.pull()
             message = 'Updated, Restarting Server, please wait!'
             meta = '<meta http-equiv="refresh" content="5">'
-            code = readFile(CONFIGFILE)
-            logs = readFile(LOGFILE)
+
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             restartServer()

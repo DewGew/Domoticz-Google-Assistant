@@ -3,6 +3,7 @@
 import os
 import yaml
 import logging
+from pip._internal import main as pip
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
@@ -81,7 +82,8 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         from pyngrok import ngrok
     except ImportError:
         logger.info('Installing package pyngrok')
-        os.system('pip3 install pyngrok')
+        pip.main(['install', 'pyngrok'])
+        from pyngrok import ngrok
         
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
@@ -157,5 +159,15 @@ def uptime():
             
 def getTunnelUrl():
     """Get ngrok tunnel url"""
-    tunnels = ngrok.get_tunnels()
-    return tunnels
+    if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
+        tunnels = ngrok.get_tunnels()
+        if tunnels != []:
+           tunnel = tunnels[0].public_url
+           if 'https' not in tunnel:
+               public_url = tunnel.replace('http', 'https')
+           else:
+               public_url = tunnel
+    else:
+        public_url = 'https://[YOUR REVERSE PROXY URL]'
+        
+    return public_url
