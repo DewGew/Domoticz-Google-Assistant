@@ -506,11 +506,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
         if userAgent == None:
             return 500 #internal error
-
+            
         url = REQUEST_SYNC_BASE_URL + '?key=' + configuration['Homegraph_API_Key']
         j = {"agentUserId": userAgent}
         
         r = requests.post(url, json=j)
+        
         if 'error' in r.text:
             logger.error(r.text)
         
@@ -561,7 +562,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             saveFile(CONFIGFILE, codeToSave)
             message = 'Config saved'
             logger.info(message) 
-            
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
@@ -571,7 +572,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             saveFile('config.yaml.bak', codeToSave)
             message = 'Backup saved'
             logger.info(message)
-
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
@@ -597,7 +598,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     message = 'Homegraph api key not valid!'
             else:
                 message = 'Add Homegraph api key to sync devices here!'
-
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
         
@@ -614,7 +615,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 f.close()
             logger.info('Logs removed by user')
             message = 'Logs removed'
-
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             
@@ -627,21 +628,18 @@ class SmartHomeReqHandler(OAuthReqHandler):
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             restartServer()
-    
+                
     def smarthome_sync(self, payload, token):
         """Handle action.devices.SYNC request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
         devices = []
+        states = {}
         getDevices() #sync all devices
         getSettings()
+        enableReport = ReportState.enable_report_state()
         
         for state in aogDevs.values():
-            # if state.entity_id in CLOUD_NEVER_EXPOSED_ENTITIES:
-                # continue
-
-            # if not config.should_expose(state):
-                # continue
 
             entity = _GoogleEntity(state)
             serialized = entity.sync_serialize()
@@ -650,12 +648,29 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
 
             devices.append(serialized)
+            try:
+                states[entity.entity_id] = entity.query_serialize()
+            except:
+                continue
+                
+        list_keys = list(states.keys())
+        for k in list_keys:
+          if k.startswith('Camera'):
+            states.pop(k)
+            
+            
+        if enableReport == True:
+            data = {
+                'devices':{
+                    'states': states,
+                }
+            }
+            self.report_state(data, token)
         
         return {
             'agentUserId': token.get('userAgentId', None),
             'devices': devices,
-        }   
-
+        }
         
     def smarthome_query(self, payload, token):
         """Handle action.devices.QUERY request.
@@ -726,7 +741,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
             if state.report_state == True and enableReport == True:
-                data = {'devices':{'states':{entity.entity_id:entity.query_serialize()}}}
+                data = {
+                    'devices':{
+                        'states':{
+                            entity.entity_id:entity.query_serialize()
+                        }
+                    }
+                }
                 self.report_state(data, token)
       
         return {'commands': final_results}
