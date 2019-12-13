@@ -558,8 +558,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.send_message(200, template)
         
         if (s.form.get("restart")):
-            message = 'Restart Server, please wait!'
-            meta = '<meta http-equiv="refresh" content="5">'
+            message = 'Restart Server, please wait 1 minute!'
+            meta = '<meta http-equiv="refresh" content="40">'
             code = ''
             logs = ''
             
@@ -594,7 +594,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 f = open(logfile, 'w')
                 f.close()
             logger.info('Logs removed by user')
-            message = ''
+            message = 'Logs removed'
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
@@ -602,8 +602,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if (s.form.get("update")):
             repo.git.reset('--hard')
             repo.remotes.origin.pull()
-            message = 'Updated, Restarting Server, please wait!'
-            meta = '<meta http-equiv="refresh" content="5">'
+            message = 'Updated, Restarting Server, please wait 1 minute!'
+            meta = '<meta http-equiv="refresh" content="40">'
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
