@@ -13,7 +13,7 @@ import sys
 import time
 from pip._internal import main as pip
 
-from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
+from helpers import (configuration, CONFIGFILE, LOGFILE, KEYFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger, ReportState)
    
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
     Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN,
@@ -21,7 +21,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
     securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
 
 try:
-    logger.info("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
+    logger.debug("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
     r = requests.get(DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
         auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
@@ -33,9 +33,12 @@ except ImportError:
     logger.info('Installing package GitPython')
     pip.main(['install', 'gitpython'])
     import git
-    
+        
 repo = git.Repo(FILE_DIR)
-
+ReportState = ReportState()
+if ReportState.enable_report_state() == False:
+    logger.error("Report State is disabled. %s not found" % (KEYFILE))
+    
 def checkupdate():
     if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
         try:
@@ -53,9 +56,9 @@ def checkupdate():
             return 0
     else:
         return 0
-      
+    
 update = checkupdate()
-                  
+         
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -73,7 +76,7 @@ def AogGetDomain(device):
             return sensorDOMAIN
         elif 'Selector' == device["SwitchType"]:
             return selectorDOMAIN
-        elif 'Fan' == device["Image"]:
+        elif 'Fan' == device["Image"]:	
             return fanDOMAIN
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == configuration['Camera_Stream']['Enabled']:
             return cameraDOMAIN
@@ -210,6 +213,9 @@ def getAog(device):
         ack = desc.get('ack', False)
         if ack:
             aog.ack = ack
+        report_state = desc.get('report_state', True)
+        if report_state != True:
+            aog.report_state = report_state
     return aog;
  
 aogDevs = {}
@@ -236,11 +242,11 @@ def getDevices(type = "all", id = "0"):
 
             aogDevs[aog.entity_id] = aog
     
-    list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames) for d in aogDevs.values()]
+    list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
     list.sort(key=takeSecond)
     deviceList = json.dumps(list)
-    # for y in list:
-        # logger.debug(y)
+    for y in list:
+        logger.debug(y)
             
 def takeSecond(elem):
     return elem[1]
@@ -276,7 +282,7 @@ def restartServer():
     logger.info(' ')
 
     os.execv(sys.executable, ['python'] + sys.argv)
-                
+          
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
 
@@ -303,18 +309,17 @@ class _GoogleEntity:
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
         state = self.state
-
-        # When a state is unavailable, the attributes that describe
-        # capabilities will be stripped. For example, a light entity will miss
-        # the min/max mireds. Therefore they will be excluded from a sync.
-        # if state.state == STATE_UNAVAILABLE:
-            # return None
-
+        enableReport = ReportState.enable_report_state()
         traits = self.traits()
 
         # Found no supported traits for this entity
         if not traits:
             return None
+        
+        if enableReport:
+            reportState = state.report_state
+        else:
+            reportState = enableReport
 
         device = {
             'id': state.entity_id,
@@ -323,9 +328,10 @@ class _GoogleEntity:
             },
             'attributes': {},
             'traits': [trait.name for trait in traits],
-            'willReportState': False,
+            'willReportState': reportState,
             'deviceInfo': {
-                'manufacturer': state.hardware
+                'manufacturer': "Domoticz",
+                "model": state.hardware
               },
             'type': DOMOTICZ_TO_GOOGLE_TYPES[state.domain],
         }
@@ -350,7 +356,7 @@ class _GoogleEntity:
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
         """
         state = self.state
-
+        
         # if state.state == STATE_UNAVAILABLE:
             # return {'online': False}
 
@@ -405,14 +411,14 @@ class _GoogleEntity:
                 trt.execute(command, params)
                 executed = True
                 break
-
+ 
         if not executed:
             raise SmartHomeError(ERR_FUNCTION_NOT_SUPPORTED,
                 'Unable to execute {} for {}'.format(command, self.state.entity_id))
 
     def async_update(self):
-        """Update the entity with latest info from Domoticz."""
-
+        """Update the entity with latest info from Domoticz."""                                        
+        
         if self.state.domain == groupDOMAIN or self.state.domain == sceneDOMAIN:
             getDevices('scene')
             getSettings()
@@ -425,11 +431,23 @@ class SmartHomeReqHandler(OAuthReqHandler):
     global smarthomeControlMappings    
     global aogDevs
     
+    
     def __init__(self, *args, **kwargs):
         super(SmartHomeReqHandler, self).__init__(*args, **kwargs)
+        self._request_id = None
         
+    def report_state(self, message, token):
+        """Send a state report to Google."""
+        
+        data = {
+            'requestId': self._request_id,
+            'agentUserId': token.get('userAgentId', None),
+            'payload': message     
+        }
+        ReportState.make_jwt_request(data)
+            
     def smarthome_process(self, message, token):
-        request_id = message.get('requestId')  # type: str
+        request_id = self._request_id  # type: str
         inputs = message.get('inputs')  # type: list
     
         if len(inputs) != 1:
@@ -451,9 +469,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.error(e)
             return {'requestId': request_id, 'payload': {'errorCode': ERR_UNKNOWN_ERROR}}
         
-        
     def smarthome_post(self, s):
         a = s.headers.get('Authorization', None)
+
         token = None
         if a != None:
             type, tokenH = a.split()
@@ -465,10 +483,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return
     
         message = json.loads(s.body)
-
-        logger.info("Request: " + json.dumps(message, indent=2, sort_keys=False))
-        response = self.smarthome_process(message, token)
         
+        self._request_id = message.get('requestId')
+        
+        logger.info("Request " + json.dumps(message, indent=2, sort_keys=False))
+        response = self.smarthome_process(message, token)
+               
         try:
             if 'errorCode' in response['payload']:
                 logger.info('Error handling message %s: %s' % (message, response['payload']))
@@ -476,7 +496,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
         
-        logger.info("Response: " + json.dumps(response, indent=2, sort_keys=False))
+        logger.info("Response " + json.dumps(response, indent=2, sort_keys=False))
     
     def smarthome(self, s):
         s.send_message(500, "not supported")
@@ -486,15 +506,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
         if userAgent == None:
             return 500 #internal error
-        
+
         url = REQUEST_SYNC_BASE_URL + '?key=' + configuration['Homegraph_API_Key']
         j = {"agentUserId": userAgent}
         
         r = requests.post(url, json=j)
-      
         if 'error' in r.text:
             logger.error(r.text)
-
+        
         return r.status_code == requests.codes.ok
 
     def syncDevices(self, s):
@@ -608,8 +627,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             restartServer()
-
-   
+    
     def smarthome_sync(self, payload, token):
         """Handle action.devices.SYNC request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
@@ -660,7 +678,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             e.async_update()
             devices[devid] = e.query_serialize()
    
-        return {'devices': devices} 
+        return {'devices': devices}
 
     def smarthome_exec(self, payload, token):
         """Handle action.devices.EXECUTE request.
@@ -668,12 +686,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         entities = {}
         results = {}
-
+        enableReport = ReportState.enable_report_state()
+        
         for command in payload['commands']:
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
-                
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
                     continue
@@ -707,7 +725,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-            
+            if state.report_state == True and enableReport == True:
+                data = {'devices':{'states':{entity.entity_id:entity.query_serialize()}}}
+                self.report_state(data, token)
+      
         return {'commands': final_results}
    
     def smarthome_disconnect(self, payload, token):
