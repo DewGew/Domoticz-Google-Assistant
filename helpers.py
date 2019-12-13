@@ -1,14 +1,26 @@
 """Helper classes for Google Assistant integration."""
 
 import os
+import io
+import json
 import yaml
 import logging
 from pip._internal import main as pip
+import time
+import requests
+try:
+    import google.auth.crypt
+    import google.auth.jwt
+except ImportError as e:
+    pip.main(['install', 'google-auth'])
+    import google.auth.crypt
+    import google.auth.jwt
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
 CONFIGFILE = 'config.yaml'
 LOGFILE = 'dzga.log'
+KEYFILE = 'smart-home-key.json'
 
 def readFile(filename):
     """Read file."""
@@ -122,6 +134,7 @@ class AogState:
         self.tempunit = None
         self.battery = 0
         self.ack = False
+        self.report_state = True
 
 def uptime():
     """Get systems uptime"""
@@ -171,3 +184,85 @@ def getTunnelUrl():
         public_url = 'https://[YOUR REVERSE PROXY URL]'
         
     return public_url
+    
+class ReportState:
+    """Google Report State implementation."""
+    
+    def __init__(self):
+        """Log error code."""
+        self._access_token = None
+
+    def enable_report_state(self):
+        try:
+            file = open(os.path.join(FILE_DIR, KEYFILE), 'r')
+            file.close()
+            return True
+        except Exception as e:
+            return False
+        
+    
+    def generate_jwt(self, sa_keyfile):
+        """Generates a signed JSON Web Token using a Google API Service Account."""
+        now = int(time.time())
+        expires = now + 3600
+
+        with io.open(sa_keyfile, 'r', encoding='utf-8') as json_file:
+            data = json.load(json_file)
+            iss = data['client_email']          
+
+        # build payload
+        payload = {
+                'iss': iss,
+                'scope': 'https://www.googleapis.com/auth/homegraph',
+                'aud': 'https://accounts.google.com/o/oauth2/token',
+                'iat': now,
+                "exp": expires,
+            }
+
+        # sign with keyfile
+        signer = google.auth.crypt.RSASigner.from_service_account_file(sa_keyfile)
+        jwt = google.auth.jwt.encode(signer, payload)
+
+        return jwt
+        
+    def get_access_token(self):
+        """Generates a signed JSON Web Token using a Google API Service Account."""
+        signed_jwt = self.generate_jwt(os.path.join(FILE_DIR, KEYFILE))
+        if signed_jwt == None:
+            return False
+        url = 'https://accounts.google.com/o/oauth2/token'
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        data = 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + signed_jwt.decode('utf-8')
+
+        r = requests.post(url, headers=headers, data=data)
+
+        if r.status_code == requests.codes.ok:
+            token_data = json.loads(r.text)
+            self._access_token = token_data['access_token']
+            return token_data['access_token']
+
+        r.raise_for_status()
+        return   
+        
+    def make_jwt_request(self, data):
+        """Makes an authorized request to the endpoint"""
+        
+        self.get_access_token()
+        if self._access_token == False:
+            return   
+        url = 'https://homegraph.googleapis.com/v1/devices:reportStateAndNotification'
+        headers = {
+            'X-GFE-SSL': 'yes',
+            'Authorization': 'Bearer ' + self._access_token
+        }
+
+        r = requests.post(url, headers=headers, json=data)
+        
+        payload = data.get('payload')
+        devs = payload.get('devices')
+        states = str(devs.get('states'))
+
+        r.raise_for_status()
+
+        logger.info("Device state reported: %s" % (states))
+        return r.status_code == requests.codes.ok
