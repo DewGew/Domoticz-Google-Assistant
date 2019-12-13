@@ -238,7 +238,6 @@ TEMPLATE = """
                     <button class="btn btn-raised btn-primary" name="sync" value="sync"><i class="material-icons" style="vertical-align: middle;">sync</i> Sync Devices</button>
                 </form>
                 </p>
-                <p class="font-weight-bold text-success">{message}</p>
                 <small class="text-muted">
                     <p>Quick start<p>
                     Visit the Actions on Google console at <a href="http://console.actions.google.com">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
@@ -571,18 +570,24 @@ TEMPLATE = """
         var config = {conf}
         var updates = {update}
         if (updates) {{
-            document.getElementById("updates").innerHTML = "Updates are Availible.";
-            $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
-            }}
+          document.getElementById("updates").innerHTML = "Updates are Availible.";
+          $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
+        }};
         
         $('body').bootstrapMaterialDesign();
         $(function () {{
           $('[data-toggle="tooltip"]').tooltip()
-        }})
+        }});
         
         if (config.auth_user == 'admin' || config.auth_pass == 'admin'){{
             $('#messageModal').modal('show')
-        }}
+        }};
+        message = '{message}'
+        if (message != '') {{
+            document.getElementById("exampleModalLabel").innerHTML = "Information!";
+            document.getElementById("message").innerHTML = message;
+            $('#messageModal').modal('show')
+        }};
 
         var devicelist = {list}
         
@@ -596,14 +601,14 @@ TEMPLATE = """
             }}else{{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}}
             x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] +  nicknames + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td><td>" + devicelist[i][4] + "</td></tr>";
 
-        }}
+        }};
         if (typeof x !== "undefined"){{
             $('#deviceList_idx').append(x.replace('undefined',''));
         }}else{{
             document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
             document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
             $('#messageModal').modal('show')
-        }}
+        }};
             
         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
             lineNumbers: true,
