@@ -257,12 +257,8 @@ class ReportState:
         }
 
         r = requests.post(url, headers=headers, json=data)
-        
-        payload = data.get('payload')
-        devs = payload.get('devices')
-        states = str(devs.get('states'))
 
         r.raise_for_status()
 
-        logger.info("Device state reported: %s" % (states))
+        logger.info("Device state reported: %s" % (json.dumps(data, indent=2, sort_keys=False)))
         return r.status_code == requests.codes.ok
