@@ -119,7 +119,7 @@ def getDesc(state):
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
         
-    elif 'Device_Config' in configuration:      
+    elif 'Device_Config' in configuration:
             desc = configuration['Device_Config'].get(int(state.id), None)
             return desc
     else:
@@ -316,7 +316,7 @@ class _GoogleEntity:
         if not traits:
             return None
         
-        if enableReport:
+        if enableReport == True:
             reportState = state.report_state
         else:
             reportState = enableReport
@@ -436,13 +436,22 @@ class SmartHomeReqHandler(OAuthReqHandler):
         super(SmartHomeReqHandler, self).__init__(*args, **kwargs)
         self._request_id = None
         
-    def report_state(self, message, token):
+    def report_state(self, states, token):
         """Send a state report to Google."""
+        
+        list_keys = list(states.keys())
+        for k in list_keys:
+          if k.startswith('Camera'):
+            states.pop(k)
         
         data = {
             'requestId': self._request_id,
             'agentUserId': token.get('userAgentId', None),
-            'payload': message     
+            'payload': {
+                'devices':{
+                    'states': states,
+                }
+            }     
         }
         ReportState.make_jwt_request(data)
             
@@ -643,29 +652,20 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             entity = _GoogleEntity(state)
             serialized = entity.sync_serialize()
-
+            
             if serialized is None:
                 continue
 
             devices.append(serialized)
-            try:
-                states[entity.entity_id] = entity.query_serialize()
-            except:
-                continue
-                
-        list_keys = list(states.keys())
-        for k in list_keys:
-          if k.startswith('Camera'):
-            states.pop(k)
-            
+            if state.report_state == True:
+                try:
+                    
+                    states[entity.entity_id] = entity.query_serialize()
+                except:
+                    continue          
             
         if enableReport == True:
-            data = {
-                'devices':{
-                    'states': states,
-                }
-            }
-            self.report_state(data, token)
+            self.report_state(states, token)
         
         return {
             'agentUserId': token.get('userAgentId', None),
@@ -701,6 +701,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         entities = {}
         results = {}
+        states = {}
         enableReport = ReportState.enable_report_state()
         
         for command in payload['commands']:
@@ -734,26 +735,20 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     logger.error(err)
                     
         final_results = list(results.values())
-        
-        states = {}
 
         for entity in entities.values():
             if entity.entity_id in results:
                 continue
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-            try:
-                states[entity.entity_id] = entity.query_serialize()
-            except:
-                continue
+            if state.report_state == True:
+                try:
+                    states[entity.entity_id] = entity.query_serialize()
+                except:
+                    continue
    
-        if enableReport == True:
-            data = {
-                'devices':{
-                    'states': states,
-                }
-            }
-            self.report_state(data, token)
+        if state.report_state == True and enableReport == True:
+            self.report_state(states, token)
       
         return {'commands': final_results}
    
