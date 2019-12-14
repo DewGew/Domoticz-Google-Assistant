@@ -734,21 +734,26 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     logger.error(err)
                     
         final_results = list(results.values())
+        
+        states = {}
 
         for entity in entities.values():
             if entity.entity_id in results:
                 continue
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-            if state.report_state == True and enableReport == True:
-                data = {
-                    'devices':{
-                        'states':{
-                            entity.entity_id:entity.query_serialize()
-                        }
-                    }
+            try:
+                states[entity.entity_id] = entity.query_serialize()
+            except:
+                continue
+   
+        if enableReport == True:
+            data = {
+                'devices':{
+                    'states': states,
                 }
-                self.report_state(data, token)
+            }
+            self.report_state(data, token)
       
         return {'commands': final_results}
    
