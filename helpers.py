@@ -242,9 +242,35 @@ class ReportState:
             return token_data['access_token']
 
         r.raise_for_status()
-        return   
+        return
         
-    def make_jwt_request(self, data):
+    def call_homegraph_api_key(self, userAgent):
+        self.get_access_token()
+        enableReport = self.enable_report_state()
+        
+        if userAgent == None:
+            return 500 #internal error
+        if enableReport == False:    
+            url = 'https://homegraph.googleapis.com/v1/devices:requestSync?key=' + configuration['Homegraph_API_Key']
+            j = {"agentUserId": userAgent}
+            
+            r = requests.post(url, json=j)
+        else:
+            headers = {
+                'X-GFE-SSL': 'yes',
+                'Authorization': 'Bearer ' + self._access_token
+            }
+            url = 'https://homegraph.googleapis.com/v1/devices:requestSync'
+            j = {"agentUserId": userAgent}
+
+            r = requests.post(url, headers=headers, json=j)
+        
+        if 'error' in r.text:
+            logger.error(r.text)
+        
+        return r.status_code == requests.codes.ok
+        
+    def call_homegraph_api(self, data):
         """Makes an authorized request to the endpoint"""
         
         self.get_access_token()
