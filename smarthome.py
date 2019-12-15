@@ -453,7 +453,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 }
             }     
         }
-        ReportState.make_jwt_request(data)
+        ReportState.call_homegraph_api(data)
             
     def smarthome_process(self, message, token):
         request_id = self._request_id  # type: str
@@ -512,19 +512,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
     def forceDevicesSync(self):
         userAgent = self.getUserAgent()
-        
-        if userAgent == None:
-            return 500 #internal error
-            
-        url = REQUEST_SYNC_BASE_URL + '?key=' + configuration['Homegraph_API_Key']
-        j = {"agentUserId": userAgent}
-        
-        r = requests.post(url, json=j)
-        
-        if 'error' in r.text:
-            logger.error(r.text)
-        
-        return r.status_code == requests.codes.ok
+        r = ReportState.call_homegraph_api_key(userAgent)
+
+        return r
 
     def syncDevices(self, s):
         user = self.getSessionUser()
@@ -606,7 +596,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 else:
                     message = 'Homegraph api key not valid!'
             else:
-                message = 'Add Homegraph api key to sync devices here!'
+                message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices here!'
             logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
