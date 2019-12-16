@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from req_handler import *
-from const import Auth
+from helpers import Auth
 import pkg_resources 
 import urllib.parse
 import json
