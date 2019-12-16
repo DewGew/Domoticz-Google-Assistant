@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 import urllib.parse
 from smarthome import *
 #import cgi
-from const import Auth
+from helpers import Auth
 
 reqHandler = SmartHomeReqHandler()
 get_mappings = {}
