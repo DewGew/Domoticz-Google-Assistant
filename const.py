@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
-from helpers import configuration
                     
 """Constants for Google Assistant."""
 VERSION = '1.3.8'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
-HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
-REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
+CONFIGFILE = 'config.yaml'
+LOGFILE = 'dzga.log'
+KEYFILE = 'smart-home-key.json'
+
+HOMEGRAPH_URL = "https://homegraph.googleapis.com/"
+HOMEGRAPH_SCOPE = "https://www.googleapis.com/auth/homegraph"
+HOMEGRAPH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
+REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + "v1/devices:requestSync"
+REPORT_STATE_BASE_URL = HOMEGRAPH_URL + "v1/devices:reportStateAndNotification"
 
 SESSION_TIMEOUT = 3600
 AUTH_CODE_TIMEOUT = 600
 
-DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
-DOMOTICZ_GET_ALL_DEVICES_URL = DOMOTICZ_URL + '/json.htm?type=devices&plan=' + configuration['Domoticz']['roomplan'] + '&filter=all&used=true'
-DOMOTICZ_GET_ONE_DEVICE_URL = DOMOTICZ_URL + '/json.htm?type=devices&rid='
-DOMOTICZ_GET_SCENES_URL = DOMOTICZ_URL + '/json.htm?type=scenes'
-DOMOTICZ_GET_SETTINGS_URL = DOMOTICZ_URL + '/json.htm?type=settings'
-DOMOTICZ_GET_CAMERAS_URL = DOMOTICZ_URL + '/json.htm?type=cameras'
+DOMOTICZ_GET_ALL_DEVICES_URL = '/json.htm?type=devices&plan='
+DOMOTICZ_GET_ONE_DEVICE_URL = '/json.htm?type=devices&rid='
+DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
+DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
+DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
 
 #https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
@@ -109,35 +114,6 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     doorDOMAIN: TYPE_DOOR,
     selectorDOMAIN: TYPE_SWITCH,
     fanDOMAIN: TYPE_FAN,
-}
-
-#Todo... dynamic tokens handling/generation if needed
-Auth = {
-    'clients': {
-        configuration['ClientID']: {
-          'clientId':       configuration['ClientID'],
-          'clientSecret':   configuration['ClientSectret'],
-        },
-    },
-    'tokens': {
-        'ZsokmCwKjdhk7qHLeYd2': {
-            'uid': '1234',
-            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'userAgentId': '1234',
-        },
-    },
-    'users': {
-        '1234': {
-            'uid': '1234',
-            'name': configuration['auth_user'],
-            'password': configuration['auth_pass'],
-            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
-        },
-    },
-    'usernames': {
-        configuration['auth_user']: '1234',
-    }
 }
 
 TEMPLATE = """
