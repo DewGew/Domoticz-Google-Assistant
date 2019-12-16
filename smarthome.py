@@ -10,15 +10,17 @@ from collections.abc import Mapping
 import re
 import os
 import sys
-import time
+import time, threading
 from pip._internal import main as pip
 
-from helpers import (configuration, CONFIGFILE, LOGFILE, KEYFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger, ReportState)
+from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger, ReportState, Auth)
    
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
-    Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN,
-    lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+    DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, CONFIGFILE, LOGFILE, KEYFILE,
+    lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN, REQUEST_SYNC_BASE_URL,
+    REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+    
+DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 
 try:
     logger.debug("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
@@ -32,12 +34,12 @@ try:
 except ImportError:
     logger.info('Installing package GitPython')
     pip.main(['install', 'gitpython'])
-    import git
-        
+    import git        
 repo = git.Repo(FILE_DIR)
 ReportState = ReportState()
 if ReportState.enable_report_state() == False:
-    logger.error("Report State is disabled. %s not found" % (KEYFILE))
+    logger.error("Service account key is not found.")
+    logger.error("Report state will be unavailable")
     
 def checkupdate():
     if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
@@ -226,11 +228,11 @@ def getDevices(type = "all", id = "0"):
 
     url = ""
     if "all" == type:  
-        url = DOMOTICZ_GET_ALL_DEVICES_URL
+        url = DOMOTICZ_URL + DOMOTICZ_GET_ALL_DEVICES_URL + configuration['Domoticz']['roomplan'] + '&filter=all&used=true'
     elif "scene" == type:
-        url = DOMOTICZ_GET_SCENES_URL
+        url = DOMOTICZ_URL + DOMOTICZ_GET_SCENES_URL
     elif "id" == type:  
-        url = DOMOTICZ_GET_ONE_DEVICE_URL + id
+        url = DOMOTICZ_URL + DOMOTICZ_GET_ONE_DEVICE_URL + id
         
     r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
     if r.status_code == 200:
@@ -265,7 +267,7 @@ def getSettings():
     """Get domoticz settings."""
     global settings
     
-    url = DOMOTICZ_GET_SETTINGS_URL
+    url = DOMOTICZ_URL + DOMOTICZ_GET_SETTINGS_URL
     r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
     
     if r.status_code == 200:
@@ -453,7 +455,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 }
             }     
         }
-        ReportState.call_homegraph_api(data)
+        ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)
             
     def smarthome_process(self, message, token):
         request_id = self._request_id  # type: str
@@ -512,7 +514,15 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
     def forceDevicesSync(self):
         userAgent = self.getUserAgent()
-        r = ReportState.call_homegraph_api_key(userAgent)
+        enableReport = ReportState.enable_report_state()
+        if userAgent == None:
+            return 500 #internal error
+            
+        data = {"agentUserId": userAgent}
+        if 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
+            r = ReportState.call_homegraph_api_key(REQUEST_SYNC_BASE_URL, data)
+        else:
+            r = ReportState.call_homegraph_api(REQUEST_SYNC_BASE_URL, data)
 
         return r
 
@@ -548,6 +558,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, template)     
 
     def settings_post(self, s):
+        enableReport = ReportState.enable_report_state()
         update = checkupdate()
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
@@ -588,7 +599,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             restartServer()
 
         if (s.form.get("sync")):
-            if configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
+            if 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' or enableReport == True:
                 r = self.forceDevicesSync()
                 time.sleep(0.5)
                 if r == True:
@@ -627,6 +638,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             restartServer()
+            
+    def delay_report_state(self, states, token):
+        time.sleep(5)
+        self.report_state(states, token)
                 
     def smarthome_sync(self, payload, token):
         """Handle action.devices.SYNC request.
@@ -648,14 +663,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             devices.append(serialized)
             if state.report_state == True:
-                try:
-                    
+                try:                   
                     states[entity.entity_id] = entity.query_serialize()
                 except:
                     continue          
             
         if enableReport == True:
-            self.report_state(states, token)
+            t = threading.Thread(target=self.delay_report_state, args=(states, token)).start()
         
         return {
             'agentUserId': token.get('userAgentId', None),
@@ -731,6 +745,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
+            print(state.state)
             if state.report_state == True:
                 try:
                     states[entity.entity_id] = entity.query_serialize()
