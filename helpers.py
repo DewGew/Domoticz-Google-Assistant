@@ -8,6 +8,7 @@ import logging
 from pip._internal import main as pip
 import time
 import requests
+from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL, REQUEST_SYNC_BASE_URL)
 try:
     import google.auth.crypt
     import google.auth.jwt
@@ -18,9 +19,6 @@ except ImportError as e:
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
-CONFIGFILE = 'config.yaml'
-LOGFILE = 'dzga.log'
-KEYFILE = 'smart-home-key.json'
 
 def readFile(filename):
     """Read file."""
@@ -30,7 +28,10 @@ def readFile(filename):
         file.close()
         return content
     except:
-        content = " ** If you want to show the logs here, set 'logtofile: true' in configuration **"
+        if filename == LOGFILE:
+            content = " ** If you want to show the logs here, set 'logtofile: true' in configuration **"
+        else:
+            content = "Problem opening this file"
         return content
         
 def saveFile(filename, content):
@@ -96,6 +97,47 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         logger.info('Installing package pyngrok')
         pip.main(['install', 'pyngrok'])
         from pyngrok import ngrok
+        
+Auth = {
+    'clients': {
+        configuration['ClientID']: {
+          'clientId': configuration['ClientID'],
+          'clientSecret': configuration['ClientSectret'],
+        },
+    },
+    'tokens': {
+        'ZsokmCwKjdhk7qHLeYd2': {
+            'uid': '1234',
+            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
+            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
+            'userAgentId': '1234',
+        },
+        'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub': {
+            'uid': '2345',
+            'accessToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
+            'refreshToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
+            'userId': '2345'
+        },
+    },
+    'users': {
+        '1234': {
+            'uid': '1234',
+            'name': configuration['auth_user'],
+            'password': configuration['auth_pass'],
+            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
+        },
+        # '2345': {
+            # 'uid': '2345',
+            # 'name': configuration['auth_user_2'],
+            # 'password': configuration['auth_pass_2'],
+            # 'tokens': ['bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub'],
+        # },
+    },
+    'usernames': {
+        configuration['auth_user']: '1234',
+        #configuration['auth_user_2']: '2345',
+    }
+}
         
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
@@ -191,13 +233,14 @@ class ReportState:
     def __init__(self):
         """Log error code."""
         self._access_token = None
+        self._access_token_expires = None
 
     def enable_report_state(self):
         try:
             file = open(os.path.join(FILE_DIR, KEYFILE), 'r')
             file.close()
             return True
-        except Exception as e:
+        except:
             return False
         
     
@@ -205,6 +248,7 @@ class ReportState:
         """Generates a signed JSON Web Token using a Google API Service Account."""
         now = int(time.time())
         expires = now + 3600
+        self._access_token_expires = expires
 
         with io.open(sa_keyfile, 'r', encoding='utf-8') as json_file:
             data = json.load(json_file)
@@ -213,8 +257,8 @@ class ReportState:
         # build payload
         payload = {
                 'iss': iss,
-                'scope': 'https://www.googleapis.com/auth/homegraph',
-                'aud': 'https://accounts.google.com/o/oauth2/token',
+                'scope': HOMEGRAPH_SCOPE,
+                'aud': HOMEGRAPH_TOKEN_URL,
                 'iat': now,
                 "exp": expires,
             }
@@ -230,7 +274,7 @@ class ReportState:
         signed_jwt = self.generate_jwt(os.path.join(FILE_DIR, KEYFILE))
         if signed_jwt == None:
             return False
-        url = 'https://accounts.google.com/o/oauth2/token'
+        url = HOMEGRAPH_TOKEN_URL
         headers = {'Content-Type': 'application/x-www-form-urlencoded'}
         data = 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + signed_jwt.decode('utf-8')
 
@@ -244,39 +288,25 @@ class ReportState:
         r.raise_for_status()
         return
         
-    def call_homegraph_api_key(self, userAgent):
-        self.get_access_token()
-        enableReport = self.enable_report_state()
+    def call_homegraph_api_key(self, url, data):
+   
+        url = url + '?key=' + configuration['Homegraph_API_Key']
         
-        if userAgent == None:
-            return 500 #internal error
-        if enableReport == False:    
-            url = 'https://homegraph.googleapis.com/v1/devices:requestSync?key=' + configuration['Homegraph_API_Key']
-            j = {"agentUserId": userAgent}
-            
-            r = requests.post(url, json=j)
-        else:
-            headers = {
-                'X-GFE-SSL': 'yes',
-                'Authorization': 'Bearer ' + self._access_token
-            }
-            url = 'https://homegraph.googleapis.com/v1/devices:requestSync'
-            j = {"agentUserId": userAgent}
-
-            r = requests.post(url, headers=headers, json=j)
+        r = requests.post(url, json=data)
         
         if 'error' in r.text:
             logger.error(r.text)
         
         return r.status_code == requests.codes.ok
         
-    def call_homegraph_api(self, data):
+    def call_homegraph_api(self, url, data):
         """Makes an authorized request to the endpoint"""
-        
-        self.get_access_token()
-        if self._access_token == False:
+        now = int(time.time())
+        if not self._access_token or now > self._access_token_expires:
+            self.get_access_token()
+        elif self._access_token == False:
             return   
-        url = 'https://homegraph.googleapis.com/v1/devices:reportStateAndNotification'
+
         headers = {
             'X-GFE-SSL': 'yes',
             'Authorization': 'Bearer ' + self._access_token
@@ -286,5 +316,5 @@ class ReportState:
 
         r.raise_for_status()
 
-        logger.info("Device state reported: %s" % (json.dumps(data, indent=2, sort_keys=False)))
+        logger.info("Device state reported %s" % (json.dumps(data, indent=2, sort_keys=False)))
         return r.status_code == requests.codes.ok
