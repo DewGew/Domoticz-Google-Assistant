@@ -300,16 +300,19 @@ TEMPLATE = """
             <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
             </ul></li><br>
             
-            <li><p>Add Request Sync</p>
-            <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</p>
+            <li><p>Add Request Sync and Report State</p>
+            <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
 
             <ul>
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
-            <li>Enable the HomeGraph API. This will be used to request a new sync and to report the state back to the HomeGraph.</li>
-            <li>Click Credentials</li>
-            <li>Click 'Create credentials'</li>
-            <li>Click 'API key'</li>
-            <li>Copy the API key shown and insert it in <code>Homegraph_API_Key</code> in config.yaml.</li>
+            <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview">HomeGraph API</a></li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Services page</a></li>
+            <li>Select <b>Create Credentials</b> and create a </b>Service account key<b></li>
+            <ul>
+            <li>Create a new Service account</li>
+            <li>Use the role Service Account > Service Account Token Creator</li>
+            </ul>
+            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
             </ul></li><br>
             
             <li><p>Navigate back to the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</p>
