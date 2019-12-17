@@ -131,7 +131,7 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
   - Select Create Credentials and create a Service account key
   - Create a new Service account
   - Use the role Service Account > Service Account Token Creator
-  - Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as smart-home-key.json.
+  - Create the account and download a JSON file. Save this in `Domoticz-Google-Assisstant` folder as `smart-home-key.json`.
 
 - Navigate back to the [Actions on Google Console](https://console.actions.google.com/).
   - On the top menu click Develop, then on the left navigation menu click on Actions.
