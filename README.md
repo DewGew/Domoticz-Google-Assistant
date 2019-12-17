@@ -102,7 +102,6 @@ Domoticz:
 # Google Assistant Settings:
 ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
 ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
-Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 
 ```
 ##  Setup Actions on Google Console Instructions
@@ -121,16 +120,17 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
   - Add name e.g. 'SmartHomeClientID'
   - Copy the client ID shown and insert it in `ClientID` in config
   - Copy the client secret shown and insert it in `ClientSectret`in config
+ 
+- Add Request Sync and Report State with Service Account (Optional but recomended)
 
-- Add Request Sync (optional but recomended)
-
-  The Request Sync feature updates devices without unlinking and relinking.
+  The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).
   - Navigate to the [Google Cloud Console API Manager](https://console.cloud.google.com/apis/credentials) for your project id.
-  - Enable the HomeGraph API. This will be used to request a new sync and to report the state back to the HomeGraph.
-  - Click Credentials
-  - Click 'Create credentials'
-  - Click 'API key'
-  - Copy the API key shown and insert it in `Homegraph_API_Key` in config.
+  - Enable the [HomeGraph API](https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview).
+  - Navigate to the [Google Cloud Console API & Services page](https://console.cloud.google.com/apis/credentials)
+  - Select **Create Credentials** and create a **Service account key**
+    - Create a new Service account
+    - Use the role Service Account > Service Account Token Creator
+  - Create the account and download a JSON file. Save this in `Domoticz-Google-Assistant` folder as `smart-home-key.json`.
 
 - Navigate back to the [Actions on Google Console](https://console.actions.google.com/).
   - On the top menu click Develop, then on the left navigation menu click on Actions.

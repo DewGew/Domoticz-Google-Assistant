@@ -33,6 +33,7 @@ Domoticz:
 ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
 ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
 Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
+# NOTE: Homegraph_API_Key is not need if you are using Service account (smart-home-key.json)
 
 # Report low battry
 Low_battery_limit: 9
@@ -51,6 +52,8 @@ Image_Override:
     - 'WallSocket'
   Speaker:
     - 'Speaker'
+  Fan:
+    - 'Fan'
     
 #Additional nicknames and room configuration
 Device_Config:

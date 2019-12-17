@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
-from helpers import configuration
                     
 """Constants for Google Assistant."""
-VERSION = '1.3.9'
+VERSION = '1.4.0'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
-HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
-REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
+CONFIGFILE = 'config.yaml'
+LOGFILE = 'dzga.log'
+KEYFILE = 'smart-home-key.json'
+
+HOMEGRAPH_URL = "https://homegraph.googleapis.com/"
+HOMEGRAPH_SCOPE = "https://www.googleapis.com/auth/homegraph"
+HOMEGRAPH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
+REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + "v1/devices:requestSync"
+REPORT_STATE_BASE_URL = HOMEGRAPH_URL + "v1/devices:reportStateAndNotification"
 
 SESSION_TIMEOUT = 3600
 AUTH_CODE_TIMEOUT = 600
 
-DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
-DOMOTICZ_GET_ALL_DEVICES_URL = DOMOTICZ_URL + '/json.htm?type=devices&plan=' + configuration['Domoticz']['roomplan'] + '&filter=all&used=true'
-DOMOTICZ_GET_ONE_DEVICE_URL = DOMOTICZ_URL + '/json.htm?type=devices&rid='
-DOMOTICZ_GET_SCENES_URL = DOMOTICZ_URL + '/json.htm?type=scenes'
-DOMOTICZ_GET_SETTINGS_URL = DOMOTICZ_URL + '/json.htm?type=settings'
-DOMOTICZ_GET_CAMERAS_URL = DOMOTICZ_URL + '/json.htm?type=cameras'
+DOMOTICZ_GET_ALL_DEVICES_URL = '/json.htm?type=devices&plan='
+DOMOTICZ_GET_ONE_DEVICE_URL = '/json.htm?type=devices&rid='
+DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
+DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
+DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
 
 #https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
@@ -109,35 +114,6 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     doorDOMAIN: TYPE_DOOR,
     selectorDOMAIN: TYPE_SWITCH,
     fanDOMAIN: TYPE_FAN,
-}
-
-#Todo... dynamic tokens handling/generation if needed
-Auth = {
-    'clients': {
-        configuration['ClientID']: {
-          'clientId':       configuration['ClientID'],
-          'clientSecret':   configuration['ClientSectret'],
-        },
-    },
-    'tokens': {
-        'ZsokmCwKjdhk7qHLeYd2': {
-            'uid': '1234',
-            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'userAgentId': '1234',
-        },
-    },
-    'users': {
-        '1234': {
-            'uid': '1234',
-            'name': configuration['auth_user'],
-            'password': configuration['auth_pass'],
-            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
-        },
-    },
-    'usernames': {
-        configuration['auth_user']: '1234',
-    }
 }
 
 TEMPLATE = """
@@ -324,16 +300,19 @@ TEMPLATE = """
             <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
             </ul></li><br>
             
-            <li><p>Add Request Sync</p>
-            <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</p>
+            <li><p>Add Request Sync and Report State (Optional but recomended)</p>
+            <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
 
             <ul>
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
-            <li>Enable the HomeGraph API. This will be used to request a new sync and to report the state back to the HomeGraph.</li>
-            <li>Click Credentials</li>
-            <li>Click 'Create credentials'</li>
-            <li>Click 'API key'</li>
-            <li>Copy the API key shown and insert it in <code>Homegraph_API_Key</code> in config.yaml.</li>
+            <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview">HomeGraph API</a></li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Services page</a></li>
+            <li>Select <b>Create Credentials</b> and create a <b>Service account key</b></li>
+            <ul>
+            <li>Create a new Service account</li>
+            <li>Use the role Service Account > Service Account Token Creator</li>
+            </ul>
+            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
             </ul></li><br>
             
             <li><p>Navigate back to the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</p>
@@ -379,9 +358,9 @@ TEMPLATE = """
             <code><b>roomplan:</b> '0'</code></br><small class="text-muted">You can assign devices in a room in domoticz then set the room idx</small></br>
             <code><b>switchProtectionPass:</b> '1234'</code></br><small class="text-muted">Is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</small></p>
             
-            <p><code><b>ClientID:</b> 'YOUR_CLIENT_ID'</code></br>
-            <code><b>ClientSectret:</b> 'YOUR_CLIENT_SECRET'</code><br><small class="text-muted">Set the Google credientials.</small><br>
-            <code><b>Homegraph_API_Key:</b> 'HOMEGRAPH_API_KEY'</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.</small><br>
+            <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code></br>
+            <code><b>ClientSectret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Set the Google credientials.</small><br>
+            <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
             <p><code><b>Image_Override:</b></code><br><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</small></p>

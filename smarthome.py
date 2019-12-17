@@ -10,18 +10,20 @@ from collections.abc import Mapping
 import re
 import os
 import sys
-import time
+import time, threading
 from pip._internal import main as pip
 
-from helpers import (configuration, CONFIGFILE, LOGFILE, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger)
+from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime, getTunnelUrl, FILE_DIR, logger, ReportState, Auth)
    
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
-    Auth, DOMOTICZ_URL, DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN,
-    lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-    securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+    DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, CONFIGFILE, LOGFILE, KEYFILE,
+    lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN, REQUEST_SYNC_BASE_URL,
+    REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+    
+DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 
 try:
-    logger.info("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
+    logger.debug("Connecting to Domoticz on %s" % (DOMOTICZ_URL))
     r = requests.get(DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
         auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 except Exception as e:
@@ -32,10 +34,13 @@ try:
 except ImportError:
     logger.info('Installing package GitPython')
     pip.main(['install', 'gitpython'])
-    import git
-    
+    import git        
 repo = git.Repo(FILE_DIR)
-
+ReportState = ReportState()
+if ReportState.enable_report_state() == False:
+    logger.error("Service account key is not found.")
+    logger.error("Report state will be unavailable")
+    
 def checkupdate():
     if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
         try:
@@ -53,9 +58,9 @@ def checkupdate():
             return 0
     else:
         return 0
-      
+    
 update = checkupdate()
-                  
+         
 #some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
@@ -73,8 +78,6 @@ def AogGetDomain(device):
             return sensorDOMAIN
         elif 'Selector' == device["SwitchType"]:
             return selectorDOMAIN
-        elif 'Fan' == device["Image"]:
-            return fanDOMAIN
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == configuration['Camera_Stream']['Enabled']:
             return cameraDOMAIN
         elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Switch']:
@@ -87,6 +90,8 @@ def AogGetDomain(device):
             return outletDOMAIN
         elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Speaker']:
             return speakerDOMAIN
+        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Fan']:
+            return fanDOMAIN
         else:
             return lightDOMAIN
     elif 'Group' == device["Type"]:
@@ -116,7 +121,7 @@ def getDesc(state):
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
         
-    elif 'Device_Config' in configuration:      
+    elif 'Device_Config' in configuration:
             desc = configuration['Device_Config'].get(int(state.id), None)
             return desc
     else:
@@ -210,6 +215,9 @@ def getAog(device):
         ack = desc.get('ack', False)
         if ack:
             aog.ack = ack
+        report_state = desc.get('report_state', True)
+        if report_state != True:
+            aog.report_state = report_state
     return aog;
  
 aogDevs = {}
@@ -220,11 +228,11 @@ def getDevices(type = "all", id = "0"):
 
     url = ""
     if "all" == type:  
-        url = DOMOTICZ_GET_ALL_DEVICES_URL
+        url = DOMOTICZ_URL + DOMOTICZ_GET_ALL_DEVICES_URL + configuration['Domoticz']['roomplan'] + '&filter=all&used=true'
     elif "scene" == type:
-        url = DOMOTICZ_GET_SCENES_URL
+        url = DOMOTICZ_URL + DOMOTICZ_GET_SCENES_URL
     elif "id" == type:  
-        url = DOMOTICZ_GET_ONE_DEVICE_URL + id
+        url = DOMOTICZ_URL + DOMOTICZ_GET_ONE_DEVICE_URL + id
         
     r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
     if r.status_code == 200:
@@ -236,11 +244,11 @@ def getDevices(type = "all", id = "0"):
 
             aogDevs[aog.entity_id] = aog
     
-    list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames) for d in aogDevs.values()]
+    list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
     list.sort(key=takeSecond)
     deviceList = json.dumps(list)
-    # for y in list:
-        # logger.debug(y)
+    for y in list:
+        logger.debug(y)
             
 def takeSecond(elem):
     return elem[1]
@@ -259,7 +267,7 @@ def getSettings():
     """Get domoticz settings."""
     global settings
     
-    url = DOMOTICZ_GET_SETTINGS_URL
+    url = DOMOTICZ_URL + DOMOTICZ_GET_SETTINGS_URL
     r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
     
     if r.status_code == 200:
@@ -276,7 +284,7 @@ def restartServer():
     logger.info(' ')
 
     os.execv(sys.executable, ['python'] + sys.argv)
-                
+          
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
 
@@ -303,18 +311,17 @@ class _GoogleEntity:
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
         state = self.state
-
-        # When a state is unavailable, the attributes that describe
-        # capabilities will be stripped. For example, a light entity will miss
-        # the min/max mireds. Therefore they will be excluded from a sync.
-        # if state.state == STATE_UNAVAILABLE:
-            # return None
-
+        enableReport = ReportState.enable_report_state()
         traits = self.traits()
 
         # Found no supported traits for this entity
         if not traits:
             return None
+        
+        if enableReport == True:
+            reportState = state.report_state
+        else:
+            reportState = enableReport
 
         device = {
             'id': state.entity_id,
@@ -323,9 +330,10 @@ class _GoogleEntity:
             },
             'attributes': {},
             'traits': [trait.name for trait in traits],
-            'willReportState': False,
+            'willReportState': reportState,
             'deviceInfo': {
-                'manufacturer': state.hardware
+                'manufacturer': "Domoticz",
+                "model": state.hardware
               },
             'type': DOMOTICZ_TO_GOOGLE_TYPES[state.domain],
         }
@@ -350,7 +358,7 @@ class _GoogleEntity:
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
         """
         state = self.state
-
+        
         # if state.state == STATE_UNAVAILABLE:
             # return {'online': False}
 
@@ -405,14 +413,14 @@ class _GoogleEntity:
                 trt.execute(command, params)
                 executed = True
                 break
-
+ 
         if not executed:
             raise SmartHomeError(ERR_FUNCTION_NOT_SUPPORTED,
                 'Unable to execute {} for {}'.format(command, self.state.entity_id))
 
     def async_update(self):
-        """Update the entity with latest info from Domoticz."""
-
+        """Update the entity with latest info from Domoticz."""                                        
+        
         if self.state.domain == groupDOMAIN or self.state.domain == sceneDOMAIN:
             getDevices('scene')
             getSettings()
@@ -425,11 +433,32 @@ class SmartHomeReqHandler(OAuthReqHandler):
     global smarthomeControlMappings    
     global aogDevs
     
+    
     def __init__(self, *args, **kwargs):
         super(SmartHomeReqHandler, self).__init__(*args, **kwargs)
+        self._request_id = None
         
+    def report_state(self, states, token):
+        """Send a state report to Google."""
+        
+        list_keys = list(states.keys())
+        for k in list_keys:
+          if k.startswith('Camera'):
+            states.pop(k)
+        
+        data = {
+            'requestId': self._request_id,
+            'agentUserId': token.get('userAgentId', None),
+            'payload': {
+                'devices':{
+                    'states': states,
+                }
+            }     
+        }
+        ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)
+            
     def smarthome_process(self, message, token):
-        request_id = message.get('requestId')  # type: str
+        request_id = self._request_id  # type: str
         inputs = message.get('inputs')  # type: list
     
         if len(inputs) != 1:
@@ -451,9 +480,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.error(e)
             return {'requestId': request_id, 'payload': {'errorCode': ERR_UNKNOWN_ERROR}}
         
-        
     def smarthome_post(self, s):
         a = s.headers.get('Authorization', None)
+
         token = None
         if a != None:
             type, tokenH = a.split()
@@ -465,10 +494,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return
     
         message = json.loads(s.body)
-
-        logger.info("Request: " + json.dumps(message, indent=2, sort_keys=False))
-        response = self.smarthome_process(message, token)
         
+        self._request_id = message.get('requestId')
+        
+        logger.info("Request " + json.dumps(message, indent=2, sort_keys=False))
+        response = self.smarthome_process(message, token)
+               
         try:
             if 'errorCode' in response['payload']:
                 logger.info('Error handling message %s: %s' % (message, response['payload']))
@@ -476,26 +507,26 @@ class SmartHomeReqHandler(OAuthReqHandler):
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
         
-        logger.info("Response: " + json.dumps(response, indent=2, sort_keys=False))
+        logger.info("Response " + json.dumps(response, indent=2, sort_keys=False))
     
     def smarthome(self, s):
         s.send_message(500, "not supported")
         
     def forceDevicesSync(self):
         userAgent = self.getUserAgent()
-        
+        enableReport = ReportState.enable_report_state()
         if userAgent == None:
             return 500 #internal error
-        
-        url = REQUEST_SYNC_BASE_URL + '?key=' + configuration['Homegraph_API_Key']
-        j = {"agentUserId": userAgent}
-        
-        r = requests.post(url, json=j)
-      
-        if 'error' in r.text:
-            logger.error(r.text)
-
-        return r.status_code == requests.codes.ok
+            
+        data = {"agentUserId": userAgent}
+        if enableReport == True:
+            r = ReportState.call_homegraph_api(REQUEST_SYNC_BASE_URL, data)
+        elif 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
+            r = ReportState.call_homegraph_api_key(REQUEST_SYNC_BASE_URL, data)
+        else:
+            logger.error("No configuration for request_sync available")
+            
+        return r
 
     def syncDevices(self, s):
         user = self.getSessionUser()
@@ -529,6 +560,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, template)     
 
     def settings_post(self, s):
+        enableReport = ReportState.enable_report_state()
         update = checkupdate()
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
@@ -542,7 +574,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             saveFile(CONFIGFILE, codeToSave)
             message = 'Config saved'
             logger.info(message) 
-            
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
@@ -552,14 +584,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
             saveFile('config.yaml.bak', codeToSave)
             message = 'Backup saved'
             logger.info(message)
-
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
         
         if (s.form.get("restart")):
-            message = 'Restart Server, please wait 1 minute!'
-            meta = '<meta http-equiv="refresh" content="40">'
+            message = 'Restart Server, please wait a minute!'
+            meta = '<meta http-equiv="refresh" content="15">'
             code = ''
             logs = ''
             
@@ -569,7 +601,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             restartServer()
 
         if (s.form.get("sync")):
-            if configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
+            if 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' or enableReport == True:
                 r = self.forceDevicesSync()
                 time.sleep(0.5)
                 if r == True:
@@ -577,8 +609,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 else:
                     message = 'Homegraph api key not valid!'
             else:
-                message = 'Add Homegraph api key to sync devices here!'
-
+                message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices here!'
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
         
@@ -595,49 +627,56 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 f.close()
             logger.info('Logs removed by user')
             message = 'Logs removed'
-
+            logs = readFile(LOGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             
         if (s.form.get("update")):
             repo.git.reset('--hard')
             repo.remotes.origin.pull()
-            message = 'Updated, Restarting Server, please wait 1 minute!'
-            meta = '<meta http-equiv="refresh" content="40">'
+            message = 'Updating to latest ' + repo.active_branch.name + ', please wait a minute!''
+            meta = '<meta http-equiv="refresh" content="15">'
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
             restartServer()
-
-   
+            
+    def delay_report_state(self, states, token):
+        time.sleep(5)
+        self.report_state(states, token)
+                
     def smarthome_sync(self, payload, token):
         """Handle action.devices.SYNC request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
         devices = []
+        states = {}
         getDevices() #sync all devices
         getSettings()
+        enableReport = ReportState.enable_report_state()
         
         for state in aogDevs.values():
-            # if state.entity_id in CLOUD_NEVER_EXPOSED_ENTITIES:
-                # continue
-
-            # if not config.should_expose(state):
-                # continue
 
             entity = _GoogleEntity(state)
             serialized = entity.sync_serialize()
-
+            
             if serialized is None:
                 continue
 
             devices.append(serialized)
+            if state.report_state == True:
+                try:                   
+                    states[entity.entity_id] = entity.query_serialize()
+                except:
+                    continue          
+            
+        if enableReport == True:
+            t = threading.Thread(target=self.delay_report_state, args=(states, token)).start()
         
         return {
             'agentUserId': token.get('userAgentId', None),
             'devices': devices,
-        }   
-
+        }
         
     def smarthome_query(self, payload, token):
         """Handle action.devices.QUERY request.
@@ -660,7 +699,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             e.async_update()
             devices[devid] = e.query_serialize()
    
-        return {'devices': devices} 
+        return {'devices': devices}
 
     def smarthome_exec(self, payload, token):
         """Handle action.devices.EXECUTE request.
@@ -668,12 +707,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         entities = {}
         results = {}
-
+        states = {}
+        enableReport = ReportState.enable_report_state()
+        
         for command in payload['commands']:
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
-                
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
                     continue
@@ -707,7 +747,16 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-            
+            print(state.state)
+            if state.report_state == True:
+                try:
+                    states[entity.entity_id] = entity.query_serialize()
+                except:
+                    continue
+   
+        if state.report_state == True and enableReport == True:
+            self.report_state(states, token)
+      
         return {'commands': final_results}
    
     def smarthome_disconnect(self, payload, token):

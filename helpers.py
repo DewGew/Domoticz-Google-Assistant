@@ -1,14 +1,24 @@
 """Helper classes for Google Assistant integration."""
 
 import os
+import io
+import json
 import yaml
 import logging
 from pip._internal import main as pip
+import time
+import requests
+from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL, REQUEST_SYNC_BASE_URL)
+try:
+    import google.auth.crypt
+    import google.auth.jwt
+except ImportError as e:
+    pip.main(['install', 'google-auth'])
+    import google.auth.crypt
+    import google.auth.jwt
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
-CONFIGFILE = 'config.yaml'
-LOGFILE = 'dzga.log'
 
 def readFile(filename):
     """Read file."""
@@ -18,7 +28,10 @@ def readFile(filename):
         file.close()
         return content
     except:
-        content = " ** If you want to show the logs here, set 'logtofile: true' in configuration **"
+        if filename == LOGFILE:
+            content = " ** If you want to show the logs here, set 'logtofile: true' in configuration **"
+        else:
+            content = "Problem opening this file"
         return content
         
 def saveFile(filename, content):
@@ -85,6 +98,47 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         pip.main(['install', 'pyngrok'])
         from pyngrok import ngrok
         
+Auth = {
+    'clients': {
+        configuration['ClientID']: {
+          'clientId': configuration['ClientID'],
+          'clientSecret': configuration['ClientSectret'],
+        },
+    },
+    'tokens': {
+        'ZsokmCwKjdhk7qHLeYd2': {
+            'uid': '1234',
+            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
+            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
+            'userAgentId': '1234',
+        },
+        'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub': {
+            'uid': '2345',
+            'accessToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
+            'refreshToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
+            'userId': '2345'
+        },
+    },
+    'users': {
+        '1234': {
+            'uid': '1234',
+            'name': configuration['auth_user'],
+            'password': configuration['auth_pass'],
+            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
+        },
+        # '2345': {
+            # 'uid': '2345',
+            # 'name': configuration['auth_user_2'],
+            # 'password': configuration['auth_pass_2'],
+            # 'tokens': ['bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub'],
+        # },
+    },
+    'usernames': {
+        configuration['auth_user']: '1234',
+        #configuration['auth_user_2']: '2345',
+    }
+}
+        
 class SmartHomeError(Exception):
     """Google Assistant Smart Home errors.
     https://developers.google.com/actions/smarthome/create-app#error_responses
@@ -122,6 +176,7 @@ class AogState:
         self.tempunit = None
         self.battery = 0
         self.ack = False
+        self.report_state = True
 
 def uptime():
     """Get systems uptime"""
@@ -171,3 +226,95 @@ def getTunnelUrl():
         public_url = 'https://[YOUR REVERSE PROXY URL]'
         
     return public_url
+    
+class ReportState:
+    """Google Report State implementation."""
+    
+    def __init__(self):
+        """Log error code."""
+        self._access_token = None
+        self._access_token_expires = None
+
+    def enable_report_state(self):
+        try:
+            file = open(os.path.join(FILE_DIR, KEYFILE), 'r')
+            file.close()
+            return True
+        except:
+            return False
+        
+    
+    def generate_jwt(self, sa_keyfile):
+        """Generates a signed JSON Web Token using a Google API Service Account."""
+        now = int(time.time())
+        expires = now + 3600
+        self._access_token_expires = expires
+
+        with io.open(sa_keyfile, 'r', encoding='utf-8') as json_file:
+            data = json.load(json_file)
+            iss = data['client_email']          
+
+        # build payload
+        payload = {
+                'iss': iss,
+                'scope': HOMEGRAPH_SCOPE,
+                'aud': HOMEGRAPH_TOKEN_URL,
+                'iat': now,
+                "exp": expires,
+            }
+
+        # sign with keyfile
+        signer = google.auth.crypt.RSASigner.from_service_account_file(sa_keyfile)
+        jwt = google.auth.jwt.encode(signer, payload)
+
+        return jwt
+        
+    def get_access_token(self):
+        """Generates a signed JSON Web Token using a Google API Service Account."""
+        signed_jwt = self.generate_jwt(os.path.join(FILE_DIR, KEYFILE))
+        if signed_jwt == None:
+            return False
+        url = HOMEGRAPH_TOKEN_URL
+        headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+        data = 'grant_type=urn%3Aietf%3Aparams%3Aoauth%3Agrant-type%3Ajwt-bearer&assertion=' + signed_jwt.decode('utf-8')
+
+        r = requests.post(url, headers=headers, data=data)
+
+        if r.status_code == requests.codes.ok:
+            token_data = json.loads(r.text)
+            self._access_token = token_data['access_token']
+            return token_data['access_token']
+
+        r.raise_for_status()
+        return
+        
+    def call_homegraph_api_key(self, url, data):
+   
+        url = url + '?key=' + configuration['Homegraph_API_Key']
+        
+        r = requests.post(url, json=data)
+        
+        if 'error' in r.text:
+            logger.error(r.text)
+        
+        return r.status_code == requests.codes.ok
+        
+    def call_homegraph_api(self, url, data):
+        """Makes an authorized request to the endpoint"""
+        now = int(time.time())
+        if not self._access_token or now > self._access_token_expires:
+            self.get_access_token()
+        elif self._access_token == False:
+            return   
+
+        headers = {
+            'X-GFE-SSL': 'yes',
+            'Authorization': 'Bearer ' + self._access_token
+        }
+
+        r = requests.post(url, headers=headers, json=data)
+
+        r.raise_for_status()
+
+        logger.info("Device state reported %s" % (json.dumps(data, indent=2, sort_keys=False)))
+        return r.status_code == requests.codes.ok
