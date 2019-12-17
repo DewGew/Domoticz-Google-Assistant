@@ -125,8 +125,8 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 - Add Request Sync (optional but recomended)
 
   The Request Sync feature updates devices without unlinking and relinking.
-  - Navigate to the [Google Cloud Console API Manager](https://console.cloud.google.com/apis/credentials) for your project id.
-  - Enable the HomeGraph API. This will be used to request a new sync and to report the state back to the HomeGraph.
+  - Enable the [HomeGraph API](https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview).
+  - Navigate to the [Google Cloud Console API & Services page](https://console.cloud.google.com/apis/credentials)
   - Click Credentials
   - Click 'Create credentials'
   - Click 'API key'
