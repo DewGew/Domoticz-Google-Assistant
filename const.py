@@ -291,7 +291,7 @@ TEMPLATE = """
             
             <li><p>Add Credentials</p>
             <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Service page</a> for your project id.</li>
             <li>Click 'Create credentials'</li>
             <li>Click 'OAuth client ID'</li>
             <li>Choose 'other'</li>
@@ -304,7 +304,7 @@ TEMPLATE = """
             <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
 
             <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/library">Google Cloud Console API Manager</a> for your project id.</li>
             <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview">HomeGraph API</a></li>
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Services page</a></li>
             <li>Select <b>Create Credentials</b> and create a <b>Service account key</b></li>
