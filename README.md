@@ -129,8 +129,8 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
   - Enable the [HomeGraph API](https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview).
   - Navigate to the [Google Cloud Console API & Services page](https://console.cloud.google.com/apis/credentials)
   - Select Create Credentials and create a Service account key
-  - Create a new Service account
-  - Use the role Service Account > Service Account Token Creator
+    - Create a new Service account
+    - Use the role Service Account > Service Account Token Creator
   - Create the account and download a JSON file. Save this in `Domoticz-Google-Assisstant` folder as `smart-home-key.json`.
 
 - Navigate back to the [Actions on Google Console](https://console.actions.google.com/).
