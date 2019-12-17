@@ -300,7 +300,7 @@ TEMPLATE = """
             <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
             </ul></li><br>
             
-            <li><p>Add Request Sync and Report State</p>
+            <li><p>Add Request Sync and Report State (Optional but recomended)</p>
             <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
 
             <ul>
@@ -360,7 +360,7 @@ TEMPLATE = """
             
             <p><code><b>ClientID:</b> 'YOUR_CLIENT_ID'</code></br>
             <code><b>ClientSectret:</b> 'YOUR_CLIENT_SECRET'</code><br><small class="text-muted">Set the Google credientials.</small><br>
-            <code><b>Homegraph_API_Key:</b> 'HOMEGRAPH_API_KEY'</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.</small><br>
+            <code><b>Homegraph_API_Key:</b> 'HOMEGRAPH_API_KEY' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</br>** NOTE: This is not need if you are using Service account (smart-home-key.json)</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
             <p><code><b>Image_Override:</b></code><br><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</small></p>
