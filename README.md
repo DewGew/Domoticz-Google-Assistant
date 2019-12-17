@@ -102,7 +102,6 @@ Domoticz:
 # Google Assistant Settings:
 ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
 ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
-Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 
 ```
 ##  Setup Actions on Google Console Instructions
