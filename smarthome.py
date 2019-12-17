@@ -519,11 +519,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return 500 #internal error
             
         data = {"agentUserId": userAgent}
-        if 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
+        if enableReport == True:
+            r = ReportState.call_homegraph_api(REQUEST_SYNC_BASE_URL, data)
+        elif 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
             r = ReportState.call_homegraph_api_key(REQUEST_SYNC_BASE_URL, data)
         else:
-            r = ReportState.call_homegraph_api(REQUEST_SYNC_BASE_URL, data)
-
+            logger.error("No configuration for request_sync available")
+            
         return r
 
     def syncDevices(self, s):
