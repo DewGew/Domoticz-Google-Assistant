@@ -634,7 +634,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if (s.form.get("update")):
             repo.git.reset('--hard')
             repo.remotes.origin.pull()
-            message = 'Updating to latest ' + repo.active_branch.name + ', please wait a minute!''
+            message = 'Updating to latest ' + repo.active_branch.name + ', please wait a minute!'
             meta = '<meta http-equiv="refresh" content="15">'
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
