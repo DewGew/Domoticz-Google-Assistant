@@ -307,7 +307,7 @@ TEMPLATE = """
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
             <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview">HomeGraph API</a></li>
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Services page</a></li>
-            <li>Select <b>Create Credentials</b> and create a </b>Service account key<b></li>
+            <li>Select <b>Create Credentials</b> and create a <b>Service account key</b></li>
             <ul>
             <li>Create a new Service account</li>
             <li>Use the role Service Account > Service Account Token Creator</li>
