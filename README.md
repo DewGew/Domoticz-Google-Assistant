@@ -124,7 +124,7 @@ ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
 - Add Request Sync and Report State with Service Account (Optional but recomended)
 
   The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).
-  - Navigate to the [Google Cloud Console API Manager](https://console.cloud.google.com/apis/credentials) for your project id.
+  - Navigate to the [Google Cloud Console API Manager](https://console.cloud.google.com/apis/library) for your project id.
   - Enable the [HomeGraph API](https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview).
   - Navigate to the [Google Cloud Console API & Services page](https://console.cloud.google.com/apis/credentials)
   - Select **Create Credentials** and create a **Service account key**
