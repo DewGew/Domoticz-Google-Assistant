@@ -590,7 +590,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.send_message(200, template)
         
         if (s.form.get("restart")):
-            message = 'Restart Server, please wait 1 minute!'
+            message = 'Restart Server, please wait a minute!'
             meta = '<meta http-equiv="refresh" content="15">'
             code = ''
             logs = ''
@@ -634,7 +634,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if (s.form.get("update")):
             repo.git.reset('--hard')
             repo.remotes.origin.pull()
-            message = 'Updated, Restarting Server, please wait 1 minute!'
+            message = 'Updating to latest ' + repo.active_branch.name + ', please wait a minute!''
             meta = '<meta http-equiv="refresh" content="15">'
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
