@@ -358,9 +358,9 @@ TEMPLATE = """
             <code><b>roomplan:</b> '0'</code></br><small class="text-muted">You can assign devices in a room in domoticz then set the room idx</small></br>
             <code><b>switchProtectionPass:</b> '1234'</code></br><small class="text-muted">Is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</small></p>
             
-            <p><code><b>ClientID:</b> 'YOUR_CLIENT_ID'</code></br>
-            <code><b>ClientSectret:</b> 'YOUR_CLIENT_SECRET'</code><br><small class="text-muted">Set the Google credientials.</small><br>
-            <code><b>Homegraph_API_Key:</b> 'HOMEGRAPH_API_KEY' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
+            <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code></br>
+            <code><b>ClientSectret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Set the Google credientials.</small><br>
+            <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
             <p><code><b>Image_Override:</b></code><br><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</small></p>
