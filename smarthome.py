@@ -78,8 +78,6 @@ def AogGetDomain(device):
             return sensorDOMAIN
         elif 'Selector' == device["SwitchType"]:
             return selectorDOMAIN
-        elif 'Fan' == device["Image"]:	
-            return fanDOMAIN
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == configuration['Camera_Stream']['Enabled']:
             return cameraDOMAIN
         elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Switch']:
@@ -92,6 +90,8 @@ def AogGetDomain(device):
             return outletDOMAIN
         elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Speaker']:
             return speakerDOMAIN
+        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Fan']:
+            return fanDOMAIN
         else:
             return lightDOMAIN
     elif 'Group' == device["Type"]:
