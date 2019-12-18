@@ -375,7 +375,7 @@ TEMPLATE = """
             nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             room = Kitchen<br />
             ack = True<br />
-            report_state = false
+            report_state = false<br />
             &lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
