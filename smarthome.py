@@ -481,6 +481,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return {'requestId': request_id, 'payload': {'errorCode': ERR_UNKNOWN_ERROR}}
         
     def smarthome_post(self, s):
+        logger.debug(s.headers)
         a = s.headers.get('Authorization', None)
 
         token = None
