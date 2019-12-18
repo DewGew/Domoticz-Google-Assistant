@@ -285,9 +285,16 @@ Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
-</syntaxhighlight>
+```
 Then ctrl-x save and close. Enable service:
-<syntaxhighlight lang="bash">
+```bash
 sudo systemctl enable dzga.service
 sudo systemctl start dzga.service
 ```
+Uninstall Service:
+```bash
+sudo systemctl stop dzga.service
+sudo systemctl disable dzga.service
+sudo rm /etc/systemd/system/dzga.service
+```
+
