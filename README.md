@@ -197,12 +197,13 @@ Camera_Stream:
 ```
 
 ## Device Settings
-Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
+Nicknames, rooms ,ack and report_state can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
 ```
 <voicecontrol>
 nicknames = Kitchen Blind One, Left Blind, Blue Blind
 room = Kitchen
 ack = True
+report_state: False
 </voicecontrol>
 ```
 Other parts of the description are ignored, so you can still leave other useful descriptions.
