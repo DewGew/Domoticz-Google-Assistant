@@ -58,6 +58,9 @@ def startServer():
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
             logger.info ('** NOTE: Ngrok assigns random urls. When server restart the server gets a new url')
         logger.info ('=======')
+        # Sync with domoticz at startup
+        getDevices()
+        getSettings()
         # Wait forever for incoming http requests
         server.serve_forever()
 
