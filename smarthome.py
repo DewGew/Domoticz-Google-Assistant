@@ -644,7 +644,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             restartServer()
             
     def delay_report_state(self, states, token):
-        time.sleep(5)
+        time.sleep(3)
         self.report_state(states, token)
                 
     def smarthome_sync(self, payload, token):
