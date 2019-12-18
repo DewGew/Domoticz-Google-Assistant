@@ -65,6 +65,7 @@ Device_Config:
       - 'Smart light'
   234:
     room: 'Bedroom'
+    report_state: false
     
 Scene_Config:
   3:
