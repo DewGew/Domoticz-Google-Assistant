@@ -532,12 +532,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         r = self.forceDevicesSync()
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
          
-    def settings(self, s):             
-        try:
-            getDevices()           
-        except Exception as e:
-            logger.error('Connection to Domoticz refused! Check configuration.')
-                
+    def settings(self, s):                            
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
             s.redirect('/login?redirect_uri={0}'.format('/settings'))
