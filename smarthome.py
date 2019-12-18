@@ -575,6 +575,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Config saved'
             logger.info(message) 
             logs = readFile(LOGFILE)
+            code = readFile(CONFIGFILE)
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code, conf=confJSON, public_url=public_url, logs=logs, update=update)
 
             s.send_message(200, template)
