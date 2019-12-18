@@ -218,6 +218,8 @@ def getAog(device):
         report_state = desc.get('report_state', True)
         if report_state != True:
             aog.report_state = report_state
+    if aog.domain == cameraDOMAIN:
+        aog.report_state = False
     return aog;
  
 aogDevs = {}
@@ -440,11 +442,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
     def report_state(self, states, token):
         """Send a state report to Google."""
-        
-        list_keys = list(states.keys())
-        for k in list_keys:
-          if k.startswith('Camera'):
-            states.pop(k)
         
         data = {
             'requestId': self._request_id,
