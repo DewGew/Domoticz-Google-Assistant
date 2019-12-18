@@ -245,12 +245,11 @@ def getDevices(type = "all", id = "0"):
                 continue
 
             aogDevs[aog.entity_id] = aog
-    
+            logger.debug('('+ str(aog.name)+', '+str(aog.id)+', '+str(aog.domain)+', '+str(aog.state)+', '+str(aog.nicknames)+', '+str(aog.report_state)+')')
+            
     list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
     list.sort(key=takeSecond)
     deviceList = json.dumps(list)
-    for y in list:
-        logger.debug(y)
             
 def takeSecond(elem):
     return elem[1]
@@ -425,10 +424,8 @@ class _GoogleEntity:
         
         if self.state.domain == groupDOMAIN or self.state.domain == sceneDOMAIN:
             getDevices('scene')
-            getSettings()
         else:
-            getDevices('id', self.state.id)
-            getSettings()      
+            getDevices('id', self.state.id)   
         
         
 class SmartHomeReqHandler(OAuthReqHandler):
@@ -682,8 +679,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
         """
         devices = {}
-        getDevices()
-        getSettings()
         
         for device in payload.get('devices', []):
             devid = device['id']
@@ -746,7 +741,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-            print(state.state)
             if state.report_state == True:
                 try:
                     states[entity.entity_id] = entity.query_serialize()
