@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 import urllib.parse
 from smarthome import *
 #import cgi
-from helpers import Auth
+from helpers import Auth, logger
 
 reqHandler = SmartHomeReqHandler()
 get_mappings = {}
@@ -23,6 +23,7 @@ class AogServer(http.server.BaseHTTPRequestHandler):
        
     #Handler for the GET requests
     def do_GET(self):
+        logger.debug(self.headers)
         self.process_Headers()
         try:
             get_mappings[self.only_path](reqHandler, self)
@@ -32,7 +33,7 @@ class AogServer(http.server.BaseHTTPRequestHandler):
             
     #Handler for the POST requests 
     def do_POST(self):
-        #print(self.headers)
+        logger.debug(self.headers)
         self.form = {}
         self.body = self.rfile.read(int(self.headers['content-length'])).decode('utf-8')
         try:
