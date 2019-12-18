@@ -369,12 +369,13 @@ TEMPLATE = """
             
             <h5 id="C2">Device Settings</h5>
 
-            <p><small class="text-muted">Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
+            <p><small class="text-muted">Nicknames, rooms, ack and report_state can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
             <code></small><br />
             &lt;voicecontrol&gt;<br />
             nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             room = Kitchen<br />
             ack = True<br />
+            report_state = false
             &lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
