@@ -54,6 +54,14 @@ sudo systemctl stop dzga #If service is running
 source Domoticz-Google-Assistant/env/bin/activate
 python3 Domoticz-Google-Assistant
 ```
+Uninstall:
+```bash
+cd /home/${USER/
+sudo systemctl stop dzga
+sudo systemctl disable dzga
+sudo rm /etc/systemd/system/dzga.service
+sudo rm -r /home/${USER/Domoticz-Google-Assistant
+```
 
 ## Manual Installation
 Open a terminal window and execute those commands. NOTE: "${USER}" will automatically take your username. No need to change that. Just copy and paste.
@@ -71,6 +79,11 @@ Update:
 ```bash
 cd /home/${USER}/Domoticz-Google-Assistant/
 git pull
+```
+Uninstall:
+```bash
+cd /home/${USER/
+sudo rm -r /home/${USER/Domoticz-Google-Assistant
 ```
 ## Configuration
 You can access the interface via http://localhost:3030/settings. The default username is `admin` and the default password is `admin`.
