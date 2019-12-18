@@ -203,7 +203,7 @@ Nicknames, rooms ,ack and report_state can be set in the Domoticz user interface
 nicknames = Kitchen Blind One, Left Blind, Blue Blind
 room = Kitchen
 ack = True
-report_state: False
+report_state = False
 </voicecontrol>
 ```
 Other parts of the description are ignored, so you can still leave other useful descriptions.
