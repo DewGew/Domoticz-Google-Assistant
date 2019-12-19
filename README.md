@@ -2,7 +2,7 @@
 
 <img src="dzga_UI.png" alt="drawing" width="600"/>
 
-Standalone implementation for [Domoticz Home Automation](http://domoticz.com). It means that you can put this server wherever you want, even on another machine. You need to setup a project in Actions on Google Console. You find instructions below.
+Standalone implementation for [Domoticz Home Automation](https://www.domoticz.com/). It means that you can put this server wherever you want, even on another machine. You need to setup a project in Actions on Google Console. You find instructions below.
 
 Based on Pawcio's script at [domoticz forum](https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244)
 
