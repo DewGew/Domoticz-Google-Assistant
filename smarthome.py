@@ -685,7 +685,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
 
             e = _GoogleEntity(state)
-            e.async_update()
             devices[devid] = e.query_serialize()
    
         return {'devices': devices}
@@ -703,6 +702,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
+                new_state = execution.get('params')
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
                     continue
@@ -735,10 +735,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
             if entity.entity_id in results:
                 continue
             entity.async_update()
-            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
+            # final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
+            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': new_state})
             if state.report_state == True:
                 try:
-                    states[entity.entity_id] = entity.query_serialize()
+                    # states[entity.entity_id] = entity.query_serialize()
+                    states[entity.entity_id] = new_state
                 except:
                     continue
    
