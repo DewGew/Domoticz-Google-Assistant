@@ -59,8 +59,11 @@ def startServer():
             logger.info ('** NOTE: Ngrok assigns random urls. When server restart the server gets a new url')
         logger.info ('=======')
         # Sync with domoticz at startup
-        getDevices()
-        getSettings()
+        try:
+            getDevices()
+            getSettings()
+        except:
+            pass
         # Wait forever for incoming http requests
         server.serve_forever()
 
