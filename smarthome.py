@@ -35,7 +35,10 @@ except ImportError:
     logger.info('Installing package GitPython')
     pip.main(['install', 'gitpython'])
     import git        
-repo = git.Repo(FILE_DIR)
+try:    
+    repo = git.Repo(FILE_DIR)
+except:
+    repo = None
 ReportState = ReportState()
 if ReportState.enable_report_state() == False:
     logger.error("Service account key is not found.")
