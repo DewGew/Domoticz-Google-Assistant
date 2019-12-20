@@ -58,7 +58,7 @@ def startServer():
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
             logger.info ('** NOTE: Ngrok assigns random urls. When server restart the server gets a new url')
         logger.info ('=======')
-        print("(Press CTRL+C to quit)")
+        print("(Press CTRL+C to stop server)")
         # Sync with domoticz at startup
         try:
             getDevices()
