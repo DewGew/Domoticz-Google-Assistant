@@ -102,7 +102,7 @@ Auth = {
     'clients': {
         configuration['ClientID']: {
           'clientId': configuration['ClientID'],
-          'clientSecret': configuration['ClientSectret'],
+          'clientSecret': configuration['ClientSecret'],
         },
     },
     'tokens': {
