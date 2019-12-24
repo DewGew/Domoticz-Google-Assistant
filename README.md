@@ -101,7 +101,7 @@ Domoticz:
   
 # Google Assistant Settings:
 ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
-ClientSectret: 'ADD_YOUR_CLIENT_SECRET_HERE'
+ClientSecret: 'ADD_YOUR_CLIENT_SECRET_HERE'
 Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
 
 ```
@@ -120,7 +120,7 @@ Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
   - Choose 'other'
   - Add name e.g. 'SmartHomeClientID'
   - Copy the client ID shown and insert it in `ClientID` in config
-  - Copy the client secret shown and insert it in `ClientSectret`in config
+  - Copy the client secret shown and insert it in `ClientSecret`in config
 
 - Add Request Sync (optional but recomended)
 

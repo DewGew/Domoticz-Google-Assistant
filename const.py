@@ -116,7 +116,7 @@ Auth = {
     'clients': {
         configuration['ClientID']: {
           'clientId':       configuration['ClientID'],
-          'clientSecret':   configuration['ClientSectret'],
+          'clientSecret':   configuration['ClientSecret'],
         },
     },
     'tokens': {
@@ -381,7 +381,7 @@ TEMPLATE = """
             <code><b>switchProtectionPass:</b> '1234'</code></br><small class="text-muted">Is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</small></p>
             
             <p><code><b>ClientID:</b> 'YOUR_CLIENT_ID'</code></br>
-            <code><b>ClientSectret:</b> 'YOUR_CLIENT_SECRET'</code><br><small class="text-muted">Set the Google credientials.</small><br>
+            <code><b>ClientSecret:</b> 'YOUR_CLIENT_SECRET'</code><br><small class="text-muted">Set the Google credientials.</small><br>
             <code><b>Homegraph_API_Key:</b> 'HOMEGRAPH_API_KEY'</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
