@@ -226,6 +226,14 @@ def getTunnelUrl():
         public_url = 'https://[YOUR REVERSE PROXY URL]'
         
     return public_url
+
+def tempConvert(temp, unit):
+    """ Convert Fahrenheit to Celsius """
+    if unit == 'F':
+        celsius = (temp-32) * 5/9
+        return celsius
+    else:
+        return temp
     
 class ReportState:
     """Google Report State implementation."""
