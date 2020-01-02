@@ -394,12 +394,12 @@ class TemperatureSettingTrait(_Trait):
             
         if domain == climateDOMAIN:
             response['thermostatMode'] = 'heat'
-            current_temp = self.state.state
+            current_temp = float(self.state.state)
             if current_temp is not None:
-                response['thermostatTemperatureAmbient'] = float(tempConvert(current_temp,  _google_temp_unit(units)))
-            setpoint = self.state.setpoint
+                response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp,  _google_temp_unit(units)),1)
+            setpoint = float(self.state.setpoint)
             if setpoint is not None:
-                response['thermostatTemperatureSetpoint'] = float(setpoint)
+                response['thermostatTemperatureSetpoint'] = round(tempConvert(setpoint,  _google_temp_unit(units)),1)
             
         return response
         
