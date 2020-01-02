@@ -396,10 +396,10 @@ class TemperatureSettingTrait(_Trait):
             response['thermostatMode'] = 'heat'
             current_temp = float(self.state.state)
             if current_temp is not None:
-                response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp,  _google_temp_unit(units)),1)
+                response['thermostatTemperatureAmbient'] = current_temp
             setpoint = float(self.state.setpoint)
             if setpoint is not None:
-                response['thermostatTemperatureSetpoint'] = round(tempConvert(setpoint,  _google_temp_unit(units)),1)
+                response['thermostatTemperatureSetpoint'] = setpoint
             
         return response
         
