@@ -248,7 +248,8 @@ def getDevices(type = "all", id = "0"):
                 continue
 
             aogDevs[aog.entity_id] = aog
-            logger.debug('('+ str(aog.name)+', '+str(aog.id)+', '+str(aog.domain)+', '+str(aog.state)+', '+str(aog.nicknames)+', '+str(aog.report_state)+')')
+            req = '{'+ str(aog.name)+':{Idx: '+str(aog.id)+',Domain: '+str(aog.domain)+',State: '+str(aog.state)+',Nicknames: '+str(aog.nicknames)+',Report State: '+str(aog.report_state)+'}}'
+            logger.debug(req)
             
     list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
     list.sort(key=takeSecond)
@@ -280,6 +281,8 @@ def getSettings():
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
         settings['Language'] = devs['Language']
+      
+     logger.debug(json.dumps(settings, indent=2, sort_keys=False))
 
 def restartServer():
     """Restart.""" 
