@@ -248,8 +248,14 @@ def getDevices(type = "all", id = "0"):
                 continue
 
             aogDevs[aog.entity_id] = aog
-            req = '{'+ str(aog.name)+':{Idx: '+str(aog.id)+',Domain: '+str(aog.domain)+',State: '+str(aog.state)+',Nicknames: '+str(aog.nicknames)+',Report State: '+str(aog.report_state)+'}}'
-            logger.debug(req)
+            req = {}
+            req[aog.name] = {}
+            req[aog.name]['Idx'] = int(aog.id)
+            req[aog.name]['Domain'] = aog.domain
+            req[aog.name]['State'] = aog.state
+            req[aog.name]['Nicknames'] = aog.nicknames
+            req[aog.name]['Report State'] = aog.report_state
+            logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
             
     list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
     list.sort(key=takeSecond)
@@ -281,9 +287,9 @@ def getSettings():
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
         settings['Language'] = devs['Language']
-      
-     logger.debug(json.dumps(settings, indent=2, sort_keys=False))
-
+        
+    logger.debug(json.dumps(settings, indent=2, sort_keys=False, ensure_ascii=False))
+        
 def restartServer():
     """Restart.""" 
     logger.info(' ')
@@ -498,7 +504,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
         self._request_id = message.get('requestId')
         
-        logger.info("Request " + json.dumps(message, indent=2, sort_keys=False))
+        logger.info("Request " + json.dumps(message, indent=2, sort_keys=False, ensure_ascii=False))
         response = self.smarthome_process(message, token)
                
         try:
@@ -508,7 +514,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
         
-        logger.info("Response " + json.dumps(response, indent=2, sort_keys=False))
+        logger.info("Response " + json.dumps(response, indent=2, sort_keys=False, ensure_ascii=False))
     
     def smarthome(self, s):
         s.send_message(500, "not supported")
