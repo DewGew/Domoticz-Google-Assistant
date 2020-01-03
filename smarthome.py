@@ -280,6 +280,8 @@ def getSettings():
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
         settings['Language'] = devs['Language']
+      
+     logger.debug(json.dumps(settings, indent=2, sort_keys=False))
 
 def restartServer():
     """Restart.""" 
