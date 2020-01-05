@@ -208,7 +208,7 @@ def getAog(device):
     if desc == None:
         desc = getDesc(aog)
     
-   if desc != None:
+    if desc != None:
         n = desc.get('nicknames', None)
         if n != None:
             aog.nicknames = n
