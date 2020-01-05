@@ -208,7 +208,7 @@ def getAog(device):
     if desc == None:
         desc = getDesc(aog)
     
-    if desc != None:
+if desc != None:
         n = desc.get('nicknames', None)
         if n != None:
             aog.nicknames = n
@@ -219,6 +219,8 @@ def getAog(device):
         if ack:
             aog.ack = ack
         report_state = desc.get('report_state', True)
+        if ReportState.enable_report_state() == False:
+            aog.report_state = False
         if report_state != True:
             aog.report_state = report_state
     if aog.domain == cameraDOMAIN:
