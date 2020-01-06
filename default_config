@@ -5,6 +5,8 @@ loglevel: 'Info'
 # Set logtofile: 'false' logs will not show in the LOG tab. Set logtofile: 'Overwrite' or true Log file will be overwritten when dzga server restarts
 # Set logtofile: 'Append' Logs will append to logfile when dzga server restarts
 logtofile: false
+# If pathToLogFile is commented, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder
+pathToLogFile: ''
 # Enable or disable UI
 userinterface: true
 # Check for updates
