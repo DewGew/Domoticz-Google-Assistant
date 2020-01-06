@@ -23,7 +23,7 @@ FILE_DIR = os.path.split(FILE_PATH)[0]
 def readFile(filename):
     """Read file."""
     try:
-        file = open(os.path.join(FILE_DIR, filename), 'r+')
+        file = open(filename, 'r+')
         content = file.read()
         file.close()
         return content
@@ -75,18 +75,22 @@ ch = logging.StreamHandler()
 ch.setLevel(loglevel)
 logger.addHandler(ch)
 # Log to file
+if 'pathToLogFile' not in configuration or configuration['pathToLogFile'] == '':
+    LOGFILEPATH = FILE_DIR
+else:
+    LOGFILEPATH = configuration['pathToLogFile']
 if 'logtofile' in configuration:
     if configuration['logtofile'] == True or configuration['logtofile'] == 'Overwrite' or configuration['logtofile'] == 'Append':
         formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s', "%Y-%m-%d %H:%M:%S")
         if configuration['logtofile'] == 'Append':
-            fh = logging.FileHandler(os.path.join(FILE_DIR, LOGFILE), mode='a')
+            fh = logging.FileHandler(os.path.join(LOGFILEPATH, LOGFILE), mode='a')
         else:
-            fh = logging.FileHandler(os.path.join(FILE_DIR, LOGFILE), mode='w')
+            fh = logging.FileHandler(os.path.join(LOGFILEPATH, LOGFILE), mode='w')
         fh.setLevel(loglevel)
         fh.setFormatter(formatter)
         logger.addHandler(fh)
 if 'logtofile' not in configuration or configuration['logtofile'] == False:
-    logfile = os.path.join(FILE_DIR, LOGFILE)
+    logfile = os.path.join(LOGFILEPATH, LOGFILE)
     if os.path.exists(logfile):
         logger.info('Delete log file')
         os.remove(logfile)
