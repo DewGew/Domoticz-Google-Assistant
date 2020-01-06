@@ -252,11 +252,11 @@ def getDevices(type = "all", id = "0"):
             aogDevs[aog.entity_id] = aog
             req = {}
             req[aog.name] = {}
-            req[aog.name]['Idx'] = int(aog.id)
-            req[aog.name]['Domain'] = aog.domain
-            req[aog.name]['State'] = aog.state
-            req[aog.name]['Nicknames'] = aog.nicknames
-            req[aog.name]['Report State'] = aog.report_state
+            req[aog.name]['idx'] = int(aog.id)
+            req[aog.name]['type'] = aog.domain
+            req[aog.name]['state'] = aog.state
+            req[aog.name]['nicknames'] = aog.nicknames
+            req[aog.name]['willReportState'] = aog.report_state
             logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
             
     list = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
