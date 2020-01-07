@@ -19,6 +19,7 @@ If applicable, add screenshots to help explain your problem.
 **Desktop (please complete the following information):**
  - Domoticz version [e.g. Stable 4.10717]
  - Dzga version [e.g. 1.3.1]
+ - Python Version [e.g. 3.5.3]
 
 **Smartphone (please complete the following information):**
  - Device: [e.g. iPhone6]
