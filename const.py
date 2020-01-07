@@ -116,35 +116,6 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     fanDOMAIN: TYPE_FAN,
 }
 
-#Todo... dynamic tokens handling/generation if needed
-Auth = {
-    'clients': {
-        configuration['ClientID']: {
-          'clientId':       configuration['ClientID'],
-          'clientSecret':   configuration['ClientSecret'],
-        },
-    },
-    'tokens': {
-        'ZsokmCwKjdhk7qHLeYd2': {
-            'uid': '1234',
-            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'userAgentId': '1234',
-        },
-    },
-    'users': {
-        '1234': {
-            'uid': '1234',
-            'name': configuration['auth_user'],
-            'password': configuration['auth_pass'],
-            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
-        },
-    },
-    'usernames': {
-        configuration['auth_user']: '1234',
-    }
-}
-
 TEMPLATE = """
 <!doctype html>
 <html lang="en">
