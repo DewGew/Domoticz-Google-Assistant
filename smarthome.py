@@ -656,6 +656,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         devices = []
         states = {}
+        aogDevs.clear() 
         getDevices() #sync all devices
         getSettings()
         enableReport = ReportState.enable_report_state()
