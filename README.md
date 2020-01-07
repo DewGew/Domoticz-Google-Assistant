@@ -25,4 +25,10 @@ Domoticz-Google-Assistant delivers:
 
 Please feel free to modify it, extend and improve
 
+# Installation
+Just open a terminal window and execute this command. Then set up [Actions on Google](https://github.com/DewGew/Domoticz-Google-Assistant/wiki). Thats it!
+```bash
+bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
+```
+
 ### [Installation and configuration](https://github.com/DewGew/Domoticz-Google-Assistant/wiki)
