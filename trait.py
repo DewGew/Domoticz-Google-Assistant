@@ -8,7 +8,7 @@ from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDO
     securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, fanDOMAIN,  ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
     ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
 
-from helpers import SmartHomeError, configuration, logger
+from helpers import SmartHomeError, configuration, logger, tempConvert
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
     
@@ -59,7 +59,13 @@ TRAITS = []
 def register_trait(trait):
     """Decorate a function to register a trait."""
     TRAITS.append(trait)
-    return trait   
+    return trait
+
+def _google_temp_unit(units):
+    """Return Google temperature unit."""
+    if units == True:
+        return "F"
+    return "C"
     
 class _Trait:
     """Represents a Trait inside Google Assistant skill."""
@@ -357,11 +363,9 @@ class TemperatureSettingTrait(_Trait):
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""       
         domain = self.state.domain
+        units = self.state.tempunit
         response = {}
-        if self.state.tempunit:
-            response["thermostatTemperatureUnit"] = "F"
-        else:
-            response["thermostatTemperatureUnit"] = "C"
+        response["thermostatTemperatureUnit"] = _google_temp_unit(units)
         if domain == tempDOMAIN:
             response["queryOnlyTemperatureSetting"] = True
         else:
@@ -373,6 +377,7 @@ class TemperatureSettingTrait(_Trait):
     def query_attributes(self):
         """Return temperature point and modes query attributes."""
         domain = self.state.domain
+        units = self.state.tempunit
         response = {}
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
@@ -381,20 +386,20 @@ class TemperatureSettingTrait(_Trait):
             response['thermostatMode'] = 'heat'
             current_temp = self.state.temp
             if current_temp is not None:
-                response['thermostatTemperatureAmbient'] = current_temp
-                response['thermostatTemperatureSetpoint'] = current_temp
+                response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp,  _google_temp_unit(units)), 1)
+                response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp,  _google_temp_unit(units)), 1)
             current_humidity = self.state.humidity
             if current_humidity is not None:
                 response['thermostatHumidityAmbient'] = current_humidity
             
         if domain == climateDOMAIN:
             response['thermostatMode'] = 'heat'
-            current_temp = self.state.state
+            current_temp = float(self.state.state)
             if current_temp is not None:
-                response['thermostatTemperatureAmbient'] = float(current_temp)
-            setpoint = self.state.setpoint
+                response['thermostatTemperatureAmbient'] = current_temp
+            setpoint = float(self.state.setpoint)
             if setpoint is not None:
-                response['thermostatTemperatureSetpoint'] = float(setpoint)
+                response['thermostatTemperatureSetpoint'] = setpoint
             
         return response
         

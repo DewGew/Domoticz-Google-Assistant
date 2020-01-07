@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 import urllib.parse
 from smarthome import *
 #import cgi
-from const import Auth
+from helpers import Auth
 
 reqHandler = SmartHomeReqHandler()
 get_mappings = {}
@@ -23,6 +23,7 @@ class AogServer(http.server.BaseHTTPRequestHandler):
        
     #Handler for the GET requests
     def do_GET(self):
+        #print(self.headers)
         self.process_Headers()
         try:
             get_mappings[self.only_path](reqHandler, self)

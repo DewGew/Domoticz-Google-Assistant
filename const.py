@@ -1,21 +1,26 @@
 # -*- coding: utf-8 -*-
-from helpers import configuration
                     
 """Constants for Google Assistant."""
-VERSION = '1.3.8'
+VERSION = '1.4.9'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
-HOMEGRAPH_URL = 'https://homegraph.googleapis.com/'
-REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + 'v1/devices:requestSync'
+CONFIGFILE = 'config.yaml'
+LOGFILE = 'dzga.log'
+KEYFILE = 'smart-home-key.json'
+
+HOMEGRAPH_URL = "https://homegraph.googleapis.com/"
+HOMEGRAPH_SCOPE = "https://www.googleapis.com/auth/homegraph"
+HOMEGRAPH_TOKEN_URL = "https://accounts.google.com/o/oauth2/token"
+REQUEST_SYNC_BASE_URL = HOMEGRAPH_URL + "v1/devices:requestSync"
+REPORT_STATE_BASE_URL = HOMEGRAPH_URL + "v1/devices:reportStateAndNotification"
 
 SESSION_TIMEOUT = 3600
 AUTH_CODE_TIMEOUT = 600
 
-DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
-DOMOTICZ_GET_ALL_DEVICES_URL = DOMOTICZ_URL + '/json.htm?type=devices&plan=' + configuration['Domoticz']['roomplan'] + '&filter=all&used=true'
-DOMOTICZ_GET_ONE_DEVICE_URL = DOMOTICZ_URL + '/json.htm?type=devices&rid='
-DOMOTICZ_GET_SCENES_URL = DOMOTICZ_URL + '/json.htm?type=scenes'
-DOMOTICZ_GET_SETTINGS_URL = DOMOTICZ_URL + '/json.htm?type=settings'
-DOMOTICZ_GET_CAMERAS_URL = DOMOTICZ_URL + '/json.htm?type=cameras'
+DOMOTICZ_GET_ALL_DEVICES_URL = '/json.htm?type=devices&plan='
+DOMOTICZ_GET_ONE_DEVICE_URL = '/json.htm?type=devices&rid='
+DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
+DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
+DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
 
 #https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
@@ -109,35 +114,6 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     doorDOMAIN: TYPE_DOOR,
     selectorDOMAIN: TYPE_SWITCH,
     fanDOMAIN: TYPE_FAN,
-}
-
-#Todo... dynamic tokens handling/generation if needed
-Auth = {
-    'clients': {
-        configuration['ClientID']: {
-          'clientId':       configuration['ClientID'],
-          'clientSecret':   configuration['ClientSecret'],
-        },
-    },
-    'tokens': {
-        'ZsokmCwKjdhk7qHLeYd2': {
-            'uid': '1234',
-            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'userAgentId': '1234',
-        },
-    },
-    'users': {
-        '1234': {
-            'uid': '1234',
-            'name': configuration['auth_user'],
-            'password': configuration['auth_pass'],
-            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
-        },
-    },
-    'usernames': {
-        configuration['auth_user']: '1234',
-    }
 }
 
 TEMPLATE = """
@@ -238,7 +214,6 @@ TEMPLATE = """
                     <button class="btn btn-raised btn-primary" name="sync" value="sync"><i class="material-icons" style="vertical-align: middle;">sync</i> Sync Devices</button>
                 </form>
                 </p>
-                <p class="font-weight-bold text-success">{message}</p>
                 <small class="text-muted">
                     <p>Quick start<p>
                     Visit the Actions on Google console at <a href="http://console.actions.google.com">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
@@ -316,7 +291,7 @@ TEMPLATE = """
             
             <li><p>Add Credentials</p>
             <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Service page</a> for your project id.</li>
             <li>Click 'Create credentials'</li>
             <li>Click 'OAuth client ID'</li>
             <li>Choose 'other'</li>
@@ -325,16 +300,19 @@ TEMPLATE = """
             <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
             </ul></li><br>
             
-            <li><p>Add Request Sync</p>
-            <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</p>
+            <li><p>Add Request Sync and Report State (Optional but recomended)</p>
+            <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
 
             <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API Manager</a> for your project id.</li>
-            <li>Enable the HomeGraph API. This will be used to request a new sync and to report the state back to the HomeGraph.</li>
-            <li>Click Credentials</li>
-            <li>Click 'Create credentials'</li>
-            <li>Click 'API key'</li>
-            <li>Copy the API key shown and insert it in <code>Homegraph_API_Key</code> in config.yaml.</li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/library">Google Cloud Console API Manager</a> for your project id.</li>
+            <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview">HomeGraph API</a></li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Services page</a></li>
+            <li>Select <b>Create Credentials</b> and create a <b>Service account key</b></li>
+            <ul>
+            <li>Create a new Service account</li>
+            <li>Use the role Service Account > Service Account Token Creator</li>
+            </ul>
+            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
             </ul></li><br>
             
             <li><p>Navigate back to the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</p>
@@ -363,7 +341,8 @@ TEMPLATE = """
             
             <p><code><b>port_settings:</b> 3030</code><br><small class="text-muted">Set the local port. Default is 3030</small></p>
             <p><code><b>loglevel:</b> 'Info'</code><br><small class="text-muted">Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></small></br> 
-            <code><b>logtofile:</b> false</code><br><small class="text-muted">Enable or disable write log to file. Set logtofile to <code>false</code> logs will not show in the LOG tab. Set logtofile to <code>'Overwrite'</code> or <code>true</code> Log file will be overwritten when dzga server restarts. Set logtofile to <code>'Append'</code> Logs will append to logfile if dzga server restarts.</small></p>
+            <code><b>logtofile:</b> false</code><br><small class="text-muted">Enable or disable write log to file. Set logtofile to <code>false</code> logs will not show in the LOG tab. Set logtofile to <code>'Overwrite'</code> or <code>true</code> Log file will be overwritten when dzga server restarts. Set logtofile to <code>'Append'</code> Logs will append to logfile if dzga server restarts.</small><br>
+            <code><b>pathToLogFile:</b> '/tmp'</code><br><small class="text-muted">Path to log file. If pathToLogFile is commented out, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder</small></p>
             <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
             <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
             <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.</small>
@@ -380,9 +359,9 @@ TEMPLATE = """
             <code><b>roomplan:</b> '0'</code></br><small class="text-muted">You can assign devices in a room in domoticz then set the room idx</small></br>
             <code><b>switchProtectionPass:</b> '1234'</code></br><small class="text-muted">Is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</small></p>
             
-            <p><code><b>ClientID:</b> 'YOUR_CLIENT_ID'</code></br>
-            <code><b>ClientSecret:</b> 'YOUR_CLIENT_SECRET'</code><br><small class="text-muted">Set the Google credientials.</small><br>
-            <code><b>Homegraph_API_Key:</b> 'HOMEGRAPH_API_KEY'</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. Not required.</small><br>
+            <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code></br>
+            <code><b>ClientSecret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Set the Google credientials.</small><br>
+            <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
             <p><code><b>Image_Override:</b></code><br><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</small></p>
@@ -391,12 +370,13 @@ TEMPLATE = """
             
             <h5 id="C2">Device Settings</h5>
 
-            <p><small class="text-muted">Nicknames, rooms and ack can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
+            <p><small class="text-muted">Nicknames, rooms, ack and report_state can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
             <code></small><br />
             &lt;voicecontrol&gt;<br />
             nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             room = Kitchen<br />
             ack = True<br />
+            report_state = false<br />
             &lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
@@ -571,18 +551,24 @@ TEMPLATE = """
         var config = {conf}
         var updates = {update}
         if (updates) {{
-            document.getElementById("updates").innerHTML = "Updates are Availible.";
-            $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
-            }}
+          document.getElementById("updates").innerHTML = "Updates are Availible.";
+          $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
+        }};
         
         $('body').bootstrapMaterialDesign();
         $(function () {{
           $('[data-toggle="tooltip"]').tooltip()
-        }})
+        }});
         
         if (config.auth_user == 'admin' || config.auth_pass == 'admin'){{
             $('#messageModal').modal('show')
-        }}
+        }};
+        message = '{message}'
+        if (message != '') {{
+            document.getElementById("exampleModalLabel").innerHTML = "Information!";
+            document.getElementById("message").innerHTML = message;
+            $('#messageModal').modal('show')
+        }};
 
         var devicelist = {list}
         
@@ -596,14 +582,14 @@ TEMPLATE = """
             }}else{{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}}
             x += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] +  nicknames + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td><td>" + devicelist[i][4] + "</td></tr>";
 
-        }}
+        }};
         if (typeof x !== "undefined"){{
             $('#deviceList_idx').append(x.replace('undefined',''));
         }}else{{
             document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
             document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
             $('#messageModal').modal('show')
-        }}
+        }};
             
         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
             lineNumbers: true,

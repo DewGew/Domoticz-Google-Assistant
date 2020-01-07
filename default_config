@@ -5,6 +5,8 @@ loglevel: 'Info'
 # Set logtofile: 'false' logs will not show in the LOG tab. Set logtofile: 'Overwrite' or true Log file will be overwritten when dzga server restarts
 # Set logtofile: 'Append' Logs will append to logfile when dzga server restarts
 logtofile: false
+# If pathToLogFile is commented, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder
+pathToLogFile: ''
 # Enable or disable UI
 userinterface: true
 # Check for updates
@@ -33,6 +35,7 @@ Domoticz:
 ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
 ClientSecret: 'ADD_YOUR_CLIENT_SECRET_HERE'
 Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
+# NOTE: Homegraph_API_Key is not need if you are using Service account (smart-home-key.json)
 
 # Report low battry
 Low_battery_limit: 9
@@ -51,8 +54,11 @@ Image_Override:
     - 'WallSocket'
   Speaker:
     - 'Speaker'
+  Fan:
+    - 'Fan'
     
 #Additional nicknames and room configuration
+#Comment out or delete section below if not needed
 Device_Config:
   123:
     ack: true
@@ -62,6 +68,7 @@ Device_Config:
       - 'Smart light'
   234:
     room: 'Bedroom'
+    report_state: false
     
 Scene_Config:
   3:
