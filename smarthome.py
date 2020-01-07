@@ -83,17 +83,17 @@ def AogGetDomain(device):
             return selectorDOMAIN
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == configuration['Camera_Stream']['Enabled']:
             return cameraDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Switch']:
+        elif 'Image_Override' in configuration and 'Switch' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Switch']:
             return switchDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Light']:
+        elif 'Image_Override' in configuration and 'Light' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Light']:
             return lightDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Media']:
+        elif 'Image_Override' in configuration and 'Media' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Media']:
             return mediaDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Outlet']:
+        elif 'Image_Override' in configuration and 'Outlet' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Outlet']:
             return outletDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Speaker']:
+        elif 'Image_Override' in configuration and 'Speaker' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Speaker']:
             return speakerDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Fan']:
+        elif 'Image_Override' in configuration and 'Fan' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Fan']:
             return fanDOMAIN
         else:
             return lightDOMAIN
