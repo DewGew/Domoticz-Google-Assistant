@@ -18,7 +18,7 @@ from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHom
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, REQUEST_SYNC_BASE_URL,
     DOMOTICZ_GET_ALL_DEVICES_URL, DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, DOMOTICZ_GET_CAMERAS_URL, groupDOMAIN, sceneDOMAIN, CONFIGFILE, LOGFILE, KEYFILE,
     lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN, climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN, REQUEST_SYNC_BASE_URL,
-    REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+    REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS,ATTRS_THERMSTATSETPOINT,ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
     
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 
@@ -83,17 +83,17 @@ def AogGetDomain(device):
             return selectorDOMAIN
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == configuration['Camera_Stream']['Enabled']:
             return cameraDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Switch']:
+        elif 'Image_Override' in configuration and 'Switch' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Switch']:
             return switchDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Light']:
+        elif 'Image_Override' in configuration and 'Light' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Light']:
             return lightDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Media']:
+        elif 'Image_Override' in configuration and 'Media' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Media']:
             return mediaDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Outlet']:
+        elif 'Image_Override' in configuration and 'Outlet' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Outlet']:
             return outletDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Speaker']:
+        elif 'Image_Override' in configuration and 'Speaker' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Speaker']:
             return speakerDOMAIN
-        elif 'Image_Override' in configuration and device["Image"] in configuration['Image_Override']['Fan']:
+        elif 'Image_Override' in configuration and 'Fan' in configuration['Image_Override'] and device["Image"] in configuration['Image_Override']['Fan']:
             return fanDOMAIN
         else:
             return lightDOMAIN
