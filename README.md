@@ -32,3 +32,6 @@ bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/in
 ```
 
 ### [Installation and configuration](https://github.com/DewGew/Domoticz-Google-Assistant/wiki)
+<!--stackedit_data:
+eyJoaXN0b3J5IjpbNjY2NTI2ODUyXX0=
+-->
