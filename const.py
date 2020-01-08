@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.4.10'
+VERSION = '1.5.1'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 CONFIGFILE = 'config.yaml'
 LOGFILE = 'dzga.log'
@@ -162,20 +162,20 @@ TEMPLATE = """
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="nav nav-tabs bg-primary">
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link active" href="#home">Home</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Home">
+        <a data-toggle="tab" class="nav-link active" href="#home"><i class="material-icons">home</i></a>
       </li>
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu1">Devices</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Devices">
+        <a data-toggle="tab" class="nav-link" href="#menu1"><i class="material-icons">devices_other</i></a>
       </li>
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu2">Configuration</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Configuration">
+        <a data-toggle="tab" class="nav-link" href="#menu2"><i class="material-icons">settings_ethernet</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Setup Actions on Google">
-        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">info</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">perm_device_information</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Help">
-        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">help</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">help_outline</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Log">
         <a data-toggle="tab" class="nav-link" href="#menu5"><i class="material-icons">notes</i></a>
@@ -187,7 +187,7 @@ TEMPLATE = """
     <div class="container">
     <div class="tab-content">
         <!-- Start page -->
-        <div id="home" class="tab-pane fade show active" role="tabpanel">
+        <div id="home" class="tab-pane fade show active" role="tabpanel">    
             <div class="row">
               <div class="col-8">
                 <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a></p>
@@ -205,7 +205,7 @@ TEMPLATE = """
                 </p>
                 <p class="lead">Please feel free to modify, extend and improve it</p>
                 <p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p>
-                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues">Report issues</a></p>
+                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">&bull; Dzga on Github</a> <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues">&bull; Report issues</a></p>
               </div>
               <div class="col-4">
                 <p>
@@ -490,7 +490,7 @@ TEMPLATE = """
         </div>
         <div id="menu5" class="tab-pane fade" role="tabpanel">
             <br>
-            <h5>Logs</h5>
+            <h5 id="logsheader">Logs</h5>
             <textarea id="logs" rows="20" style="font-size: 10pt; width: 100%;">{logs}</textarea>
             <br>
             <div class="row">
@@ -586,10 +586,11 @@ TEMPLATE = """
         }}
       }}
     }}
-    $(document).ready(function() {{
-    
+
+    $(document).ready(function() {{    
         var config = {conf}
         var updates = {update}
+        document.getElementById("logsheader").innerHTML = 'Logs <small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
         if (updates) {{
           document.getElementById("updates").innerHTML = "Updates are Availible.";
           // document.getElementById("modalLabel").innerHTML = "Updates are Availible!";
