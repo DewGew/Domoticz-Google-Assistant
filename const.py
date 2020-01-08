@@ -386,7 +386,22 @@ TEMPLATE = """
             &nbsp;&nbsp;&nbsp;&nbsp;- 'Fan'</code><br>
             <small class="text-muted">Support device types <code>Switch Light Media Outlet Speaker Fan</code>. Its possible to remove those that you don't need.</small></p>
             <p><code><b>Camera_Stream:</b></code><br><small class="text-muted">In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. <a href="#C3">Read more below</a>.</small><p>
-            <p><code><b>Armhome/Armaway:</b></code><br><small class="text-muted">User-friendly name for the arm level in your language.</small></p>
+            <p><small class="text-muted">User-friendly name for the arm level in your language.</small><br>
+            <code><b>Armhome:</b><br>
+            &nbsp;&nbsp;<b>level_synonym:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'låg säkerhet'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 1'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'hemmaläge'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL1'<br>
+            &nbsp;&nbsp;<b>lang:</b> 'sv'<br>
+            <b>Armaway:</b><br>
+            &nbsp;&nbsp;<b>level_synonym:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'hög säkerhet'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 2'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'bortaläge'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL2'<br>
+            &nbsp;&nbsp;<b>lang:</b> 'sv'
+            </code></p>
             
             <h5 id="C2">Device Settings</h5>
 
