@@ -1,4 +1,4 @@
-﻿# -*- coding: utf-8 -*-
+# -*- coding: utf-8 -*-
 
 import requests
 import json
@@ -396,10 +396,10 @@ class TemperatureSettingTrait(_Trait):
             response['thermostatMode'] = 'heat'
             current_temp = float(self.state.state)
             if current_temp is not None:
-                response['thermostatTemperatureAmbient'] = current_temp
+                response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
             setpoint = float(self.state.setpoint)
             if setpoint is not None:
-                response['thermostatTemperatureSetpoint'] = setpoint
+                response['thermostatTemperatureSetpoint'] = round(tempConvert(setpoint , _google_temp_unit(units)), 1)
             
         return response
         
