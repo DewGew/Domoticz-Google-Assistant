@@ -7,9 +7,6 @@ python:
   - "3.8-dev"  # 3.8 development branch
   - "nightly"  # nightly build
 # command to install dependencies
-before_install:
-  - sed 's/#.*//' ${GIT_DIR}/requirements/system-requirements.txt | xargs sudo apt-get install -y
-
 install:
   - pip install -r requirements/pip-requirements.txt
 # command to run tests
