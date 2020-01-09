@@ -67,8 +67,8 @@ def startServer():
             pass
         # Exit if running on travis
         istravis = os.environ.get('TRAVIS') == 'true'
-        print(istravis)
         if istravis == True:
+            logger.info('Travis test is finished')
             exit()
         # Wait forever for incoming http requests
         server.serve_forever()
