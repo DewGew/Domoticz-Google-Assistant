@@ -15,9 +15,9 @@ Required:
 
 Domoticz-Google-Assistant delivers: 
 - The oauth authorization and smarthome endpoint for the google assistant.
-- Two-factor authentication pin for domoticz protected devices. (works best with english language)
-- Acknowledgement with Yes or No. (works best with english language)
-- Arm Disarm Securitypanel. (works best with english language)
+- Two-factor authentication pin for domoticz protected devices. (limited language support)
+- Acknowledgement with Yes or No. (limited language support)
+- Arm Disarm Securitypanel. (limited language support)
 - On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close.
 - Stream surveillance camera to chromecast.
 - Toggle Selector switches.

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.4.10'
+VERSION = '1.5.2'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 CONFIGFILE = 'config.yaml'
 LOGFILE = 'dzga.log'
@@ -120,30 +120,25 @@ TEMPLATE = """
 <!doctype html>
 <html lang="en">
   <head>
+    <title>Domoticz Google Assistant v""" + VERSION + """</title>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     {meta}
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-
     <!-- Material Design for Bootstrap fonts and icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Material+Icons">
-
     <!-- Material Design for Bootstrap CSS -->
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
-    
     <!-- Codemirror CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css" />
-
-    
-    <title>Domoticz Google Assistant v""" + VERSION + """</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css" />  
   </head>
   <body>
     <!-- Modal -->
-    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
         <div class="modal-content">
           <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Security Risk</h5>
+            <h5 class="modal-title" id="modalLabel">Security Risk</h5>
             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
               <span aria-hidden="true">&times;</span>
             </button>
@@ -157,6 +152,7 @@ TEMPLATE = """
         </div>
       </div>
     </div>
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
     <a class="navbar-brand" href="/settings">
         <img src="https://upload.wikimedia.org/wikipedia/commons/5/5a/Google_Assistant_logo.png" width="30" height="30" class="d-inline-block align-top" alt="">
@@ -166,20 +162,20 @@ TEMPLATE = """
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
     <ul class="nav nav-tabs bg-primary">
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link active" href="#home">Home</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Home">
+        <a data-toggle="tab" class="nav-link active" href="#home"><i class="material-icons">home</i></a>
       </li>
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu1">Devices</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Devices">
+        <a data-toggle="tab" class="nav-link" href="#menu1"><i class="material-icons">devices_other</i></a>
       </li>
-      <li class="nav-item">
-        <a data-toggle="tab" class="nav-link" href="#menu2">Configuration</a>
+      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Configuration">
+        <a data-toggle="tab" class="nav-link" href="#menu2"><i class="material-icons">settings_ethernet</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Setup Actions on Google">
-        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">info</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">perm_device_information</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Help">
-        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">help</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">help_outline</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Log">
         <a data-toggle="tab" class="nav-link" href="#menu5"><i class="material-icons">notes</i></a>
@@ -187,25 +183,29 @@ TEMPLATE = """
     </ul>
     </div>
     </nav>
-   <div class="container">
+    <!-- Container -->
+    <div class="container">
     <div class="tab-content">
-        <div id="home" class="tab-pane fade show active" role="tabpanel">
+        <!-- Start page -->
+        <div id="home" class="tab-pane fade show active" role="tabpanel">    
             <div class="row">
               <div class="col-8">
-                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a> and the <a href="https://github.com/home-assistant/home-assistant/tree/dev/homeassistant/components/google_assistant">home assistant implementation</a></p>
+                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a></p>
                 <p class="lead">Domoticz-Google-Assistant delivers:<br />
                 <ul>
-                <li>The oauth authorization and smarthome endpoint for the google assistant</li>
-                <li>Two-factor authentication pin for domoticz protected devices (works best with english language)</li>
-                <li>Acknowledgement with Yes or No. (works best with english language)</li>
-                <li>Arm Disarm Securitypanel (works best with english language)</li>
-                <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close</li>
-                <li>Stream surveillance camera to chromecast</li>
+                    <li>The oauth authorization and smarthome endpoint for the google assistant</li>
+                    <li>Two-factor authentication pin for domoticz protected devices (limited language support)</li>
+                    <li>Acknowledgement with Yes or No. (limited language support)</li>
+                    <li>Arm Disarm Securitypanel (limited language support)</li>
+                    <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close</li>
+                    <li>Stream surveillance camera to chromecast</li>
+                    <li>Toggle selector devices</li>
+                    <li>Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.</li>
                 </ul>
                 </p>
-                <p class="lead">Please feel free to modify it, extend and improve</p>
+                <p class="lead">Please feel free to modify, extend and improve it</p>
                 <p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p>
-                <p class="lead">Report issues <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues">here</a></p>            
+                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">&bull; Dzga on Github</a> <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues">&bull; Report issues</a></p>
               </div>
               <div class="col-4">
                 <p>
@@ -234,19 +234,22 @@ TEMPLATE = """
                 <small class="text-muted">DZGA Version:<br>V""" + VERSION + """</small><br>
                 <small class="text-muted" id="updates"></small>
               </div>
-              <div class="col" id="buttonUpdate">
-              
-              </div>
-              <div class="col">
-                <small class="text-muted"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">Source Code at Github</a></small><br>
-                <small class="text-muted"><a href="https://www.domoticz.com/wiki/Google_Assistant#Domoticz_Google_Assistant_Server_python">Domoticz wiki</a></small>
+              <div class="col" id="buttonUpdate"></div>
+              <div class="col-4">
+                <small class="text-muted">Encourage the development, please use the button below.</small>
+                <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <input type="hidden" name="cmd" value="_s-xclick" />
+                <input type="hidden" name="hosted_button_id" value="7D7ZWKMDLXA4J" />
+                <input type="image" src="https://www.paypalobjects.com/en_US/SE/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                <img alt="" border="0" src="https://www.paypal.com/en_SE/i/scr/pixel.gif" width="1" height="1" />
+                </form></center>
               </div>
             </div>
         </div>
         <div id="menu1" class="tab-pane fade" role="tabpanel">
             <br>
             <h5>Device list</h5>
-            <small class="text-muted">List of devices the server recived from domoticz. Room and Nicknames added in configuration. <b>Click on Header to sort asc or desc</b><br><b>NOTE:</b> If you don't see any device check your connection to domoticz.</small>
+            <small class="text-muted">List of devices the server recived from domoticz. Room and Nicknames is added from configuration. <b>Click on Header to sort asc or desc</b><br><b>NOTE:</b> If you don't see any device check your connection to domoticz.</small>
             <table class="table" id="deviceTable">
               <thead>
                 <tr>
@@ -351,32 +354,64 @@ TEMPLATE = """
             <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small></br>
             <code><b>auth_pass:</b> 'admin'</code><br><small class="text-muted">Set the authorization password.</small></p>
             
-            <p><code><b>Domoticz:</code></b><br>
-            <code><b>ip:</b> 'http://192.168.1.100'</code></br>
-            <code><b>port:</b> '8080'</code></br><small class="text-muted">Add correct ipaddress, port connect to domoticz.</small><br>
-            <code><b>username:</b> 'user'</code></br>
-            <code><b>password:</b> 'password'</code></br><small class="text-muted">Domoticz credientials</small></br>
-            <code><b>roomplan:</b> '0'</code></br><small class="text-muted">You can assign devices in a room in domoticz then set the room idx</small></br>
-            <code><b>switchProtectionPass:</b> '1234'</code></br><small class="text-muted">Is set equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to false if ask for pin function is not needed.</small></p>
+            <p><small class="text-muted">Add correct ipaddress, port, domoticz credientials to connect to domoticz.</small><br>
+            <code><b>Domoticz:</code></b><br>
+            <code>&nbsp;&nbsp;<b>ip:</b> 'http://192.168.1.100'</code><br>
+            <code>&nbsp;&nbsp;<b>port:</b> '8080'</code><br>
+            <code>&nbsp;&nbsp;<b>username:</b>'user'</code></br>
+            <code>&nbsp;&nbsp;<b>password:</b>'password'</code></br>
+            <code>&nbsp;&nbsp;<b>roomplan:</b> '0'</code></br>
+            <code>&nbsp;&nbsp;<b>switchProtectionPass:</b> '1234'</code><br>
+            <small class="text-muted">Assign a roomplan. <code>'0'</code> is all devices. Set <code>switchProtectionPass:</code> equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to <code>false</code> if ask for pin function is not needed.</small></p>
             
             <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code></br>
             <code><b>ClientSecret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Set the Google credientials.</small><br>
             <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
-            <p><code><b>Image_Override:</b></code><br><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name</small></p>
-            <p><code><b>Camera_Stream:</b></code><br><small class="text-muted">In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. Read more below.</small><p>
-            <p><code><b>Armhome/Armaway:</b></code><br><small class="text-muted">User-friendly name for the arm level in your language.</small></p>
+            <p><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name (e.g. - 'Light').</small><br>
+            <code><b>Image_Override:</b><br>
+            <b>&nbsp;&nbsp;Switch:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Generic'<br>
+            &nbsp;&nbsp;<b>Light:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Light'<br>
+            &nbsp;&nbsp;<b>Media:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Media'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'TV'<br>
+            &nbsp;&nbsp;<b>Outlet:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'WallSocket'<br>
+            &nbsp;&nbsp;<b>Speaker:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Speaker'<br>
+            &nbsp;&nbsp;<b>Fan:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Fan'</code><br>
+            <small class="text-muted">Support device types <code>Switch Light Media Outlet Speaker Fan</code>. Its possible to remove those that you don't need.</small></p>
+            <p><code><b>Camera_Stream:</b></code><br><small class="text-muted">In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. <a href="#C3">Read more below</a>.</small><p>
+            <p><small class="text-muted">User-friendly name for the arm level in your language.</small><br>
+            <code><b>Armhome:</b><br>
+            &nbsp;&nbsp;<b>level_synonym:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'låg säkerhet'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 1'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'hemmaläge'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL1'<br>
+            &nbsp;&nbsp;<b>lang:</b> 'sv'<br>
+            <b>Armaway:</b><br>
+            &nbsp;&nbsp;<b>level_synonym:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'hög säkerhet'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 2'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'bortaläge'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL2'<br>
+            &nbsp;&nbsp;<b>lang:</b> 'sv'
+            </code></p>
             
             <h5 id="C2">Device Settings</h5>
 
             <p><small class="text-muted">Nicknames, rooms, ack and report_state can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
             <code></small><br />
             &lt;voicecontrol&gt;<br />
-            nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
-            room = Kitchen<br />
-            ack = True<br />
-            report_state = false<br />
+            &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
+            &nbsp;&nbsp;room = Kitchen<br />
+            &nbsp;&nbsp;ack = True<br />
+            &nbsp;&nbsp;report_state = false<br />
             &lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
@@ -387,7 +422,12 @@ TEMPLATE = """
 
             <p><small class="text-muted">Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls. More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats. You need a to convert your video url to one of above. Try with ffmpeg or with a surveillance software system. Try out http://shinobi.video. <br />
             In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)</small></p>
-
+            <p><code><b>Camera_Stream: </b></code><br>
+            <code>&nbsp;&nbsp;<b>Enabled:</b> true </code><small class="text-muted"># Enable/disable cast to chromecast</small><br>
+            <code>&nbsp;&nbsp;<b>Cameras:</b> </code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Idx:</b></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- '123' </code><small class="text-muted"># Idx of camera attached device</small><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Camera_URL:</b></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8' </code><small class="text-muted"># Stream url</small><br>
+            </p>
             <p><small class="text-muted">Example convert rtsp to hls or mp4 using ffmpeg:</small><br />
             <code>
             ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
@@ -450,7 +490,7 @@ TEMPLATE = """
         </div>
         <div id="menu5" class="tab-pane fade" role="tabpanel">
             <br>
-            <h5>Logs</h5>
+            <h5 id="logsheader">Logs</h5>
             <textarea id="logs" rows="20" style="font-size: 10pt; width: 100%;">{logs}</textarea>
             <br>
             <div class="row">
@@ -546,12 +586,16 @@ TEMPLATE = """
         }}
       }}
     }}
-    $(document).ready(function() {{
-    
+
+    $(document).ready(function() {{    
         var config = {conf}
         var updates = {update}
+        document.getElementById("logsheader").innerHTML = 'Logs <small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
         if (updates) {{
           document.getElementById("updates").innerHTML = "Updates are Availible.";
+          // document.getElementById("modalLabel").innerHTML = "Updates are Availible!";
+          // document.getElementById("message").innerHTML = '<p>Updates are Availible. Just press update button to get latest Dzga version.</p><p><center><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form></center></p>';
+          // $('#messageModal').modal('show')
           $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
         }};
         
@@ -565,7 +609,7 @@ TEMPLATE = """
         }};
         message = '{message}'
         if (message != '') {{
-            document.getElementById("exampleModalLabel").innerHTML = "Information!";
+            document.getElementById("modalLabel").innerHTML = "Information!";
             document.getElementById("message").innerHTML = message;
             $('#messageModal').modal('show')
         }};
@@ -586,7 +630,7 @@ TEMPLATE = """
         if (typeof x !== "undefined"){{
             $('#deviceList_idx').append(x.replace('undefined',''));
         }}else{{
-            document.getElementById("exampleModalLabel").innerHTML = "Check configuration.";
+            document.getElementById("modalLabel").innerHTML = "Check configuration.";
             document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
             $('#messageModal').modal('show')
         }};
