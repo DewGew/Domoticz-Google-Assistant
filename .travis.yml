@@ -11,4 +11,5 @@ install:
   - pip install -r requirements/pip-requirements.txt
 # command to run tests
 script:
+  - cd ..
   - python3 Domoticz-Google-Assistant
