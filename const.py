@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.5.2'
+VERSION = '1.5.3'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 CONFIGFILE = 'config.yaml'
 LOGFILE = 'dzga.log'
@@ -181,6 +181,21 @@ TEMPLATE = """
         <a data-toggle="tab" class="nav-link" href="#menu5"><i class="material-icons">notes</i></a>
       </li>
     </ul>
+        <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
+          <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Dzga on GitHub">
+          <a class="nav-link p-2" href="https://github.com/DewGew/Domoticz-Google-Assistant" target="_blank" rel="noopener" aria-label="GitHub">
+          <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+width="32" height="32"
+viewBox="0 0 172 172"
+style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><path d="M0,172v-172h172v172z" fill="none" fill-rule="nonzero"></path><g fill="#ffffff" fill-rule="evenodd"><path d="M86,21.5c-35.63037,0 -64.5,28.86963 -64.5,64.5c0,28.4917 18.47656,52.6792 44.11279,61.20361c3.2334,0.58789 4.40918,-1.38574 4.40918,-3.10742c0,-1.53271 -0.06299,-5.58496 -0.08398,-10.95996c-17.95166,3.88428 -21.73096,-8.65039 -21.73096,-8.65039c-2.93945,-7.45361 -7.15967,-9.44824 -7.15967,-9.44824c-5.85791,-3.98926 0.44092,-3.90528 0.44092,-3.90528c6.4668,0.46192 9.86817,6.63477 9.86817,6.63477c5.75293,9.86817 15.09619,7.0127 18.77051,5.375c0.58789,-4.17822 2.26758,-7.01269 4.09424,-8.62939c-14.31934,-1.6167 -29.37354,-7.15967 -29.37354,-31.87207c0,-7.05469 2.51953,-12.80761 6.63477,-17.32178c-0.65088,-1.6167 -2.87646,-8.18848 0.62989,-17.06982c0,0 5.41699,-1.72168 17.7417,6.61377c5.14404,-1.42773 10.66602,-2.1416 16.14599,-2.16259c5.47998,0.02099 11.00195,0.73486 16.14599,2.16259c12.32471,-8.33545 17.7207,-6.61377 17.7207,-6.61377c3.52734,8.88134 1.32276,15.45313 0.65088,17.06982c4.13623,4.51416 6.61377,10.26709 6.61377,17.32178c0,24.77539 -15.0752,30.21338 -29.43653,31.83008c2.30957,1.97364 4.36719,5.9209 4.36719,11.92578c0,8.6294 -0.06298,15.5791 -0.06298,17.69971c0,1.72168 1.15478,3.7373 4.43017,3.10742c25.61523,-8.54541 44.0708,-32.71192 44.0708,-61.20361c0,-35.63037 -28.86963,-64.5 -64.5,-64.5z"></path></g></g></svg>
+          </a>
+        </li>
+        <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Discord">
+          <a class="nav-link p-2" href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">
+          <img src="https://discordapp.com/assets/28174a34e77bb5e5310ced9f95cb480b.png" height="32" width="32">
+          </a>
+        </li>
+      </ul>
     </div>
     </nav>
     <!-- Container -->
@@ -190,22 +205,19 @@ TEMPLATE = """
         <div id="home" class="tab-pane fade show active" role="tabpanel">    
             <div class="row">
               <div class="col-8">
-                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a></p>
+                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a><br><p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p></p>
                 <p class="lead">Domoticz-Google-Assistant delivers:<br />
-                <ul>
+                <ul class="text-muted">
                     <li>The oauth authorization and smarthome endpoint for the google assistant</li>
                     <li>Two-factor authentication pin for domoticz protected devices (limited language support)</li>
                     <li>Acknowledgement with Yes or No. (limited language support)</li>
                     <li>Arm Disarm Securitypanel (limited language support)</li>
-                    <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene and Open/Close</li>
-                    <li>Stream surveillance camera to chromecast</li>
-                    <li>Toggle selector devices</li>
-                    <li>Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.</li>
+                    <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene, Open/Close, Stream Camera and Toggle selector devices</li>
+                    <li>Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy</li>
                 </ul>
                 </p>
-                <p class="lead">Please feel free to modify, extend and improve it</p>
-                <p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p>
-                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant">&bull; Dzga on Github</a> <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues">&bull; Report issues</a></p>
+                <p class="lead">Please feel free to modify, extend and improve it!</p>
+                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues/new/choose">&bull; Report issue</a><span id="issues"></span></p>
               </div>
               <div class="col-4">
                 <p>
@@ -507,7 +519,7 @@ TEMPLATE = """
     
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
     <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
     <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.js"></script>
@@ -586,6 +598,8 @@ TEMPLATE = """
         }}
       }}
     }}
+    
+    var urlToGetAllOpenBugs = "https://api.github.com/repos/DewGew/Domoticz-Google-Assistant/issues?state=open";
 
     $(document).ready(function() {{    
         var config = {conf}
@@ -652,6 +666,15 @@ TEMPLATE = """
          }});
          
         document.getElementById("save").value = document.getElementById("code").value
+        
+        $.getJSON(urlToGetAllOpenBugs, function (allIssues) {{
+            $("#issues").append('<a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues"> &bull;' + allIssues.length + ' open issues</a>');
+            //$.each(allIssues, function (i, issue) {{
+            //    $("#issues")
+            //        .append("<b>" + issue.number + " - " + issue.title + "</b></br>")
+            //        .append("created at: " + issue.created_at + "</br>")
+            //}});
+        }});
     
     }});</script>    
   </body>
