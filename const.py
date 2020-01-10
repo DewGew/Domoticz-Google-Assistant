@@ -205,7 +205,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         <div id="home" class="tab-pane fade show active" role="tabpanel">    
             <div class="row">
               <div class="col-8">
-                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244">domoticz forum</a><br><p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p></p>
+                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244" target="_blank" rel="noopener" aria-label="Domoticz Forum">domoticz forum</a><br><p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p></p>
                 <p class="lead">Domoticz-Google-Assistant delivers:<br />
                 <ul class="text-muted">
                     <li>The oauth authorization and smarthome endpoint for the google assistant</li>
@@ -217,7 +217,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                 </ul>
                 </p>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
-                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues/new/choose">&bull; Report issue</a><span id="issues"></span></p>
+                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues/new/choose" target="_blank" rel="noopener" aria-label="Github Issue">&bull; Report issue</a><span id="issues"></span></p>
               </div>
               <div class="col-4">
                 <p>
@@ -228,7 +228,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                 </p>
                 <small class="text-muted">
                     <p>Quick start<p>
-                    Visit the Actions on Google console at <a href="http://console.actions.google.com">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
+                    Visit the Actions on Google console at <a href="http://console.actions.google.com" target="_blank" rel="noopener" aria-label="Actions on Google">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
                     <kbd>{public_url}/smarthome</kbd><br><br>
                     In Account linking, set the Authorization URL to:<br>
                     <kbd>{public_url}/oauth</kbd><br><br>
@@ -249,7 +249,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
               <div class="col" id="buttonUpdate"></div>
               <div class="col-4">
                 <small class="text-muted">Encourage the development, please use the button below.</small>
-                <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" rel="noopener" aria-label="Paypal">
                 <input type="hidden" name="cmd" value="_s-xclick" />
                 <input type="hidden" name="hosted_button_id" value="7D7ZWKMDLXA4J" />
                 <input type="image" src="https://www.paypalobjects.com/en_US/SE/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
@@ -295,7 +295,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <br>
             <h5>Setup Actions on Google Console Instructions</h5>
             <ul>
-            <li><p>Use the <a href="https://console.actions.google.com/">Actions on Google Console</a> to add a new project with a name of your choosing and click     - Create Project.</p>
+            <li><p>Use the <a href="https://console.actions.google.com/" target="_blank" rel="noopener" aria-label="Actions on Google">Actions on Google Console</a> to add a new project with a name of your choosing and click     - Create Project.</p>
 
             <ul>
             <li>Click Home Control, then click Smart Home.</li>
@@ -306,7 +306,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             
             <li><p>Add Credentials</p>
             <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Service page</a> for your project id.</li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console API & Service page</a> for your project id.</li>
             <li>Click 'Create credentials'</li>
             <li>Click 'OAuth client ID'</li>
             <li>Choose 'other'</li>
@@ -319,9 +319,9 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
 
             <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/library">Google Cloud Console API Manager</a> for your project id.</li>
-            <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview">HomeGraph API</a></li>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials">Google Cloud Console API & Services page</a></li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/library" target="_blank" rel="noopener">Google Cloud Console API Manager</a> for your project id.</li>
+            <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview" target="_blank" rel="noopener">HomeGraph API</a></li>
+            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console API & Services page</a></li>
             <li>Select <b>Create Credentials</b> and create a <b>Service account key</b></li>
             <ul>
             <li>Create a new Service account</li>
@@ -330,7 +330,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
             </ul></li><br>
             
-            <li><p>Navigate back to the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</p>
+            <li><p>Navigate back to the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</p>
             <ul>
             <li>On the top menu click Develop, then on the left navigation menu click on Actions.
             Enter the URL for fulfillment, e.g. <code>{public_url}/smarthome</code>, click Done.</li>
@@ -361,7 +361,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
             <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
             <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.</small>
-            </br><code><b>ngrok_auth_:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup">ngrok.com</a> and paste the token.</small></p>
+            </br><code><b>ngrok_auth_:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
             
             <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small></br>
             <code><b>auth_pass:</b> 'admin'</code><br><small class="text-muted">Set the authorization password.</small></p>
@@ -476,7 +476,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
 
             <p><small class="text-muted">If you want to allow other household users to control the devices:<br />
             <ul>
-            <li>Go to the settings for the project you created in the <a href="https://console.actions.google.com/">Actions on Google Console</a>.</li>
+            <li>Go to the settings for the project you created in the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</li>
             <li>Click <code>Test -&gt; Simulator</code>, then click Share icon in the right top corner. Follow the on-screen instruction:</li>
             <li>Add team members:</li>
             <li>Got to <code>Settings -&gt; Permission</code>, click Add, type the new user’s e-mail address and choose <code>Project -&gt; Viewer role</code>.</li>
@@ -668,7 +668,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         document.getElementById("save").value = document.getElementById("code").value
         
         $.getJSON(urlToGetAllOpenBugs, function (allIssues) {{
-            $("#issues").append('<a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues"> &bull;' + allIssues.length + ' open issues</a>');
+            $("#issues").append('<a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues" target="_blank" rel="noopener" aria-label="Github Issue"> &bull;' + allIssues.length + ' open issues</a>');
             //$.each(allIssues, function (i, issue) {{
             //    $("#issues")
             //        .append("<b>" + issue.number + " - " + issue.title + "</b></br>")
