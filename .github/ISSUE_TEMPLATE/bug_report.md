@@ -7,14 +7,17 @@ assignees: ''
 
 ---
 
-**Describe the bug**
+**Describe the bug**  
 A clear and concise description of what the bug is.
 
-**Expected behavior**
+**Expected behavior**  
 A clear and concise description of what you expected to happen.
 
-**Screenshots**
-If applicable, add screenshots to help explain your problem.
+**Logs:**
+
+```
+Paste the dzga logs here.
+```
 
 **Desktop (please complete the following information):**
  - Domoticz version [e.g. Stable 4.10717]
@@ -24,5 +27,5 @@ If applicable, add screenshots to help explain your problem.
 **Smartphone (please complete the following information):**
  - Device: [e.g. iPhone6]
 
-**Additional context**
-Add any other context about the problem here.
+**Additional context, screenshot**  
+Add any other context or screenshot about the problem here.
