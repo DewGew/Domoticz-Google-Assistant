@@ -692,6 +692,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
         for device in payload.get('devices', []):
             devid = device['id']
+            _GoogleEntity(aogDevs.get(devid, None)).async_update()
             state = aogDevs.get(devid, None)
             
             if not state:
