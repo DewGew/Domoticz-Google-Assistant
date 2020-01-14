@@ -1,5 +1,6 @@
 /config.py
 /config.yaml
+/travis.yml
 env/
 /__pycache__
 /dzga.log
