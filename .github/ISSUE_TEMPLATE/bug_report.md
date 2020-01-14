@@ -14,6 +14,7 @@ assignees: ''
 <!-- A clear and concise description of what you expected to happen. -->
 
 **Logs:**
+<!-- Turn on debug logs in setting -->
 
 ```
 Paste the dzga logs here.
