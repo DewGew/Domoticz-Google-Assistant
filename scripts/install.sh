@@ -14,11 +14,11 @@
 # limitations under the License.
 set -o errexit
 
-scripts_dir="$(dirname "${BASH_SOURCE[0]}")"
-GIT_DIR="$(realpath $(dirname ${BASH_SOURCE[0]})/..)"
+SCRIPTS_DIR="$(dirname "${BASH_SOURCE[0]}")"
+INSTALL_DIR="$(realpath $(dirname ${BASH_SOURCE[0]})/..)"
 
 # make sure we're running as the owner of the checkout directory
-RUN_AS="$(ls -ld "$scripts_dir" | awk 'NR==1 {print $3}')"
+RUN_AS="$(ls -ld "$SCRIPTS_DIR" | awk 'NR==1 {print $3}')"
 if [ "$USER" != "$RUN_AS" ]
 then
     echo ""
@@ -29,17 +29,12 @@ echo ""
 echo " Updating your system..."
 echo ""
 sudo apt-get update -y
-sed 's/#.*//' ${GIT_DIR}/requirements/system-requirements.txt | xargs sudo apt-get install -y
+sed 's/#.*//' ${INSTALL_DIR}/requirements/system-requirements.txt | xargs sudo apt-get install -y
 cd /home/${USER}/
 
 echo ""
 echo " Create virtual enviroment..."
 echo ""
-python3 -m venv Domoticz-Google-Assistant/env
-Domoticz-Google-Assistant/env/bin/python -m pip install --upgrade pip setuptools wheel
-source Domoticz-Google-Assistant/env/bin/activate
-
-echo ""
-echo " Installing python packages..."
-echo ""
-pip3 install -r ${GIT_DIR}/requirements/pip-requirements.txt
+python3 -m venv ${INSTALL_DIR}/env
+${INSTALL_DIR}/env/bin/python -m pip install --upgrade pip setuptools wheel
+source ${INSTALL_DIR}/env/bin/activate
