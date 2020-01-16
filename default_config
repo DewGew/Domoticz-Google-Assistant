@@ -30,12 +30,6 @@ Domoticz:
   username: 'username'
   password: 'password'
   switchProtectionPass: '1234' #Set this to false if ask for pin function is not needed
-  
-# Google Assistant Settings:
-ClientID: 'ADD_YOUR_CLIENT_ID_HERE'
-ClientSecret: 'ADD_YOUR_CLIENT_SECRET_HERE'
-Homegraph_API_Key: 'ADD_YOUR HOMEGRAPH_API_KEY_HERE'
-# NOTE: Homegraph_API_Key is not need if you are using Service account (smart-home-key.json)
 
 # Report low battry
 Low_battery_limit: 9
