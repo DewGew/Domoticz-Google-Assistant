@@ -32,9 +32,21 @@ sudo apt-get update -y
 sed 's/#.*//' ${INSTALL_DIR}/requirements/system-requirements.txt | xargs sudo apt-get install -y
 cd /home/${USER}/
 
+VER=$(python3 -V 2>&1 | sed 's/.* \([0-9]\).\([0-9]\).*/\1\2/')
+if [ "$VER" -lt "35" ]; then
+    echo " $INSTALL_DIR requires python 3.5 or greater"
+	echo ""
+    exit 1
+fi
+
 echo ""
 echo " Create virtual enviroment..."
 echo ""
 python3 -m venv ${INSTALL_DIR}/env
 ${INSTALL_DIR}/env/bin/python -m pip install --upgrade pip setuptools wheel
 source ${INSTALL_DIR}/env/bin/activate
+
+echo ""
+echo " Installing python packages..."
+echo ""
+pip3 install -r ${INSTALL_DIR}/requirements/pip-requirements.txt
