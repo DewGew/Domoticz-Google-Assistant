@@ -31,7 +31,7 @@ class OAuthReqHandler(ReqHandler):
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
             print('No user data')
-            s.redirect('/login?client_id=%s&redirect_uri=%s&redirect=%s&state=%s' % 
+            s.redirect('login?client_id=%s&redirect_uri=%s&redirect=%s&state=%s' % 
                 (client_id, urllib.parse.quote(redirect_uri, safe=''), s.only_path, state))
             return
  
@@ -53,7 +53,7 @@ class OAuthReqHandler(ReqHandler):
         user = self.getUser(s.form.get("username", None), s.form.get("password", None))
         
         if user == None:
-            s.redirect('/login?client_id=%s&redirect_uri=%s&redirect=%s&state=%s' % 
+            s.redirect('login?client_id=%s&redirect_uri=%s&redirect=%s&state=%s' % 
                 (s.form.get("client_id", None), s.form.get("redirect_uri", None), s.form.get("redirect", None), s.form.get("state", None)), 301)
             return
               
