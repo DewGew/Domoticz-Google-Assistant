@@ -102,6 +102,11 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         pip.main(['install', 'pyngrok'])
         from pyngrok import ngrok
         
+if 'ClientID' not in configuration:
+	configuration['ClientID'] = 'sampleClientId'
+if 'ClientSecret' not in configuration:
+	configuration['ClientSecret'] = 'sampleClientSecret'
+        
 Auth = {
     'clients': {
         configuration['ClientID']: {
