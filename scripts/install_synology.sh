@@ -52,14 +52,14 @@ fi
 echo ""
 echo " Create virtual enviroment..."
 echo ""
-#python3 -m venv ${INSTALL_DIR}/env
-#${INSTALL_DIR}/env/bin/python -m pip install --upgrade pip setuptools wheel
+python3 -m venv ${INSTALL_DIR}/env
+${INSTALL_DIR}/env/bin/python -m pip install --upgrade pip setuptools wheel
 source ${INSTALL_DIR}/env/bin/activate
 
 echo ""
 echo " Installing python packages..."
 echo ""
-# pip3 install -r ${INSTALL_DIR}/requirements/pip-requirements.txt
+pip3 install -r ${INSTALL_DIR}/requirements/pip-requirements.txt
 
 echo ""
 echo " Create dzga daemon file"
