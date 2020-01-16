@@ -540,7 +540,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def syncDevices(self, s):
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
-            s.redirect('/login?redirect_uri={0}'.format('/sync'))
+            s.redirect('login?redirect_uri={0}'.format('sync'))
             return
         
         r = self.forceDevicesSync()
@@ -549,7 +549,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def settings(self, s):                            
         user = self.getSessionUser()
         if user == None or user.get('uid', '') == '':
-            s.redirect('/login?redirect_uri={0}'.format('/settings'))
+            s.redirect('login?redirect_uri={0}'.format('settings'))
             return
             
         update = checkupdate()
