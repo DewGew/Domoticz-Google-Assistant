@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.5.6'
+VERSION = '1.5.7'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 CONFIGFILE = 'config.yaml'
 LOGFILE = 'dzga.log'
