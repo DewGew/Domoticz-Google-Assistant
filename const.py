@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.5.6'
+VERSION = '1.5.7'
 PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
 CONFIGFILE = 'config.yaml'
 LOGFILE = 'dzga.log'
@@ -22,7 +22,7 @@ DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
 DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
 DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
 
-#https://developers.google.com/actions/smarthome/guides/
+# https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
 TYPE_AC_UNIT = PREFIX_TYPES + 'AC_UNIT'
 TYPE_BLINDS = PREFIX_TYPES + 'BLINDS'
@@ -130,7 +130,7 @@ TEMPLATE = """
     <!-- Material Design for Bootstrap CSS -->
     <link rel="stylesheet" href="https://unpkg.com/bootstrap-material-design@4.1.1/dist/css/bootstrap-material-design.min.css" integrity="sha384-wXznGJNEXNG1NFsbm0ugrLFMQPWswR3lds2VeinahP8N0zJw9VWSopbjv2x7WCvX" crossorigin="anonymous">
     <!-- Codemirror CSS -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css" />  
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css" />
   </head>
   <body>
     <!-- Modal -->
@@ -202,10 +202,10 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
     <div class="container">
     <div class="tab-content">
         <!-- Start page -->
-        <div id="home" class="tab-pane fade show active" role="tabpanel">    
+        <div id="home" class="tab-pane fade show active" role="tabpanel">
             <div class="row">
               <div class="col-8">
-                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244" target="_blank" rel="noopener" aria-label="Domoticz Forum">domoticz forum</a><br><p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p></p>
+                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244" target="_blank" rel="noopener" aria-label="Domoticz Forum">domoticz forum</a><br><p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p>
                 <p class="lead">Domoticz-Google-Assistant delivers:<br />
                 <ul class="text-muted">
                     <li>The oauth authorization and smarthome endpoint for the google assistant</li>
@@ -215,9 +215,15 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene, Open/Close, Stream Camera and Toggle selector devices</li>
                     <li>Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy</li>
                 </ul>
-                </p>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
-                <p class="lead"><a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues/new/choose" target="_blank" rel="noopener" aria-label="Github Issue">&bull; Report issue</a><span id="issues"></span></p>
+                <p class="lead">
+                <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues" target="_blank" rel="noopener" aria-label="Github Issues">
+                <img alt="GitHub issues" src="https://img.shields.io/github/issues/DewGew/Domoticz-Google-Assistant?style=for-the-badge">
+                </a>
+                <a href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">
+                <img alt="Discord" src="https://img.shields.io/discord/664815298284748830?label=Chat%20on%20discord&logo=discord&logoColor=white&style=for-the-badge">
+                </a>
+                </p>
               </div>
               <div class="col-4">
                 <p>
@@ -225,9 +231,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <button class="btn btn-raised btn-primary" name="restart" value="restart"><i class="material-icons" style="vertical-align: middle;">replay</i> Restart Server</button>
                     <button class="btn btn-raised btn-primary" name="sync" value="sync"><i class="material-icons" style="vertical-align: middle;">sync</i> Sync Devices</button>
                 </form>
-                </p>
                 <small class="text-muted">
-                    <p>Quick start<p>
+                    <b>Quick start</b><br>
                     Visit the Actions on Google console at <a href="http://console.actions.google.com" target="_blank" rel="noopener" aria-label="Actions on Google">http://console.actions.google.com</a>.<br>Under Develop section, replace the fulfillment URL in Actions with:<br>
                     <kbd>{public_url}/smarthome</kbd><br><br>
                     In Account linking, set the Authorization URL to:<br>
@@ -252,7 +257,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                 <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" rel="noopener" aria-label="Paypal">
                 <input type="hidden" name="cmd" value="_s-xclick" />
                 <input type="hidden" name="hosted_button_id" value="7D7ZWKMDLXA4J" />
-                <input type="image" src="https://www.paypalobjects.com/en_US/SE/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                <input type="image" src="https://www.paypalobjects.com/en_US/SE/i/btn/btn_donateCC_LG.gif" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
                 <img alt="" border="0" src="https://www.paypal.com/en_SE/i/scr/pixel.gif" width="1" height="1" />
                 </form></center>
               </div>
@@ -302,8 +307,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>On the top menu click Develop, then on the left navigation menu click on Invocation.</li>
             <li>Add your App's name. Click Save.</li>
             <li>Click 'Save'.</li>
-            </ul></li><br>
-            
+            </ul></li>
+
             <li><p>Add Credentials</p>
             <ul>
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console API & Service page</a> for your project id.</li>
@@ -313,8 +318,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Add name e.g. 'SmartHomeClientID'</li>
             <li>Copy the client ID shown and insert it in <code>clientID</code> in config.yaml</li>
             <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
-            </ul></li><br>
-            
+            </ul></li>
+
             <li><p>Add Request Sync and Report State (Optional but recomended)</p>
             <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
 
@@ -328,8 +333,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Use the role Service Account > Service Account Token Creator</li>
             </ul>
             <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
-            </ul></li><br>
-            
+            </ul></li>
+
             <li><p>Navigate back to the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</p>
             <ul>
             <li>On the top menu click Develop, then on the left navigation menu click on Actions.
@@ -353,32 +358,32 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <a href="#C4">Other</a><br>
             </p>
             <h5 id="C1">Configuration Settings</h5>
-            
+
             <p><code><b>port_settings:</b> 3030</code><br><small class="text-muted">Set the local port. Default is 3030</small></p>
-            <p><code><b>loglevel:</b> 'Info'</code><br><small class="text-muted">Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></small></br> 
+            <p><code><b>loglevel:</b> 'Info'</code><br><small class="text-muted">Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></small><br>
             <code><b>logtofile:</b> false</code><br><small class="text-muted">Enable or disable write log to file. Set logtofile to <code>false</code> logs will not show in the LOG tab. Set logtofile to <code>'Overwrite'</code> or <code>true</code> Log file will be overwritten when dzga server restarts. Set logtofile to <code>'Append'</code> Logs will append to logfile if dzga server restarts.</small><br>
             <code><b>pathToLogFile:</b> '/tmp'</code><br><small class="text-muted">Path to log file. If pathToLogFile is commented out, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder</small></p>
             <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
             <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
             <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.</small>
-            </br><code><b>ngrok_auth_:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
-            
-            <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small></br>
+            <br><code><b>ngrok_auth_:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
+
+            <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small><br>
             <code><b>auth_pass:</b> 'admin'</code><br><small class="text-muted">Set the authorization password.</small></p>
-            
+
             <p><small class="text-muted">Add correct ipaddress, port, domoticz credientials to connect to domoticz.</small><br>
-            <code><b>Domoticz:</code></b><br>
+                <code><b>Domoticz:</b></code><br>
             <code>&nbsp;&nbsp;<b>ip:</b> 'http://192.168.1.100'</code><br>
             <code>&nbsp;&nbsp;<b>port:</b> '8080'</code><br>
-            <code>&nbsp;&nbsp;<b>username:</b>'user'</code></br>
-            <code>&nbsp;&nbsp;<b>password:</b>'password'</code></br>
-            <code>&nbsp;&nbsp;<b>roomplan:</b> '0'</code></br>
+            <code>&nbsp;&nbsp;<b>username:</b>'user'</code><br>
+            <code>&nbsp;&nbsp;<b>password:</b>'password'</code><br>
+            <code>&nbsp;&nbsp;<b>roomplan:</b> '0'</code><br>
             <code>&nbsp;&nbsp;<b>switchProtectionPass:</b> '1234'</code><br>
             <small class="text-muted">Assign a roomplan. <code>'0'</code> is all devices. Set <code>switchProtectionPass:</code> equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to <code>false</code> if ask for pin function is not needed.</small></p>
-            
-            <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code></br>
+
+            <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code><br>
             <code><b>ClientSecret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Set the Google credientials.</small><br>
-            <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.</br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
+            <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.<br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
             <p><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name (e.g. - 'Light').</small><br>
@@ -414,11 +419,11 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;&nbsp;&nbsp;- 'SL2'<br>
             &nbsp;&nbsp;<b>lang:</b> 'sv'
             </code></p>
-            
+
             <h5 id="C2">Device Settings</h5>
 
             <p><small class="text-muted">Nicknames, rooms, ack and report_state can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
-            <code></small><br />
+            </small><br /><code>
             &lt;voicecontrol&gt;<br />
             &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             &nbsp;&nbsp;room = Kitchen<br />
@@ -437,8 +442,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <p><code><b>Camera_Stream: </b></code><br>
             <code>&nbsp;&nbsp;<b>Enabled:</b> true </code><small class="text-muted"># Enable/disable cast to chromecast</small><br>
             <code>&nbsp;&nbsp;<b>Cameras:</b> </code><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Idx:</b></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- '123' </code><small class="text-muted"># Idx of camera attached device</small><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Camera_URL:</b></br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8' </code><small class="text-muted"># Stream url</small><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Idx:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- '123' </code><small class="text-muted"># Idx of camera attached device</small><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Camera_URL:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8' </code><small class="text-muted"># Stream url</small><br>
             </p>
             <p><small class="text-muted">Example convert rtsp to hls or mp4 using ffmpeg:</small><br />
             <code>
@@ -459,10 +464,10 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
               /var/www/html/cam/cam.mp4
             </code>
             </p>
-            
+
             <h5 id="C4">Other</h5>
-            
-            <h6><small class="text-muted">Connect smart home devices to your Google Home device</h6>
+
+            <small class="text-muted"><h6>Connect smart home devices to your Google Home device</h6>
             <ul>
             <li>On your mobile device, open the Google Home app.</li>
             <li>On the Home tab, tap the “Add” quick action .</li>
@@ -470,8 +475,9 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Tap Have something already set up?</li>
             <li>Select your device app e.g: "[test]Your Appname"</li>
             <li>Login with auth credentials from config</li>
-            </ul></small>
-            
+            </ul>
+            </small>
+
             <h6>Share devices</h6>
 
             <p><small class="text-muted">If you want to allow other household users to control the devices:<br />
@@ -484,7 +490,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>When the new user opens the link with their own Google account, it will enable your draft test app under their account.</li>
             <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py</li>
             </ul></small></p>
-            
+
             <h6>Update</h6>
 
             <p>
@@ -516,7 +522,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         </div>
     </div>
     </div>
-    
+
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
     <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
@@ -598,10 +604,10 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         }}
       }}
     }}
-    
+
     var urlToGetAllOpenBugs = "https://api.github.com/repos/DewGew/Domoticz-Google-Assistant/issues?state=open";
 
-    $(document).ready(function() {{    
+    $(document).ready(function() {{
         var config = {conf}
         var updates = {update}
         document.getElementById("logsheader").innerHTML = 'Logs <small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
@@ -612,12 +618,12 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
           // $('#messageModal').modal('show')
           $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
         }};
-        
+
         $('body').bootstrapMaterialDesign();
         $(function () {{
           $('[data-toggle="tooltip"]').tooltip()
         }});
-        
+
         if (config.auth_user == 'admin' || config.auth_pass == 'admin'){{
             $('#messageModal').modal('show')
         }};
@@ -629,7 +635,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         }};
 
         var devicelist = {list}
-        
+
         var x,i, nicknames = "";
         for (i in devicelist){{
             if (devicelist[i][4] == undefined) {{
@@ -648,7 +654,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
             $('#messageModal').modal('show')
         }};
-            
+
         var editor = CodeMirror.fromTextArea(document.getElementById("code"), {{
             lineNumbers: true,
             mode: "yaml",
@@ -664,19 +670,10 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             textTosave = editor.getValue();
             document.getElementById("save").value = textTosave;
          }});
-         
+
         document.getElementById("save").value = document.getElementById("code").value
-        
-        $.getJSON(urlToGetAllOpenBugs, function (allIssues) {{
-            $("#issues").append('<a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues" target="_blank" rel="noopener" aria-label="Github Issue"> &bull;' + allIssues.length + ' open issues</a>');
-            //$.each(allIssues, function (i, issue) {{
-            //    $("#issues")
-            //        .append("<b>" + issue.number + " - " + issue.title + "</b></br>")
-            //        .append("created at: " + issue.created_at + "</br>")
-            //}});
-        }});
-    
-    }});</script>    
+
+    }});</script>
   </body>
 </html>
 """
