@@ -50,6 +50,12 @@ def saveFile(filename, text):
 
 
 try:
+    if (os.path.exists(os.path.join(FILE_DIR, 'config.yaml'))):
+        print('Config.yaml exist in root copy file to /config...')
+        os.popen('cp ' + os.path.join(FILE_DIR, 'config.yaml') + ' ' + os.path.join(FILE_DIR, CONFIGFILE))
+        time.sleep(2)
+        os.popen('rm ' + os.path.join(FILE_DIR, 'config.yaml'))
+        time.sleep(3)
     print('Loading configuration...')
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
         configuration = yaml.safe_load(conf)
@@ -58,7 +64,7 @@ except yaml.YAMLError as exc:
 except FileNotFoundError as err:
     print('No config.yaml found...')
     print('Loading default configuration...')
-    content = readFile(os.path.join(FILE_DIR, 'default_config'))
+    content = readFile(os.path.join(FILE_DIR, 'config/default_config'))
     print('Create config.yaml...')
     saveFile(CONFIGFILE, content)
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
@@ -272,6 +278,12 @@ class ReportState:
     @staticmethod
     def enable_report_state():
         try:
+            if (os.path.exists(os.path.join(FILE_DIR, 'smart-home-key.json'))):
+                print('smart-home-key.json exist in root copy file to /config...')
+                os.popen('cp ' + os.path.join(FILE_DIR, 'smart-home-key.json') + ' ' + os.path.join(FILE_DIR, KEYFILE))
+                time.sleep(2)
+                os.popen('rm ' + os.path.join(FILE_DIR, 'smart-home-key.json'))
+                time.sleep(3)
             file = open(os.path.join(FILE_DIR, KEYFILE), 'r')
             file.close()
             return True
