@@ -5,3 +5,4 @@ env/
 /__pycache__
 /dzga.log
 .github/
+config/
