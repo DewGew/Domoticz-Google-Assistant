@@ -1,0 +1,7 @@
+python3
+python3-dev
+gcc
+musl-dev
+libffi-dev
+libressl-dev
+git
