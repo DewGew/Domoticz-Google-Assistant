@@ -6,6 +6,7 @@ env/
 /__pycache__
 /dzga.log
 .github/
+config/
 config/config.yaml
 config/smart-home-key.json
 
