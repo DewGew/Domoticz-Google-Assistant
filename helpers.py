@@ -51,7 +51,7 @@ def saveFile(filename, text):
 
 try:
     if (os.path.exists(os.path.join(FILE_DIR, 'config.yaml'))):
-        print('Config.yaml exist in root copy file to /config...')
+        print('Config.yaml exist in root dir. Move file to /config...')
         os.popen('cp ' + os.path.join(FILE_DIR, 'config.yaml') + ' ' + os.path.join(FILE_DIR, CONFIGFILE))
         time.sleep(2)
         os.popen('rm ' + os.path.join(FILE_DIR, 'config.yaml'))
@@ -279,7 +279,7 @@ class ReportState:
     def enable_report_state():
         try:
             if (os.path.exists(os.path.join(FILE_DIR, 'smart-home-key.json'))):
-                print('smart-home-key.json exist in root copy file to /config...')
+                logger.info('smart-home-key.json exist in root dir. Move file to /config...')
                 os.popen('cp ' + os.path.join(FILE_DIR, 'smart-home-key.json') + ' ' + os.path.join(FILE_DIR, KEYFILE))
                 time.sleep(2)
                 os.popen('rm ' + os.path.join(FILE_DIR, 'smart-home-key.json'))
