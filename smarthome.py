@@ -632,7 +632,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         if s.form.get("backup"):
             codeToSave = readFile(os.path.join(FILE_DIR, CONFIGFILE))
-            saveFile('config.yaml.bak', codeToSave)
+            saveFile('config/config.yaml.bak', codeToSave)
             message = 'Backup saved'
             logger.info(message)
             logs = readFile(os.path.join(logfilepath, LOGFILE))
