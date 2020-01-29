@@ -17,9 +17,7 @@ try:
     import google.auth.crypt
     import google.auth.jwt
 except ImportError as e:
-    pip.main(['install', 'google-auth'])
-    import google.auth.crypt
-    import google.auth.jwt
+    logger.error(e)
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
@@ -111,10 +109,8 @@ if 'logtofile' not in configuration or configuration['logtofile'] == False:
 if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
     try:
         from pyngrok import ngrok
-    except ImportError:
-        logger.info('Installing package pyngrok')
-        pip.main(['install', 'pyngrok'])
-        from pyngrok import ngrok
+    except ImportError as e:
+        logger.error(e)
 
 if 'ClientID' not in configuration:
     configuration['ClientID'] = 'sampleClientId'
