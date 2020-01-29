@@ -10,7 +10,7 @@ from collections.abc import Mapping
 from itertools import product
 
 import requests
-from pip._internal import main as pip
+import git
 
 import trait
 from auth import *
@@ -35,12 +35,6 @@ try:
 except Exception as e:
     logger.error('Connection to Domoticz refused with error: %s' % e)
 
-try:
-    import git
-except ImportError:
-    logger.info('Installing package GitPython')
-    pip.main(['install', 'gitpython'])
-    import git
 try:
     repo = git.Repo(FILE_DIR)
 except:
