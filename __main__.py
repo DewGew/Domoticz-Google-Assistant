@@ -4,11 +4,26 @@ from const import PUBLIC_URL
 from server import *
 from smarthome import *
 
+use_ssl = ('use_ssl' in configuration and configuration['use_ssl'] == True)
+
+if use_ssl:
+    import ssl
+
 if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
     from pyngrok import ngrok
 
 tunnel = PUBLIC_URL
 
+def secure(server):
+    key  = configuration['ssl_key']  if 'ssl_key'  in configuration else None
+    cert = configuration['ssl_cert'] if 'ssl_cert' in configuration else None
+
+    if key is None or cert is None:
+        logger.info('ssl_key and ssl_cert options are mandatory if use_ssl is True')
+        return
+
+    logger.info('Using SSL connection')
+    server.socket = ssl.wrap_socket (server.socket, keyfile=key, certfile=cert, server_side=True, ssl_version=ssl.PROTOCOL_TLSv1_2)
 
 class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     pass
@@ -32,12 +47,15 @@ def startServer():
         # Create a web server and define the handler to manage the
         # incoming request
         server = ThreadingSimpleServer(('', configuration['port_number']), AogServer)
+        if(use_ssl):
+            secure(server)
+
         logger.info('========')
         logger.info('Started DZGA v' + VERSION + ' server at port ' + str(configuration['port_number']))
         logger.info(' ')
         if 'userinterface' in configuration and configuration['userinterface'] is True:
-            logger.info('   Visit http://localhost:' + str(
-                configuration['port_number']) + '/settings to access the user interface')
+            protocol = 'https' if use_ssl else 'http'
+            logger.info('   Visit %s://localhost:%d/settings to access the user interface', protocol, configuration['port_number'])
         else:
             logger.info('   Configure your settings in config.yaml in Domoticz-Google-Assistant folder')
         logger.info(' ')
