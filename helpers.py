@@ -9,7 +9,6 @@ import time
 
 import requests
 import yaml
-from pip._internal import main as pip
 
 from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL)
 
