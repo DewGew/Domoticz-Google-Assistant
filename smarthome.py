@@ -3,6 +3,7 @@
 import hashlib
 import os
 import re
+import subprocess
 import sys
 import threading
 from collections.abc import Mapping
@@ -696,6 +697,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
+
+            subprocess.call(['pip', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
             restartServer()
 
     def delay_report_state(self, states, token):
