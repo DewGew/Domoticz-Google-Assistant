@@ -18,6 +18,11 @@ CheckForUpdates: true
 ngrok_tunnel: false
 ngrok_auth_token: 'auth_token'
 
+# Use SSL encryption in HTTP server if not using ngrok
+use_ssl: false
+ssl_key:  # /path/to/privkey.pem
+ssl_cert: # /path/to/fullchain.pem
+
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
 auth_pass: 'admin'
