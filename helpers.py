@@ -116,6 +116,14 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         pip.main(['install', 'pyngrok'])
         from pyngrok import ngrok
 
+if 'use_ssl' in configuration and configuration['use_ssl'] == True:
+    try:
+        import ssl
+    except ImportError:
+        logger.info('Installing package ssl')
+        pip.main(['install', 'ssl'])
+        import ssl
+
 if 'ClientID' not in configuration:
     configuration['ClientID'] = 'sampleClientId'
 if 'ClientSecret' not in configuration:
