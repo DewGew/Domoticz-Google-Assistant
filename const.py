@@ -366,7 +366,12 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
             <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
             <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.</small>
-            <br><code><b>ngrok_auth_:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
+            <br><code><b>ngrok_auth_token:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
+            <p>
+            <code><b>use_ssl:</b> false</code><br><small class="text-muted">Use SSL encryption in HTTP server if not using ngrok</small><br>
+            <code><b>ssl_key:</b> /path/to/privkey.pem</code><br>
+            <code><b>ssl_cert:</b> /path/to/fullchain.pem</code>
+            </p>
 
             <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small><br>
             <code><b>auth_pass:</b> 'admin'</code><br><small class="text-muted">Set the authorization password.</small></p>
