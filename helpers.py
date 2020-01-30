@@ -114,10 +114,8 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
 if 'use_ssl' in configuration and configuration['use_ssl'] == True:
     try:
         import ssl
-    except ImportError:
-        logger.info('Installing package ssl')
-        subprocess.call(['pip', 'install', 'ssl'])
-        import ssl
+    except ImportError as e:
+        logger.error(e)
 
 if 'ClientID' not in configuration:
     configuration['ClientID'] = 'sampleClientId'
