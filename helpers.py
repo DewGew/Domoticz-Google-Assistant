@@ -6,20 +6,15 @@ import json
 import logging
 import os
 import time
+import subprocess
+import sys
 
 import requests
 import yaml
-from pip._internal import main as pip
+import google.auth.crypt
+import google.auth.jwt
 
-from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL)
-
-try:
-    import google.auth.crypt
-    import google.auth.jwt
-except ImportError as e:
-    pip.main(['install', 'google-auth'])
-    import google.auth.crypt
-    import google.auth.jwt
+from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL, PUBLIC_URL)
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
@@ -50,6 +45,12 @@ def saveFile(filename, text):
 
 
 try:
+    if (os.path.exists(os.path.join(FILE_DIR, 'config.yaml'))):
+        print('Config.yaml exist in root dir. Move file to /config...')
+        os.popen('cp ' + os.path.join(FILE_DIR, 'config.yaml') + ' ' + os.path.join(FILE_DIR, CONFIGFILE))
+        time.sleep(2)
+        os.popen('rm ' + os.path.join(FILE_DIR, 'config.yaml'))
+        time.sleep(3)
     print('Loading configuration...')
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
         configuration = yaml.safe_load(conf)
@@ -58,7 +59,7 @@ except yaml.YAMLError as exc:
 except FileNotFoundError as err:
     print('No config.yaml found...')
     print('Loading default configuration...')
-    content = readFile(os.path.join(FILE_DIR, 'default_config'))
+    content = readFile(os.path.join(FILE_DIR, 'config/default_config'))
     print('Create config.yaml...')
     saveFile(CONFIGFILE, content)
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
@@ -107,8 +108,14 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         from pyngrok import ngrok
     except ImportError:
         logger.info('Installing package pyngrok')
-        pip.main(['install', 'pyngrok'])
+        subprocess.call(['pip', 'install', 'pyngrok'])
         from pyngrok import ngrok
+
+if 'use_ssl' in configuration and configuration['use_ssl'] == True:
+    try:
+        import ssl
+    except ImportError as e:
+        logger.error(e)
 
 if 'ClientID' not in configuration:
     configuration['ClientID'] = 'sampleClientId'
@@ -247,7 +254,7 @@ def getTunnelUrl():
             else:
                 public_url = tunnel
     else:
-        public_url = 'https://[YOUR REVERSE PROXY URL]'
+        public_url = PUBLIC_URL
 
     return public_url
 
@@ -272,6 +279,12 @@ class ReportState:
     @staticmethod
     def enable_report_state():
         try:
+            if (os.path.exists(os.path.join(FILE_DIR, 'smart-home-key.json'))):
+                logger.info('smart-home-key.json exist in root dir. Move file to /config...')
+                os.popen('cp ' + os.path.join(FILE_DIR, 'smart-home-key.json') + ' ' + os.path.join(FILE_DIR, KEYFILE))
+                time.sleep(2)
+                os.popen('rm ' + os.path.join(FILE_DIR, 'smart-home-key.json'))
+                time.sleep(3)
             file = open(os.path.join(FILE_DIR, KEYFILE), 'r')
             file.close()
             return True

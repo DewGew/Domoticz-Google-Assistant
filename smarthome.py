@@ -3,13 +3,13 @@
 import hashlib
 import os
 import re
+import subprocess
 import sys
 import threading
 from collections.abc import Mapping
 from itertools import product
 
 import requests
-from pip._internal import main as pip
 
 import trait
 from auth import *
@@ -36,14 +36,10 @@ except Exception as e:
 
 try:
     import git
-except ImportError:
-    logger.info('Installing package GitPython')
-    pip.main(['install', 'gitpython'])
-    import git
-try:
     repo = git.Repo(FILE_DIR)
 except:
     repo = None
+    
 ReportState = ReportState()
 if not ReportState.enable_report_state():
     logger.error("Service account key is not found.")
@@ -632,7 +628,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         if s.form.get("backup"):
             codeToSave = readFile(os.path.join(FILE_DIR, CONFIGFILE))
-            saveFile('config.yaml.bak', codeToSave)
+            saveFile('config/config.yaml.bak', codeToSave)
             message = 'Backup saved'
             logger.info(message)
             logs = readFile(os.path.join(logfilepath, LOGFILE))
@@ -696,6 +692,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update)
             s.send_message(200, template)
+            
+            subprocess.call(['pip', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
             restartServer()
 
     def delay_report_state(self, states, token):

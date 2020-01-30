@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.5.7'
-PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
-CONFIGFILE = 'config.yaml'
+VERSION = '1.5.9'
+PUBLIC_URL = 'https://[your public url]'
+CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
-KEYFILE = 'smart-home-key.json'
+KEYFILE = 'config/smart-home-key.json'
 
 HOMEGRAPH_URL = "https://homegraph.googleapis.com/"
 HOMEGRAPH_SCOPE = "https://www.googleapis.com/auth/homegraph"
@@ -307,9 +307,9 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>On the top menu click Develop, then on the left navigation menu click on Invocation.</li>
             <li>Add your App's name. Click Save.</li>
             <li>Click 'Save'.</li>
-            </ul></li>
+            </ul></li><br>
 
-            <li><p>Add Credentials</p>
+            <li><p>Add Credentials (Optional not required)</p>
             <ul>
             <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console API & Service page</a> for your project id.</li>
             <li>Click 'Create credentials'</li>
@@ -318,7 +318,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Add name e.g. 'SmartHomeClientID'</li>
             <li>Copy the client ID shown and insert it in <code>clientID</code> in config.yaml</li>
             <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
-            </ul></li>
+            </ul></li><br>
 
             <li><p>Add Request Sync and Report State (Optional but recomended)</p>
             <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
@@ -333,7 +333,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Use the role Service Account > Service Account Token Creator</li>
             </ul>
             <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
-            </ul></li>
+            </ul></li><br>
 
             <li><p>Navigate back to the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</p>
             <ul>
@@ -366,7 +366,12 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
             <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
             <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.</small>
-            <br><code><b>ngrok_auth_:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
+            <br><code><b>ngrok_auth_token:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
+            <p>
+            <code><b>use_ssl:</b> false</code><br><small class="text-muted">Use SSL encryption in HTTP server if not using ngrok</small><br>
+            <code><b>ssl_key:</b> /path/to/privkey.pem</code><br>
+            <code><b>ssl_cert:</b> /path/to/fullchain.pem</code>
+            </p>
 
             <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small><br>
             <code><b>auth_pass:</b> 'admin'</code><br><small class="text-muted">Set the authorization password.</small></p>
@@ -382,7 +387,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <small class="text-muted">Assign a roomplan. <code>'0'</code> is all devices. Set <code>switchProtectionPass:</code> equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to <code>false</code> if ask for pin function is not needed.</small></p>
 
             <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code><br>
-            <code><b>ClientSecret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Set the Google credientials.</small><br>
+            <code><b>ClientSecret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Optional Not required. Set the Google credientials.</small><br>
             <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.<br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
