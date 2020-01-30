@@ -64,7 +64,7 @@ pip3 install -r ${INSTALL_DIR}/requirements/pip-requirements.txt
 echo ""
 echo " Create dzga daemon file"
 echo ""
-cp ${INSTALL_DIR}/systemd/dzga_synology.service dzga-daemon
+cp ${INSTALL_DIR}/systemd/dzga_synology dzga-daemon
 sudo chmod 755 dzga-daemon
 sudo ${ROOT_DIR}/dzga-daemon restart
 
