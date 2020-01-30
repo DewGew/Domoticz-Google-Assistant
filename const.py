@@ -2,7 +2,7 @@
                     
 """Constants for Google Assistant."""
 VERSION = '1.5.9'
-PUBLIC_URL = 'https://[YOUR REVERSE PROXY URL]'
+PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
 KEYFILE = 'config/smart-home-key.json'
