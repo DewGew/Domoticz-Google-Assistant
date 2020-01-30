@@ -11,8 +11,9 @@ Required:
 - public url
 - python >= 3.5
 - Make local deployment available trough HTTPS with valid certificate:
+  - SSL with own domain or dynamic DNS, require ssl key and ssl certficate
   - Use ngrok for a secure SSL tunnel with valid public HTTPS URL
-  - Configure reverse proxy with domain name and valid certificate using Lets Encrypt
+  - Configure reverse proxy with valid certificate using Lets Encrypt
 
 Domoticz-Google-Assistant delivers: 
 - The oauth authorization and smarthome endpoint for the google assistant.
