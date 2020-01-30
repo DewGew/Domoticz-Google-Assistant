@@ -6,20 +6,15 @@ import json
 import logging
 import os
 import time
+import subprocess
+import sys
 
 import requests
 import yaml
-from pip._internal import main as pip
+import google.auth.crypt
+import google.auth.jwt
 
 from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL)
-
-try:
-    import google.auth.crypt
-    import google.auth.jwt
-except ImportError as e:
-    pip.main(['install', 'google-auth'])
-    import google.auth.crypt
-    import google.auth.jwt
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
@@ -113,7 +108,7 @@ if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
         from pyngrok import ngrok
     except ImportError:
         logger.info('Installing package pyngrok')
-        pip.main(['install', 'pyngrok'])
+        subprocess.call(['pip', 'install', 'pyngrok'])
         from pyngrok import ngrok
 
 if 'use_ssl' in configuration and configuration['use_ssl'] == True:
@@ -121,7 +116,7 @@ if 'use_ssl' in configuration and configuration['use_ssl'] == True:
         import ssl
     except ImportError:
         logger.info('Installing package ssl')
-        pip.main(['install', 'ssl'])
+        subprocess.call(['pip', 'install', 'ssl'])
         import ssl
 
 if 'ClientID' not in configuration:
