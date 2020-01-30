@@ -10,7 +10,7 @@ python:
   - "3.8"
 # command to install dependencies
 install:
-  - pip install --upgrade setuptools
+  - python -m pip install --upgrade pip setuptools wheel
   - pip install -r requirements/pip-requirements.txt
 # command to run tests
 script:
