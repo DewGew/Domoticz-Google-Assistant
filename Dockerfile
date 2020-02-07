@@ -1,19 +1,21 @@
 # Dockerfile for Domoticz-Google-Assistant
 
+# Install minimal Python 3.
+FROM jfloff/alpine-python:3.7-slim
+
 # Update Software repository
-RUN apk add --update --no-cache git
-
-ARG COMMIT_ID
 RUN cd / && \
-    git clone https://github.com/DewGew/Domoticz-Google-Assistant && \
-    cp ./Domoticz-Google-Assistant/requirements/pip-requirements.txt requirements.txt
+    apk add  --no-cache --virtual=build-dependencies \
+                git \
+                libffi-dev \
+                libressl-dev && \
+    git clone https://github.com/DewGew/Domoticz-Google-Assistant.git dzGA && \
+    cp /dzGA/requirements/pip-requirements.txt /requirements.txt
 
-#Copy configuration
-COPY apk-requirements.txt /Domoticz-Google-Assistant/requirements/apk-requirements.txt
-COPY config.yaml /Domoticz-Google-Assistant/config/config.yaml
-COPY smart-home-key.json /Domoticz-Google-Assistant/config/smart-home-key.json
- 
+# Create volume
+VOLUME /dzGA/config
+
 # Configure Services and Port
-CMD ["python3 Domoticz-Google-Assistant"]
- 
+CMD ["python3 /dzGA/__main__.py"]
+
 EXPOSE 3030
