@@ -1,0 +1,16 @@
+version: '3'
+services:
+  dz-googleassistant:
+    build: '.'
+    image: domoticz-google-assistant
+    container_name: domoticz-google-assistant
+    environment:
+      - PUID=1010
+      - PGID=1010
+    ports:
+      - 3030:3030
+    volumes:
+      - /home/${USER}/Domoticz-Google-Assistant/config:/dzGA/config
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/localtime:/etc/localtime:ro
+    restart: unless-stopped
