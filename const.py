@@ -340,7 +340,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>On the top menu click Develop, then on the left navigation menu click on Actions.
             Enter the URL for fulfillment, e.g. <code>{public_url}/smarthome</code>, click Done.</li>
             <li>On the left navigation menu under Account Linking.</li>
-            <li>Under Client Information, enter the client ID and secret from earlier.</li>
+            <li>Under Client Information, enter <code>sampleClientId</code> as client ID and <code>sampleClientSecret</code> as secret.(If using optional credentials above, enter the client ID and secret from earlier.)</li>
             <li>Change Authorization URL to <code>{public_url}/oauth</code>.</li>
             <li>Change Token URL to <code>{public_url}/token</code>.</li>
             <li>Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.</li>
