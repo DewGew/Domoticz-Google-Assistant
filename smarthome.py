@@ -128,6 +128,8 @@ def AogGetDomain(device):
         logger.info(device["Name"] + " (Idx: " + device[
             "idx"] + ") is a color switch. To get all functions, set this device as Dimmer in Domoticz")
         return lightDOMAIN
+    elif 'Color Switch' == device["Type"] and device["SwitchType"] in ['Push On Button', 'Push Off Button']:
+        return pushDOMAIN
     elif 'Security' == device["Type"]:
         return securityDOMAIN
     return None
