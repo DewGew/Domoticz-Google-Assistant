@@ -141,7 +141,7 @@ def getDesc(state):
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
 
-    elif 'Device_Config' in configuration:
+    elif 'Device_Config' in configuration and configuration['Device_Config'] is not None:
         desc = configuration['Device_Config'].get(int(state.id), None)
         return desc
     else:

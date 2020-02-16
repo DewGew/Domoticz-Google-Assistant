@@ -80,6 +80,7 @@ def startServer():
             getDevices()
             getSettings()
         except (ValueError, Exception):
+            logger.error('Error in  getting devices and settings')
             pass
         # Exit if running on travis
         istravis = os.environ.get('TRAVIS') == 'true'
