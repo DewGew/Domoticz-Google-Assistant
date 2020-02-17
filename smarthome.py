@@ -137,7 +137,7 @@ def AogGetDomain(device):
 
 def getDesc(state):
     if state.domain == sceneDOMAIN or state.domain == groupDOMAIN:
-        if 'Scene_Config' in configuration:
+        if 'Scene_Config' in configuration and configuration['Scene_Config'] is not None:
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
 
