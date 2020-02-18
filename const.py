@@ -488,11 +488,11 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <p><small class="text-muted">If you want to allow other household users to control the devices:<br />
             <ul>
             <li>Go to the settings for the project you created in the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</li>
-            <li>Click <code>Test -&gt; Simulator</code>, then click Share icon in the right top corner. Follow the on-screen instruction:</li>
-            <li>Add team members:</li>
-            <li>Got to <code>Settings -&gt; Permission</code>, click Add, type the new user’s e-mail address and choose <code>Project -&gt; Viewer role</code>.</li>
-            <li>Copy and share the link with the new user.</li>
-            <li>When the new user opens the link with their own Google account, it will enable your draft test app under their account.</li>
+            <li>Click three dots icon next to your profile icon, then click <code>Manage user access</code></li>
+            <li>In <a href="https://console.cloud.google.com/iam-admin/iam" target="_blank" rel="noopener">Google Cloud Platform</a> click <code>ADD</code>.</li>
+            <li>type the new user’s Google Account mail address as <code>New member</code>.</li>
+            <li>Select role <code>Project -&gt; Viewer</code>.</li>
+            <li>Click <code>SAVE</code>.</li>
             <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py</li>
             </ul></small></p>
 
