@@ -32,11 +32,13 @@ TYPE_DISHWASHER = PREFIX_TYPES + 'DISHWASHER'
 TYPE_DOOR = PREFIX_TYPES + 'DOOR'
 TYPE_DRYER = PREFIX_TYPES + 'DRYER'
 TYPE_FAN = PREFIX_TYPES + 'FAN'
+TYPE_GARAGE = PREFIX_TYPES + 'GARAGE'
 TYPE_GATE = PREFIX_TYPES + 'GATE'
 TYPE_HEATER = PREFIX_TYPES + 'HEATER'
 TYPE_LIGHT = PREFIX_TYPES + 'LIGHT'
 TYPE_LOCK = PREFIX_TYPES + 'LOCK'
 TYPE_OUTLET = PREFIX_TYPES + 'OUTLET'
+TYPE_RADIATOR = PREFIX_TYPES + 'RADIATOR'
 TYPE_SCENE = PREFIX_TYPES + 'SCENE'
 TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
 TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
@@ -47,6 +49,7 @@ TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
 TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
 TYPE_MEDIA = PREFIX_TYPES + 'TV'
 TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
+TYPE_VALVE = PREFIX_TYPES + 'VALVE'
 TYPE_WATERHEATER = PREFIX_TYPES + 'WATERHEATER'
 TYPE_WASHER = PREFIX_TYPES + 'WASHER'
 TYPE_WINDOW = PREFIX_TYPES + 'WINDOW'
@@ -493,7 +496,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>type the new user’s Google Account mail address as <code>New member</code>.</li>
             <li>Select role <code>Project -&gt; Viewer</code>.</li>
             <li>Click <code>SAVE</code>.</li>
-            <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py</li>
+            <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from configuration</li>
             </ul></small></p>
 
             <h6>Update</h6>
