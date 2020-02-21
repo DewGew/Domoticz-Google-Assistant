@@ -15,6 +15,7 @@ CheckForUpdates: true
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
 # When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. 
 # Create account at ngrok.com and paste the token in this file.
+# Ngrok assigns random urls. When server restart the server gets a new url.
 ngrok_tunnel: false
 ngrok_auth_token: 'auth_token'
 
