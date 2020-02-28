@@ -110,6 +110,8 @@ def AogGetDomain(device):
             return fanDOMAIN
         else:
             return lightDOMAIN
+    elif 'Blinds' == device["Type"]:
+        return blindsDOMAIN
     elif 'Group' == device["Type"]:
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
