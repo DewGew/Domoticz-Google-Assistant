@@ -9,7 +9,7 @@ RUN cd / && \
                 git \
                 libffi-dev \
                 libressl-dev && \
-    git clone https://github.com/DewGew/Domoticz-Google-Assistant.git dzGA && \
+    git clone --single-branch --branch beta https://github.com/DewGew/Domoticz-Google-Assistant.git dzGA && \
     cp /dzGA/requirements/pip-requirements.txt /requirements.txt
 
 # Create volume
