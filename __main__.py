@@ -51,7 +51,7 @@ def startServer():
             secure(server)
 
         logger.info('========')
-        logger.info('Started DZGA v' + VERSION + ' server at port ' + str(configuration['port_number']))
+        logger.info('Started DZGA v%s server at port %s', VERSION, configuration['port_number'])
         logger.info(' ')
         if 'userinterface' in configuration and configuration['userinterface'] is True:
             protocol = 'https' if use_ssl else 'http'
@@ -62,13 +62,13 @@ def startServer():
         logger.info('=========')
         logger.info('Visit the Actions on Google console at http://console.actions.google.com')
         logger.info('Under Develop section, replace the fulfillment URL in Actions with:')
-        logger.info('   ' + tunnel + '/smarthome')
+        logger.info('   %s/smarthome', tunnel)
         logger.info(' ')
         logger.info('In Account linking, set the Authorization URL to:')
-        logger.info('   ' + tunnel + '/oauth')
+        logger.info('   %s/oauth', tunnel)
         logger.info(' ')
         logger.info('Then set the Token URL to:')
-        logger.info('   ' + tunnel + '/token')
+        logger.info('   %s/token', tunnel)
         logger.info(' ')
         logger.info('Finally press \'SAVE\' and then \'TEST\' button')
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] is True:
@@ -80,6 +80,7 @@ def startServer():
             getDevices()
             getSettings()
         except (ValueError, Exception):
+            logger.error('Error in  getting devices and settings')
             pass
         # Exit if running on travis
         istravis = os.environ.get('TRAVIS') == 'true'

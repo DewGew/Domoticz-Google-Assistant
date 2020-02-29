@@ -3,19 +3,16 @@
 # Install minimal Python 3.
 FROM jfloff/alpine-python:3.7-slim
 
-# Install Software
-RUN cd / && \
-    apk add  --no-cache --virtual=build-dependencies \
-                git \
-                libffi-dev \
-                libressl-dev && \
-    git clone https://github.com/DewGew/Domoticz-Google-Assistant.git dzGA && \
-    cp /dzGA/requirements/pip-requirements.txt /requirements.txt
+RUN mkdir -p config
+
+COPY *.py /
+COPY *.html /
+COPY requirements/pip-requirements.txt /requirements.txt
 
 # Create volume
-VOLUME /dzGA/config
+VOLUME /config
 
 # Configure Services and Port
-CMD ["python3 /dzGA/__main__.py"]
+CMD ["python3 /__main__.py"]
 
 EXPOSE 3030

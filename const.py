@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.5.10'
+VERSION = '1.5.11'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -32,11 +32,13 @@ TYPE_DISHWASHER = PREFIX_TYPES + 'DISHWASHER'
 TYPE_DOOR = PREFIX_TYPES + 'DOOR'
 TYPE_DRYER = PREFIX_TYPES + 'DRYER'
 TYPE_FAN = PREFIX_TYPES + 'FAN'
+TYPE_GARAGE = PREFIX_TYPES + 'GARAGE'
 TYPE_GATE = PREFIX_TYPES + 'GATE'
 TYPE_HEATER = PREFIX_TYPES + 'HEATER'
 TYPE_LIGHT = PREFIX_TYPES + 'LIGHT'
 TYPE_LOCK = PREFIX_TYPES + 'LOCK'
 TYPE_OUTLET = PREFIX_TYPES + 'OUTLET'
+TYPE_RADIATOR = PREFIX_TYPES + 'RADIATOR'
 TYPE_SCENE = PREFIX_TYPES + 'SCENE'
 TYPE_SCREEN = PREFIX_TYPES + 'SCREEN'
 TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
@@ -47,6 +49,7 @@ TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
 TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
 TYPE_MEDIA = PREFIX_TYPES + 'TV'
 TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
+TYPE_VALVE = PREFIX_TYPES + 'VALVE'
 TYPE_WATERHEATER = PREFIX_TYPES + 'WATERHEATER'
 TYPE_WASHER = PREFIX_TYPES + 'WASHER'
 TYPE_WINDOW = PREFIX_TYPES + 'WINDOW'
@@ -253,13 +256,12 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
               </div>
               <div class="col" id="buttonUpdate"></div>
               <div class="col-4">
-                <small class="text-muted">Encourage the development, please use the button below.</small>
-                <center><form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank" rel="noopener" aria-label="Paypal">
-                <input type="hidden" name="cmd" value="_s-xclick" />
-                <input type="hidden" name="hosted_button_id" value="7D7ZWKMDLXA4J" />
-                <input type="image" src="https://www.paypalobjects.com/en_US/SE/i/btn/btn_donateCC_LG.gif" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
-                <img alt="" border="0" src="https://www.paypal.com/en_SE/i/scr/pixel.gif" width="1" height="1" />
-                </form></center>
+                <small class="text-muted">Encourage the development.</small>
+                <form action="https://www.paypal.me/dzga" target="_blank" rel="noopener" aria-label="Paypal">
+                <button class="btn btn-raised btn-info" title="Sponsor with PayPal" alt="Sponsor with PayPal">
+                <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="32" height="32" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg); vertical-align: middle;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M8.32 21.97a.546.546 0 0 1-.26-.32c-.03-.15-.06.11.6-4.09c.6-3.8.59-3.74.67-3.85c.13-.17.11-.17 1.61-.18c1.32-.03 1.6-.03 2.19-.12c3.25-.45 5.26-2.36 5.96-5.66c.04-.22.08-.41.09-.41c0-.01.07.04.15.1c1.03.78 1.38 2.22.99 4.14c-.46 2.29-1.68 3.81-3.58 4.46c-.81.28-1.49.39-2.69.42c-.8.04-.82.04-1.05.19c-.17.17-.16.14-.55 2.55c-.27 1.7-.37 2.25-.41 2.35c-.07.16-.21.3-.37.38l-.11.07H10c-1.29 0-1.62 0-1.68-.03m-4.5-2.23c-.19-.1-.32-.27-.32-.47C3.5 19 6.11 2.68 6.18 2.5c.09-.18.32-.37.5-.44L6.83 2h3.53c3.91 0 3.76 0 4.64.2c2.62.55 3.82 2.3 3.37 4.93c-.5 2.93-1.98 4.67-4.5 5.3c-.87.21-1.48.27-3.14.27c-1.31 0-1.41.01-1.67.15c-.26.15-.47.42-.56.75c-.04.07-.27 1.47-.53 3.1a241.3 241.3 0 0 0-.47 3.02l-.03.06H5.69c-1.58 0-1.8 0-1.87-.04z" fill="#FFF"/><rect x="0" y="0" width="24" height="24" fill="rgba(0, 0, 0, 0)" /></svg>
+                Sponsor DZGA</button>
+                </form>
               </div>
             </div>
         </div>
@@ -365,7 +367,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <code><b>pathToLogFile:</b> '/tmp'</code><br><small class="text-muted">Path to log file. If pathToLogFile is commented out, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder</small></p>
             <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
             <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
-            <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.</small>
+            <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.<br>Ngrok assigns random urls. When server restart the server gets a new url.</small>
             <br><code><b>ngrok_auth_token:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
             <p>
             <code><b>use_ssl:</b> false</code><br><small class="text-muted">Use SSL encryption in HTTP server if not using ngrok or reverse proxy</small><br>
@@ -488,12 +490,12 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <p><small class="text-muted">If you want to allow other household users to control the devices:<br />
             <ul>
             <li>Go to the settings for the project you created in the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</li>
-            <li>Click <code>Test -&gt; Simulator</code>, then click Share icon in the right top corner. Follow the on-screen instruction:</li>
-            <li>Add team members:</li>
-            <li>Got to <code>Settings -&gt; Permission</code>, click Add, type the new user’s e-mail address and choose <code>Project -&gt; Viewer role</code>.</li>
-            <li>Copy and share the link with the new user.</li>
-            <li>When the new user opens the link with their own Google account, it will enable your draft test app under their account.</li>
-            <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from config.py</li>
+            <li>Click three dots icon next to your profile icon, then click <code>Manage user access</code></li>
+            <li>In <a href="https://console.cloud.google.com/iam-admin/iam" target="_blank" rel="noopener">Google Cloud Platform</a> click <code>ADD</code>.</li>
+            <li>type the new user’s Google Account mail address as <code>New member</code>.</li>
+            <li>Select role <code>Project -&gt; Viewer</code>.</li>
+            <li>Click <code>SAVE</code>.</li>
+            <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from configuration</li>
             </ul></small></p>
 
             <h6>Update</h6>

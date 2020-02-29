@@ -71,7 +71,7 @@ update = checkupdate()
 
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
-    if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'RFY']:
+    if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY']:
         if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US',
                                     'Blinds Percentage', 'Blinds Percentage Inverted']:
             return blindsDOMAIN
@@ -110,6 +110,8 @@ def AogGetDomain(device):
             return fanDOMAIN
         else:
             return lightDOMAIN
+    elif 'Blinds' == device["Type"]:
+        return blindsDOMAIN
     elif 'Group' == device["Type"]:
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
@@ -137,11 +139,11 @@ def AogGetDomain(device):
 
 def getDesc(state):
     if state.domain == sceneDOMAIN or state.domain == groupDOMAIN:
-        if 'Scene_Config' in configuration:
+        if 'Scene_Config' in configuration and configuration['Scene_Config'] is not None:
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
 
-    elif 'Device_Config' in configuration:
+    elif 'Device_Config' in configuration and configuration['Device_Config'] is not None:
         desc = configuration['Device_Config'].get(int(state.id), None)
         return desc
     else:
