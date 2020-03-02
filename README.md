@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/DewGew/Domoticz-Google-Assistant.svg?branch=master)](https://travis-ci.com/DewGew/Domoticz-Google-Assistant) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/dewgew/Domoticz-Google-Assistant) [![Discord](https://img.shields.io/discord/664815298284748830?label=Chat%20on%20Discord)](https://discordapp.com/invite/AmJV6AC)
+[![Build Status](https://travis-ci.com/DewGew/Domoticz-Google-Assistant.svg?branch=master)](https://travis-ci.com/DewGew/Domoticz-Google-Assistant) ![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/dewgew/domoticz-google-assistant?logo=docker) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/dewgew/Domoticz-Google-Assistant) [![Discord](https://img.shields.io/discord/664815298284748830?label=Chat%20on%20Discord)](https://discordapp.com/invite/AmJV6AC)
 # Domoticz-Google-Assistant 
 
 <img src="dzga_UI.png" alt="drawing" width="600"/>
