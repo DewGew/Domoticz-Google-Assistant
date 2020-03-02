@@ -221,7 +221,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
                 <p class="lead">
                 <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues" target="_blank" rel="noopener" aria-label="Github Issues">
-                <img alt="GitHub issues" src="https://img.shields.io/github/issues/DewGew/Domoticz-Google-Assistant?style=for-the-badge">
+                <img alt="GitHub issues" src="https://img.shields.io/github/issues/DewGew/Domoticz-Google-Assistant?logo=github&style=for-the-badge">
                 </a>
                 <a href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">
                 <img alt="Discord" src="https://img.shields.io/discord/664815298284748830?label=Chat%20on%20discord&logo=discord&logoColor=white&style=for-the-badge">
@@ -617,7 +617,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
     $(document).ready(function() {{
         var config = {conf}
         var updates = {update}
-        document.getElementById("logsheader").innerHTML = 'Logs <small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
+        document.getElementById("logsheader").innerHTML = 'Logs <br><small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
         if (updates) {{
           document.getElementById("updates").innerHTML = "Updates are Availible.";
           // document.getElementById("modalLabel").innerHTML = "Updates are Availible!";
