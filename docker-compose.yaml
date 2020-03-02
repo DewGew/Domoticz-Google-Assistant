@@ -10,7 +10,7 @@ services:
     ports:
       - 3030:3030
     volumes:
-      - /home/${USER}/Domoticz-Google-Assistant/config:/dzGA/config
+      - /home/${USER}/Domoticz-Google-Assistant/config:/config
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
