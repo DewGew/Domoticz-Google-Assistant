@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.5.11'
+VERSION = '1.6'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -88,6 +88,7 @@ sensorDOMAIN = 'Sensor'
 doorDOMAIN = 'DoorSensor'
 selectorDOMAIN = 'Selector'
 fanDOMAIN = 'Fan'
+hiddenDOMAIN = 'Hidden'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -429,18 +430,40 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
 
             <h5 id="C2">Device Settings</h5>
 
-            <p><small class="text-muted">Nicknames, rooms, ack and report_state can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
+            <p><small class="text-muted">Nicknames, rooms, ack, hide etc. can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
             </small><br /><code>
             &lt;voicecontrol&gt;<br />
             &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             &nbsp;&nbsp;room = Kitchen<br />
             &nbsp;&nbsp;ack = True<br />
-            &nbsp;&nbsp;report_state = false<br />
+            &nbsp;&nbsp;report_state = False<br />
+            &nbsp;&nbsp;hide = True<br />
             &lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
             Every variable should be on a separate line.
-            If there is no such configuration in the Domoticz device it will still try the config.</small></p>
+            If there is no such configuration in the Domoticz device it will still try the config:</small><br>
+            <code><b>Device_Config:</b><br>
+            &nbsp;&nbsp;<b>123:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;ack: true'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Kitchen Blind One'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Left Blind'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Blue Blind'<br>
+            &nbsp;&nbsp;<b>243:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Bedroom'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;report_state: false<br>
+            &nbsp;&nbsp;<b>345:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;hide: true<br>
+            &nbsp;&nbsp;<b>456:</b> # For thermostat devices only, Bug Thermostat idx must be a number above Temp idx<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;merge_temp_idx: '123'<br>
+            <b>Scene_Config:</b><br>
+            &nbsp;&nbsp;<b>3:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Cool scene'<br>
+            </code></p>
 
             <h5 id="C3">Stream camera to chromecast</h5>
 

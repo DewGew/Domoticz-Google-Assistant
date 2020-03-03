@@ -18,9 +18,9 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, groupDOMAIN,
                    sceneDOMAIN, CONFIGFILE, LOGFILE, lightDOMAIN, switchDOMAIN, blindsDOMAIN, pushDOMAIN, climateDOMAIN,
                    tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-                   REQUEST_SYNC_BASE_URL,
-                   REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN,
-                   fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN,
+                   selectorDOMAIN, hiddenDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP,
+                   ATTRS_PERCENTAGE, VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
@@ -243,8 +243,22 @@ def getAog(device):
             aog.report_state = False
         if not report_state:
             aog.report_state = report_state
+        if climateDOMAIN == aog.domain:
+            at_idx = desc.get('actual_temp_idx', None)
+            if at_idx is not None:
+                aog.actual_temp_idx = at_idx
+                try:
+                    aog.state = str(aogDevs[tempDOMAIN + at_idx].temp)
+                    aogDevs[tempDOMAIN + at_idx].domain = hiddenDOMAIN
+                except:
+                    logger.error('Merge Error, Cant find temp device with idx %s', at_idx)
+                    logger.error('Make sure temp device has a idx below %s', aog.id)
+        hide = desc.get('hide', False)
+        if hide:
+            aog.domain = hiddenDOMAIN
     if aog.domain == cameraDOMAIN:
         aog.report_state = False
+        
     return aog
 
 
@@ -278,7 +292,12 @@ def getDevices(devices="all", idx="0"):
             req[aog.name]['idx'] = int(aog.id)
             req[aog.name]['type'] = aog.domain
             req[aog.name]['state'] = aog.state
-            req[aog.name]['nicknames'] = aog.nicknames
+            if aog.nicknames is not None:
+                req[aog.name]['nicknames'] = aog.nicknames
+            if aog.actual_temp_idx is not None:
+                req[aog.name]['actual_temp_idx'] = aog.actual_temp_idx
+            if aog.hide is not False:
+                req[aog.name]['hidden'] = aog.hide
             req[aog.name]['willReportState'] = aog.report_state
             logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
 
