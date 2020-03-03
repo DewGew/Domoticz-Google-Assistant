@@ -69,11 +69,10 @@ Device_Config:
   234:
     room: 'Bedroom'
     report_state: false
-  345:
+    hide: true
+  345: # For thermostat devices only, Bug Thermostat idx must be a number above Temp idx
     room: 'Hallway'
-    actual_temp_idx: '321' # Get actual temp from device 321, works only for thermostat devices
-  456:
-    hide: true # Hide device from google assistant
+    actual_temp_idx: '321'  
     
 Scene_Config:
   3:
