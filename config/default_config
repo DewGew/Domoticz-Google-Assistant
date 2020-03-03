@@ -72,7 +72,8 @@ Device_Config:
     hide: true
   345: # For thermostat devices only, Bug Thermostat idx must be a number above Temp idx
     room: 'Hallway'
-    actual_temp_idx: '321'  
+    actual_temp_idx: '321' # Merge Actual temp from another temp device
+    selector_modes_idx: '392' # Merge Modes from selector device
     
 Scene_Config:
   3:
