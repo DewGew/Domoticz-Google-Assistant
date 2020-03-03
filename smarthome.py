@@ -243,6 +243,15 @@ def getAog(device):
             aog.report_state = False
         if not report_state:
             aog.report_state = report_state
+        if climateDOMAIN == aog.domain:
+            at_idx = desc.get('actual_temp_idx', None)
+            if at_idx is not None:
+                aog.actual_temp_idx = at_idx
+                try:
+                    logger.info('Merge Temp%s device to %s', at_idx, aog.entity_id)
+                    aog.state = aogDevs[tempDOMAIN + at_idx].state
+                except:
+                    logger.error('Cant find device Temp%s check configuration', at_idx)
     if aog.domain == cameraDOMAIN:
         aog.report_state = False
     return aog
