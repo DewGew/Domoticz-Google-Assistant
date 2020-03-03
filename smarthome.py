@@ -251,7 +251,8 @@ def getAog(device):
                     aog.state = str(aogDevs[tempDOMAIN + at_idx].temp)
                     aogDevs[tempDOMAIN + at_idx].domain = hiddenDOMAIN
                 except:
-                    logger.error('Cant find temp device with idx %s', at_idx)
+                    logger.error('Merge Error, Cant find temp device with idx %s', at_idx)
+                    logger.error('Make sure temp device has a idx below %s', aog.id)
         hide = desc.get('hide', False)
         if hide:
             aog.domain = hiddenDOMAIN
