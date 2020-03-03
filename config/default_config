@@ -71,7 +71,9 @@ Device_Config:
     report_state: false
   345:
     room: 'Hallway'
-    actual_temp_idx: '321' #Get actual temp from device 321, works only for thermostat devices
+    actual_temp_idx: '321' # Get actual temp from device 321, works only for thermostat devices
+  456:
+    hide: true # Hide device from google assistant
     
 Scene_Config:
   3:
