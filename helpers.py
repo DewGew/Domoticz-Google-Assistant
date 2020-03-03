@@ -206,6 +206,7 @@ class AogState:
         self.ack = False
         self.report_state = True
         self.actual_temp_idx = None
+        self.hide = False
 
 
 def uptime():
