@@ -88,6 +88,7 @@ sensorDOMAIN = 'Sensor'
 doorDOMAIN = 'DoorSensor'
 selectorDOMAIN = 'Selector'
 fanDOMAIN = 'Fan'
+hiddenDOMAIN = 'Hidden'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
