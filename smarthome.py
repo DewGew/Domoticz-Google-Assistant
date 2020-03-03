@@ -249,7 +249,7 @@ def getAog(device):
                 aog.actual_temp_idx = at_idx
                 try:
                     logger.info('Merge Temp%s device to %s', at_idx, aog.entity_id)
-                    aog.state = aogDevs[tempDOMAIN + at_idx].state
+                    aog.state = aogDevs[tempDOMAIN + at_idx].temp
                 except:
                     logger.error('Cant find device Temp%s check configuration', at_idx)
     if aog.domain == cameraDOMAIN:
