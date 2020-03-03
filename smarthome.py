@@ -18,9 +18,9 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, groupDOMAIN,
                    sceneDOMAIN, CONFIGFILE, LOGFILE, lightDOMAIN, switchDOMAIN, blindsDOMAIN, pushDOMAIN, climateDOMAIN,
                    tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-                   REQUEST_SYNC_BASE_URL,
-                   REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN,
-                   fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION)
+                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN,
+                   selectorDOMAIN, hiddenDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP,
+                   ATTRS_PERCENTAGE, VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
@@ -248,12 +248,16 @@ def getAog(device):
             if at_idx is not None:
                 aog.actual_temp_idx = at_idx
                 try:
-                    logger.info('Merge Temp%s device to %s', at_idx, aog.entity_id)
-                    aog.state = aogDevs[tempDOMAIN + at_idx].temp
+                    aog.state = str(aogDevs[tempDOMAIN + at_idx].temp)
+                    aogDevs[tempDOMAIN + at_idx].domain = hiddenDOMAIN
                 except:
-                    logger.error('Cant find device Temp%s check configuration', at_idx)
+                    logger.error('Cant find temp device with idx %s', at_idx)
+        hide = desc.get('hide', False)
+        if hide:
+            aog.domain = hiddenDOMAIN
     if aog.domain == cameraDOMAIN:
         aog.report_state = False
+        
     return aog
 
 
