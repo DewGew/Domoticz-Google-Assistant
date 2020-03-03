@@ -69,6 +69,9 @@ Device_Config:
   234:
     room: 'Bedroom'
     report_state: false
+  345:
+    room: 'Hallway'
+    actual_temp_idx: '321' #Get actual temp from device 321, works only for thermostat devices
     
 Scene_Config:
   3:
