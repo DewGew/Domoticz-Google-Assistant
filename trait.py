@@ -46,6 +46,7 @@ COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT = (
 COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE = (
         PREFIX_COMMANDS + 'ThermostatTemperatureSetRange')
 COMMAND_THERMOSTAT_SET_MODE = PREFIX_COMMANDS + 'ThermostatSetMode'
+COMMAND_THERMOSTAT_TEMPERATURE_RELATIVE = PREFIX_COMMANDS + 'TemperatureRelative'
 COMMAND_LOCKUNLOCK = PREFIX_COMMANDS + 'LockUnlock'
 COMMAND_FANSPEED = PREFIX_COMMANDS + 'SetFanSpeed'
 COMMAND_MODES = PREFIX_COMMANDS + 'SetModes'
@@ -383,11 +384,11 @@ class TemperatureSettingTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
+        
         if domain == tempDOMAIN:
             response["queryOnlyTemperatureSetting"] = True
-        else:
-            response["queryOnlyTemperatureSetting"] = False
-            response["availableThermostatModes"] = 'heat'
+        elif domain == climateDOMAIN:
+            response["availableThermostatModes"] = 'off,heat,cool,on,auto,eco'
 
         return response
 
@@ -404,14 +405,19 @@ class TemperatureSettingTrait(_Trait):
             current_temp = self.state.temp
             if current_temp is not None:
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
-                response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)),
-                                                                  1)
+                response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
             current_humidity = self.state.humidity
             if current_humidity is not None:
                 response['thermostatHumidityAmbient'] = current_humidity
 
         if domain == climateDOMAIN:
-            response['thermostatMode'] = 'heat'
+            if self.state.modes_idx is not None:
+                levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+                level = self.state.level
+                index = int(level / 10)
+                response['thermostatMode'] = levelName[index].lower()
+            else:
+                response['thermostatMode'] = 'heat'
             current_temp = float(self.state.state)
             if current_temp is not None:
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
@@ -424,6 +430,12 @@ class TemperatureSettingTrait(_Trait):
     def execute(self, command, params):
         """Execute a temperature point or mode command."""
         # All sent in temperatures are always in Celsius
+        if command == COMMAND_THERMOSTAT_SET_MODE:
+            levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+            if params['thermostatMode'] in levelName:
+                level = str(levelName.index(params['thermostatMode']) * 10)
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.modes_idx + '&switchcmd=Set%20Level&level=' + level
+           
         if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(
                 params['thermostatTemperatureSetpoint'])
