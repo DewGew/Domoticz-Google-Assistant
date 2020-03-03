@@ -291,7 +291,12 @@ def getDevices(devices="all", idx="0"):
             req[aog.name]['idx'] = int(aog.id)
             req[aog.name]['type'] = aog.domain
             req[aog.name]['state'] = aog.state
-            req[aog.name]['nicknames'] = aog.nicknames
+            if aog.nicknames is not None:
+                req[aog.name]['nicknames'] = aog.nicknames
+            if aog.actual_temp_idx is not None:
+                req[aog.name]['actual_temp_idx'] = aog.actual_temp_idx
+            if aog.hide is not False:
+                req[aog.name]['hidden'] = aog.hide
             req[aog.name]['willReportState'] = aog.report_state
             logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
 
