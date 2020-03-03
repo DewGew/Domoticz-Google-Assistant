@@ -25,12 +25,13 @@ from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHom
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
+CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
 
 try:
-    logger.debug("Connecting to Domoticz on %s" % DOMOTICZ_URL)
+    logger.info("Connecting to Domoticz on %s" % DOMOTICZ_URL)
     r = requests.get(
         DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
-        auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']), timeout=(2, 5))
+        auth=CREDITS, timeout=(2, 5))
 except Exception as e:
     logger.error('Connection to Domoticz refused with error: %s' % e)
 
@@ -64,10 +65,8 @@ def checkupdate():
             return 0
     else:
         return 0
-
-
+        
 update = checkupdate()
-
 
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
@@ -110,28 +109,25 @@ def AogGetDomain(device):
             return fanDOMAIN
         else:
             return lightDOMAIN
-    elif 'Blinds' == device["Type"]:
+    elif 'Blinds' == device["Type"]:	
         return blindsDOMAIN
     elif 'Group' == device["Type"]:
         return groupDOMAIN
     elif 'Scene' == device["Type"]:
         return sceneDOMAIN
-    elif 'Temp' == device["Type"]:
+    elif device["Type"] in ['Temp', 'Temp + Humidity', 'Temp + Humidity + Baro']:
         return tempDOMAIN
     elif 'Thermostat' == device['Type']:
         return climateDOMAIN
-    elif 'Temp + Humidity' == device['Type']:
-        return tempDOMAIN
-    elif 'Temp + Humidity + Baro' == device['Type']:
-        return tempDOMAIN
-    elif 'Color Switch' == device["Type"] and "Dimmer" == device["SwitchType"]:
-        return colorDOMAIN
-    elif 'Color Switch' == device["Type"] and "On/Off" == device["SwitchType"]:
-        logger.info(device["Name"] + " (Idx: " + device[
-            "idx"] + ") is a color switch. To get all functions, set this device as Dimmer in Domoticz")
-        return lightDOMAIN
-    elif 'Color Switch' == device["Type"] and device["SwitchType"] in ['Push On Button', 'Push Off Button']:
-        return pushDOMAIN
+    elif 'Color Switch' == device["Type"]: 
+        if "Dimmer" == device["SwitchType"]:
+            return colorDOMAIN
+        elif "On/Off" == device["SwitchType"]:
+            logger.info('%s (Idx: %s) is a color switch. To get all functions, set this device as Dimmer in Domoticz', device["Name"], device[
+                "idx"])
+            return lightDOMAIN
+        elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
+            return pushDOMAIN
     elif 'Security' == device["Type"]:
         return securityDOMAIN
     return None
@@ -253,6 +249,16 @@ def getAog(device):
                 except:
                     logger.error('Merge Error, Cant find temp device with idx %s', at_idx)
                     logger.error('Make sure temp device has a idx below %s', aog.id)
+            modes_idx = desc.get('selector_modes_idx', None)
+            if modes_idx is not None:
+                aog.modes_idx = modes_idx
+                try:
+                    aog.level = aogDevs[selectorDOMAIN + modes_idx].level
+                    aog.selectorLevelName = aogDevs[selectorDOMAIN + modes_idx].selectorLevelName
+                    aogDevs[selectorDOMAIN + modes_idx].domain = hiddenDOMAIN
+                except:
+                    logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
+                    logger.error('Make sure selector has a idx below %s', aog.id)
         hide = desc.get('hide', False)
         if hide:
             aog.domain = hiddenDOMAIN
@@ -279,7 +285,7 @@ def getDevices(devices="all", idx="0"):
     elif "id" == devices:
         url = DOMOTICZ_URL + DOMOTICZ_GET_ONE_DEVICE_URL + idx
 
-    r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+    r = requests.get(url, auth=CREDITS)
     if r.status_code == 200:
         devs = r.json()['result']
         for d in devs:
@@ -288,18 +294,21 @@ def getDevices(devices="all", idx="0"):
                 continue
 
             aogDevs[aog.entity_id] = aog
-            req = {aog.name: {}}
-            req[aog.name]['idx'] = int(aog.id)
-            req[aog.name]['type'] = aog.domain
-            req[aog.name]['state'] = aog.state
-            if aog.nicknames is not None:
-                req[aog.name]['nicknames'] = aog.nicknames
-            if aog.actual_temp_idx is not None:
-                req[aog.name]['actual_temp_idx'] = aog.actual_temp_idx
-            if aog.hide is not False:
-                req[aog.name]['hidden'] = aog.hide
-            req[aog.name]['willReportState'] = aog.report_state
-            logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
+            if 'loglevel' in configuration and (configuration['loglevel']).lower() == 'debug':
+                req = {aog.name: {}}
+                req[aog.name]['idx'] = int(aog.id)
+                req[aog.name]['type'] = aog.domain
+                req[aog.name]['state'] = aog.state
+                if aog.nicknames is not None:
+                    req[aog.name]['nicknames'] = aog.nicknames
+                if aog.modes_idx is not None:
+                    req[aog.name]['modes_idx'] = aog.modes_idx
+                if aog.hide is not False:
+                    req[aog.name]['hidden'] = aog.hide
+                if aog.actual_temp_idx is not None:
+                    req[aog.name]['actual_temp_idx'] = aog.actual_temp_idx
+                req[aog.name]['willReportState'] = aog.report_state
+                logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
 
     devlist = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
     devlist.sort(key=takeSecond)
@@ -328,7 +337,7 @@ def getSettings():
     global settings
 
     url = DOMOTICZ_URL + DOMOTICZ_GET_SETTINGS_URL
-    r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+    r = requests.get(url, auth=CREDITS)
 
     if r.status_code == 200:
         devs = r.json()
@@ -762,12 +771,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
         """
         devices = {}
-
+        getDevices()
+        
         for device in payload.get('devices', []):
             devid = device['id']
             _GoogleEntity(aogDevs.get(devid, None)).async_update()
-            state = aogDevs.get(devid, None)
-
+            state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
                 devices[devid] = {'online': False}
