@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.6'
+VERSION = '1.6.2'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -456,8 +456,9 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;&nbsp;&nbsp;report_state: false<br>
             &nbsp;&nbsp;<b>345:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;hide: true<br>
-            &nbsp;&nbsp;<b>456:</b> # For thermostat devices only, Bug Thermostat idx must be a number above Temp idx<br>
+            &nbsp;&nbsp;<b>456:</b> # For thermostat devices only, Bug Thermostat idx must be a number above Temp idx.<br>
             &nbsp;&nbsp;&nbsp;&nbsp;merge_temp_idx: '123'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
             <b>Scene_Config:</b><br>
             &nbsp;&nbsp;<b>3:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
