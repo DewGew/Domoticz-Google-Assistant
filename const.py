@@ -216,8 +216,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <li>Two-factor authentication pin for domoticz protected devices (limited language support)</li>
                     <li>Acknowledgement with Yes or No. (limited language support)</li>
                     <li>Arm Disarm Securitypanel (limited language support)</li>
-                    <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene, Open/Close, Stream Camera and Toggle selector devices</li>
-                    <li>Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy</li>
+                    <li>Supports Ngrok and SSL</li>
+                    <li><b>NEW:</b>Modes for thermostat</li>
                 </ul>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
                 <p class="lead">
@@ -431,15 +431,15 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <h5 id="C2">Device Settings</h5>
 
             <p><small class="text-muted">Nicknames, rooms, ack, hide etc. can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
-            </small><br /><code>
+            </small><br />
+            <code>
             &lt;voicecontrol&gt;<br />
             &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             &nbsp;&nbsp;room = Kitchen<br />
             &nbsp;&nbsp;ack = True<br />
             &nbsp;&nbsp;report_state = False<br />
             &nbsp;&nbsp;hide = True<br />
-            &nbsp;&nbsp;actual_temp_idx = 236</code><small class="text-muted">#For thermostat devices only, Bug Thermostat idx must be a number above Temp idx. Merged device will automaticly hidden</small><br />
-            <code>&lt;/voicecontrol&gt;<br />
+            &lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
             Every variable should be on a separate line.
@@ -457,15 +457,27 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;&nbsp;&nbsp;report_state: false<br>
             &nbsp;&nbsp;<b>345:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;hide: true<br>
-            &nbsp;&nbsp;<b>456:</b></code><small class="text-muted">#For thermostat devices only, Bug Thermostat idx must be a number above Temp idx. Merged device will automaticly hidden</small><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;merge_temp_idx: '123'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
             <b>Scene_Config:</b><br>
             &nbsp;&nbsp;<b>3:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
             &nbsp;&nbsp;&nbsp;&nbsp;nicknames:'<br>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Cool scene'<br>
-            </code></p>
+            </code>
+            <small class="text-muted"><b>For thermostat devices only.</b><br> Function to merge actual temperature from another temp device or modes from selector device to thermostat. Bug Thermostat idx <b>must</b> be a number <b>above</b> Temp/selector idx. Merged device will automaticly hidden. Levels from selector device supported is: Off - Heat - Cool - Auto - Eco</small><br>
+            <code>
+            &lt;voicecontrol&gt;<br />
+            &nbsp;&nbsp;actual_temp_idx = 123<br />
+            &nbsp;&nbsp;selector_modes_idx = 234<br />
+            &lt;/voicecontrol&gt;<br />
+            </code>
+            <small class="text-muted">or in config.yaml:</small><br>
+            <code><b>Device_Config:</b><br>
+            &nbsp;&nbsp;<b>456:</b></code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;actual_temp_idx: '123'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
+            </code>
+            
+            </p>
 
             <h5 id="C3">Stream camera to chromecast</h5>
 
