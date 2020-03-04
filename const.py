@@ -438,7 +438,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;ack = True<br />
             &nbsp;&nbsp;report_state = False<br />
             &nbsp;&nbsp;hide = True<br />
-            &lt;/voicecontrol&gt;<br />
+            &nbsp;&nbsp;actual_temp_idx = 236</code><small class="text-muted">#For thermostat devices only, Bug Thermostat idx must be a number above Temp idx. Merged device will automaticly hidden</small><br />
+            <code>&lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
             Every variable should be on a separate line.
@@ -456,7 +457,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;&nbsp;&nbsp;report_state: false<br>
             &nbsp;&nbsp;<b>345:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;hide: true<br>
-            &nbsp;&nbsp;<b>456:</b></code><small class="text-muted">#For thermostat devices only, Bug Thermostat idx must be a number above Temp idx. Merged device will automaticly hidden</small><br><br>
+            &nbsp;&nbsp;<b>456:</b></code><small class="text-muted">#For thermostat devices only, Bug Thermostat idx must be a number above Temp idx. Merged device will automaticly hidden</small><br>
             <code>&nbsp;&nbsp;&nbsp;&nbsp;merge_temp_idx: '123'<br>
             &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
             <b>Scene_Config:</b><br>
