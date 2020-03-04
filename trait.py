@@ -385,15 +385,18 @@ class TemperatureSettingTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
-        response["thermostatTemperatureRange"] = {
-            'minThresholdCelsius': 5,
-            'maxThresholdCelsius': 35}
+        # response["thermostatTemperatureRange"] = {
+            # 'minThresholdCelsius': 5,
+            # 'maxThresholdCelsius': 35}
         
         if domain == tempDOMAIN:
             response["queryOnlyTemperatureSetting"] = True
 
         elif domain == climateDOMAIN:
-            response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
+            if self.state.modes_idx is not None:
+                response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
+            else:
+                response["availableThermostatModes"] = 'heat'
 
         return response
 
