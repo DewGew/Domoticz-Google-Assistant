@@ -370,7 +370,8 @@ class TemperatureSettingTrait(_Trait):
         COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
         COMMAND_THERMOSTAT_SET_MODE,
     ]
-
+    
+    
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
@@ -384,11 +385,15 @@ class TemperatureSettingTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
+        response["thermostatTemperatureRange"] = {
+            'minThresholdCelsius': 5,
+            'maxThresholdCelsius': 35}
         
         if domain == tempDOMAIN:
             response["queryOnlyTemperatureSetting"] = True
+
         elif domain == climateDOMAIN:
-            response["availableThermostatModes"] = 'off,heat,cool,on,auto,eco'
+            response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
 
         return response
 
@@ -430,17 +435,34 @@ class TemperatureSettingTrait(_Trait):
     def execute(self, command, params):
         """Execute a temperature point or mode command."""
         # All sent in temperatures are always in Celsius
-        if command == COMMAND_THERMOSTAT_SET_MODE:
-            levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+        if command == COMMAND_THERMOSTAT_SET_MODE and self.state.modes_idx is not None:
+            levels = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+            levelName = [x.lower() for x in levels]
+
             if params['thermostatMode'] in levelName:
                 level = str(levelName.index(params['thermostatMode']) * 10)
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.modes_idx + '&switchcmd=Set%20Level&level=' + level
-           
+            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+                
         if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(
-                params['thermostatTemperatureSetpoint'])
+            if self.state.modes_idx is not None:
+                levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+                level = self.state.level
+                index = int(level / 10)
+                if levelName[index].lower() == 'off':
+                    raise SmartHomeError('inOffMode',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
+                elif levelName[index].lower() == 'auto':
+                    raise SmartHomeError('inAutoMode',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
+                elif levelName[index].lower() == 'eco':
+                    raise SmartHomeError('inEcoMode',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))                   
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(
+                    params['thermostatTemperatureSetpoint'])
+
+            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 
 
 @register_trait
