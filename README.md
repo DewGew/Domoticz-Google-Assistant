@@ -24,6 +24,7 @@ Domoticz-Google-Assistant delivers:
 - Stream surveillance camera to chromecast.
 - Toggle Selector switches.
 - Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
+- **NEW** Modes for thermostat
 
 Please feel free to modify it, extend and improve
 
