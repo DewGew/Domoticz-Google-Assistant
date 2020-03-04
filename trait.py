@@ -438,14 +438,18 @@ class TemperatureSettingTrait(_Trait):
     def execute(self, command, params):
         """Execute a temperature point or mode command."""
         # All sent in temperatures are always in Celsius
-        if command == COMMAND_THERMOSTAT_SET_MODE and self.state.modes_idx is not None:
-            levels = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
-            levelName = [x.lower() for x in levels]
+        if command == COMMAND_THERMOSTAT_SET_MODE:
+            if self.state.modes_idx is not None:
+                levels = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+                levelName = [x.lower() for x in levels]
 
-            if params['thermostatMode'] in levelName:
-                level = str(levelName.index(params['thermostatMode']) * 10)
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.modes_idx + '&switchcmd=Set%20Level&level=' + level
-            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+                if params['thermostatMode'] in levelName:
+                    level = str(levelName.index(params['thermostatMode']) * 10)
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.modes_idx + '&switchcmd=Set%20Level&level=' + level
+                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            else:
+                raise SmartHomeError('notSupported',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
                 
         if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
             if self.state.modes_idx is not None:
