@@ -262,7 +262,7 @@ def getAog(device):
         hide = desc.get('hide', False)
         if hide:
             aog.domain = hiddenDOMAIN
-    if aog.domain == cameraDOMAIN:
+    if aog.domain == cameraDOMAIN or aog.domain == selectorDOMAIN:
         aog.report_state = False
         
     return aog
@@ -775,7 +775,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         
         for device in payload.get('devices', []):
             devid = device['id']
-            _GoogleEntity(aogDevs.get(devid, None)).async_update()
+            #_GoogleEntity(aogDevs.get(devid, None)).async_update()
             state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
@@ -830,7 +830,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     logger.error(err)
 
         final_results = list(results.values())
-
         for entity in entities.values():
             if entity.entity_id in results:
                 continue
@@ -844,8 +843,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 except:
                     continue
 
-        if state.report_state == True and enableReport == True:
-            self.report_state(states, token)
+            if state.report_state == True and enableReport == True:
+                self.report_state(states, token)
 
         return {'commands': final_results}
 
