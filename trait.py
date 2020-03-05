@@ -340,9 +340,6 @@ class OpenCloseTrait(_Trait):
             elif p == 0:
                 # close
                 url += 'On'
-            else:
-                # stop
-                url += 'Stop'
 
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
@@ -356,6 +353,39 @@ class OpenCloseTrait(_Trait):
                                      'Unable to execute {} for {} check your settings'.format(command,
                                                                                               self.state.entity_id))
 
+@register_trait
+class StartStopTrait(_Trait):
+    """Trait to offer StartStop functionality.
+    https://developers.google.com/actions/smarthome/traits/startstop
+    """
+
+    name = TRAIT_STARTSTOP
+    commands = [COMMAND_STARTSTOP, COMMAND_PAUSEUNPAUSE]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain == blindsDOMAIN
+
+    def sync_attributes(self):
+        """Return StartStop attributes for a sync request."""
+        return {}
+
+    def query_attributes(self):
+        """Return StartStop query attributes."""
+        if self.state.domain == blindsDOMAIN:
+            response['isRunning'] = True
+        
+        return response
+
+    def execute(self, command, params):
+        """Execute a StartStop command."""
+        if command == COMMAND_STARTSTOP:
+            if params["start"] is False:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Stop'
+            
+            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            
 
 @register_trait
 class TemperatureSettingTrait(_Trait):
@@ -822,11 +852,11 @@ class TooglesTrait(_Trait):
 
     def sync_attributes(self):
         """Return mode attributes for a sync request."""
-        level_list = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+        levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
         levels = []
 
-        if level_list:
-            for s in level_list:
+        if levelName:
+            for s in levelName:
                 levels.append(
                     {
                         "name": s,
@@ -852,7 +882,6 @@ class TooglesTrait(_Trait):
 
         if toggle_settings:
             response["on"] = self.state.state != 'Off'
-            response["online"] = True
             response["currentToggleSettings"] = toggle_settings
 
         return response
