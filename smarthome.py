@@ -262,7 +262,7 @@ def getAog(device):
         hide = desc.get('hide', False)
         if hide:
             aog.domain = hiddenDOMAIN
-    if aog.domain == cameraDOMAIN or aog.domain == selectorDOMAIN:
+    if aog.domain in [cameraDOMAIN, selectorDOMAIN, blindsDOMAIN]:
         aog.report_state = False
         
     return aog
