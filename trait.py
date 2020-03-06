@@ -46,6 +46,7 @@ COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT = (
 COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE = (
         PREFIX_COMMANDS + 'ThermostatTemperatureSetRange')
 COMMAND_THERMOSTAT_SET_MODE = PREFIX_COMMANDS + 'ThermostatSetMode'
+COMMAND_THERMOSTAT_TEMPERATURE_RELATIVE = PREFIX_COMMANDS + 'TemperatureRelative'
 COMMAND_LOCKUNLOCK = PREFIX_COMMANDS + 'LockUnlock'
 COMMAND_FANSPEED = PREFIX_COMMANDS + 'SetFanSpeed'
 COMMAND_MODES = PREFIX_COMMANDS + 'SetModes'
@@ -339,9 +340,6 @@ class OpenCloseTrait(_Trait):
             elif p == 0:
                 # close
                 url += 'On'
-            else:
-                # stop
-                url += 'Stop'
 
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
@@ -355,6 +353,39 @@ class OpenCloseTrait(_Trait):
                                      'Unable to execute {} for {} check your settings'.format(command,
                                                                                               self.state.entity_id))
 
+@register_trait
+class StartStopTrait(_Trait):
+    """Trait to offer StartStop functionality.
+    https://developers.google.com/actions/smarthome/traits/startstop
+    """
+
+    name = TRAIT_STARTSTOP
+    commands = [COMMAND_STARTSTOP, COMMAND_PAUSEUNPAUSE]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain == blindsDOMAIN
+
+    def sync_attributes(self):
+        """Return StartStop attributes for a sync request."""
+        return {}
+
+    def query_attributes(self):
+        """Return StartStop query attributes."""
+        if self.state.domain == blindsDOMAIN:
+            response['isRunning'] = True
+        
+        return response
+
+    def execute(self, command, params):
+        """Execute a StartStop command."""
+        if command == COMMAND_STARTSTOP:
+            if params["start"] is False:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Stop'
+            
+            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            
 
 @register_trait
 class TemperatureSettingTrait(_Trait):
@@ -369,7 +400,8 @@ class TemperatureSettingTrait(_Trait):
         COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE,
         COMMAND_THERMOSTAT_SET_MODE,
     ]
-
+    
+    
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
@@ -383,11 +415,18 @@ class TemperatureSettingTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
+        # response["thermostatTemperatureRange"] = {
+            # 'minThresholdCelsius': 5,
+            # 'maxThresholdCelsius': 35}
+        
         if domain == tempDOMAIN:
             response["queryOnlyTemperatureSetting"] = True
-        else:
-            response["queryOnlyTemperatureSetting"] = False
-            response["availableThermostatModes"] = 'heat'
+
+        elif domain == climateDOMAIN:
+            if self.state.modes_idx is not None:
+                response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
+            else:
+                response["availableThermostatModes"] = 'heat'
 
         return response
 
@@ -404,14 +443,19 @@ class TemperatureSettingTrait(_Trait):
             current_temp = self.state.temp
             if current_temp is not None:
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
-                response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)),
-                                                                  1)
+                response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
             current_humidity = self.state.humidity
             if current_humidity is not None:
                 response['thermostatHumidityAmbient'] = current_humidity
 
         if domain == climateDOMAIN:
-            response['thermostatMode'] = 'heat'
+            if self.state.modes_idx is not None:
+                levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+                level = self.state.level
+                index = int(level / 10)
+                response['thermostatMode'] = levelName[index].lower()
+            else:
+                response['thermostatMode'] = 'heat'
             current_temp = float(self.state.state)
             if current_temp is not None:
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
@@ -424,11 +468,38 @@ class TemperatureSettingTrait(_Trait):
     def execute(self, command, params):
         """Execute a temperature point or mode command."""
         # All sent in temperatures are always in Celsius
-        if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(
-                params['thermostatTemperatureSetpoint'])
+        if command == COMMAND_THERMOSTAT_SET_MODE:
+            if self.state.modes_idx is not None:
+                levels = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+                levelName = [x.lower() for x in levels]
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+                if params['thermostatMode'] in levelName:
+                    level = str(levelName.index(params['thermostatMode']) * 10)
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.modes_idx + '&switchcmd=Set%20Level&level=' + level
+                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            else:
+                raise SmartHomeError('notSupported',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
+                
+        if command == COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT:
+            if self.state.modes_idx is not None:
+                levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+                level = self.state.level
+                index = int(level / 10)
+                if levelName[index].lower() == 'off':
+                    raise SmartHomeError('inOffMode',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
+                elif levelName[index].lower() == 'auto':
+                    raise SmartHomeError('inAutoMode',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
+                elif levelName[index].lower() == 'eco':
+                    raise SmartHomeError('inEcoMode',
+                                     'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))                   
+
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(
+                    params['thermostatTemperatureSetpoint'])
+
+            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
 
 
 @register_trait
@@ -781,11 +852,11 @@ class TooglesTrait(_Trait):
 
     def sync_attributes(self):
         """Return mode attributes for a sync request."""
-        level_list = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
+        levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
         levels = []
 
-        if level_list:
-            for s in level_list:
+        if levelName:
+            for s in levelName:
                 levels.append(
                     {
                         "name": s,
@@ -811,7 +882,6 @@ class TooglesTrait(_Trait):
 
         if toggle_settings:
             response["on"] = self.state.state != 'Off'
-            response["online"] = True
             response["currentToggleSettings"] = toggle_settings
 
         return response

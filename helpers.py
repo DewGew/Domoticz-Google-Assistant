@@ -205,6 +205,9 @@ class AogState:
         self.battery = 0
         self.ack = False
         self.report_state = True
+        self.actual_temp_idx = None
+        self.hide = False
+        self.modes_idx = None
 
 
 def uptime():

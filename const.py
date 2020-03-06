@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.5.11'
+VERSION = '1.6.3'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -88,6 +88,7 @@ sensorDOMAIN = 'Sensor'
 doorDOMAIN = 'DoorSensor'
 selectorDOMAIN = 'Selector'
 fanDOMAIN = 'Fan'
+hiddenDOMAIN = 'Hidden'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -215,13 +216,13 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <li>Two-factor authentication pin for domoticz protected devices (limited language support)</li>
                     <li>Acknowledgement with Yes or No. (limited language support)</li>
                     <li>Arm Disarm Securitypanel (limited language support)</li>
-                    <li>On/Off, Brightness, Thermostat, Color Settings, speaker volume, Lock/Unlock, Scene, Open/Close, Stream Camera and Toggle selector devices</li>
-                    <li>Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy</li>
+                    <li>Supports Ngrok and SSL</li>
+                    <li><b>NEW:</b>Modes for thermostat</li>
                 </ul>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
                 <p class="lead">
                 <a href="https://github.com/DewGew/Domoticz-Google-Assistant/issues" target="_blank" rel="noopener" aria-label="Github Issues">
-                <img alt="GitHub issues" src="https://img.shields.io/github/issues/DewGew/Domoticz-Google-Assistant?style=for-the-badge">
+                <img alt="GitHub issues" src="https://img.shields.io/github/issues/DewGew/Domoticz-Google-Assistant?logo=github&style=for-the-badge">
                 </a>
                 <a href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">
                 <img alt="Discord" src="https://img.shields.io/discord/664815298284748830?label=Chat%20on%20discord&logo=discord&logoColor=white&style=for-the-badge">
@@ -429,18 +430,54 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
 
             <h5 id="C2">Device Settings</h5>
 
-            <p><small class="text-muted">Nicknames, rooms, ack and report_state can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
-            </small><br /><code>
+            <p><small class="text-muted">Nicknames, rooms, ack, hide etc. can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
+            </small><br />
+            <code>
             &lt;voicecontrol&gt;<br />
             &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
             &nbsp;&nbsp;room = Kitchen<br />
             &nbsp;&nbsp;ack = True<br />
-            &nbsp;&nbsp;report_state = false<br />
+            &nbsp;&nbsp;report_state = False<br />
+            &nbsp;&nbsp;hide = True<br />
             &lt;/voicecontrol&gt;<br />
             </code>
             <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
             Every variable should be on a separate line.
-            If there is no such configuration in the Domoticz device it will still try the config.</small></p>
+            If there is no such configuration in the Domoticz device it will still try the config:</small><br>
+            <code><b>Device_Config:</b><br>
+            &nbsp;&nbsp;<b>123:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;ack: true'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Kitchen Blind One'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Left Blind'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Blue Blind'<br>
+            &nbsp;&nbsp;<b>243:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Bedroom'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;report_state: false<br>
+            &nbsp;&nbsp;<b>345:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;hide: true<br>
+            <b>Scene_Config:</b><br>
+            &nbsp;&nbsp;<b>3:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Cool scene'<br>
+            </code>
+            <small class="text-muted"><b>For thermostat devices only.</b><br> Function to merge actual temperature from another temp device or modes from selector device to thermostat. Bug Thermostat idx <b>must</b> be a number <b>above</b> Temp/selector idx. Merged device will automaticly hidden. Levels from selector device supported is: Off - Heat - Cool - Auto - Eco</small><br>
+            <code>
+            &lt;voicecontrol&gt;<br />
+            &nbsp;&nbsp;actual_temp_idx = 123<br />
+            &nbsp;&nbsp;selector_modes_idx = 234<br />
+            &lt;/voicecontrol&gt;<br />
+            </code>
+            <small class="text-muted">or in config.yaml:</small><br>
+            <code><b>Device_Config:</b><br>
+            &nbsp;&nbsp;<b>456:</b></code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;actual_temp_idx: '123'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
+            </code>
+            
+            </p>
 
             <h5 id="C3">Stream camera to chromecast</h5>
 
@@ -617,7 +654,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
     $(document).ready(function() {{
         var config = {conf}
         var updates = {update}
-        document.getElementById("logsheader").innerHTML = 'Logs <small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
+        document.getElementById("logsheader").innerHTML = 'Logs <br><small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
         if (updates) {{
           document.getElementById("updates").innerHTML = "Updates are Availible.";
           // document.getElementById("modalLabel").innerHTML = "Updates are Availible!";

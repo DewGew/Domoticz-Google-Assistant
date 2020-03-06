@@ -1,5 +1,5 @@
-[![Build Status](https://travis-ci.com/DewGew/Domoticz-Google-Assistant.svg?branch=master)](https://travis-ci.com/DewGew/Domoticz-Google-Assistant) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/dewgew/Domoticz-Google-Assistant) [![Discord](https://img.shields.io/discord/664815298284748830?label=Chat%20on%20Discord)](https://discordapp.com/invite/AmJV6AC)
-# Domoticz-Google-Assistant
+[![Travis (.com)](https://img.shields.io/travis/com/dewgew/Domoticz-Google-Assistant?logo=travis)](https://travis-ci.com/DewGew/Domoticz-Google-Assistant) [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/dewgew/domoticz-google-assistant?logo=docker)](https://hub.docker.com/r/dewgew/domoticz-google-assistant) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/dewgew/Domoticz-Google-Assistant?logo=github) [![Discord](https://img.shields.io/discord/664815298284748830?logo=discord)](https://discordapp.com/invite/AmJV6AC)
+# Domoticz-Google-Assistant 
 
 <img src="dzga_UI.png" alt="drawing" width="600"/>
 
@@ -24,6 +24,7 @@ Domoticz-Google-Assistant delivers:
 - Stream surveillance camera to chromecast.
 - Toggle Selector switches.
 - Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
+- **NEW** Modes for thermostat
 
 Please feel free to modify it, extend and improve
 
