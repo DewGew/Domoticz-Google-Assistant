@@ -9,7 +9,7 @@ from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDO
                    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
                    cameraDOMAIN, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, fanDOMAIN,
                    ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
-                   ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED, heaterDOMAIN)
+                   ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED, heaterDOMAIN, smokeDOMAIN, kettleDOMAIN)
 
 from helpers import SmartHomeError, configuration, logger, tempConvert
 
@@ -47,6 +47,7 @@ COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE = (
         PREFIX_COMMANDS + 'ThermostatTemperatureSetRange')
 COMMAND_THERMOSTAT_SET_MODE = PREFIX_COMMANDS + 'ThermostatSetMode'
 COMMAND_THERMOSTAT_TEMPERATURE_RELATIVE = PREFIX_COMMANDS + 'TemperatureRelative'
+COMMAND_SET_TEMPERATURE = PREFIX_COMMANDS + 'SetTemperature'
 COMMAND_LOCKUNLOCK = PREFIX_COMMANDS + 'LockUnlock'
 COMMAND_FANSPEED = PREFIX_COMMANDS + 'SetFanSpeed'
 COMMAND_MODES = PREFIX_COMMANDS + 'SetModes'
@@ -126,6 +127,8 @@ class OnOffTrait(_Trait):
             sensorDOMAIN,
             fanDOMAIN,
             heaterDOMAIN,
+            smokeDOMAIN,
+            kettleDOMAIN,
         )
 
     def sync_attributes(self):
@@ -151,7 +154,7 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
         protected = self.state.protected
 
-        if domain != sensorDOMAIN:
+        if domain not in [sensorDOMAIN, smokeDOMAIN]:
             if domain == groupDOMAIN:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
@@ -416,9 +419,9 @@ class TemperatureSettingTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
-        # response["thermostatTemperatureRange"] = {
-            # 'minThresholdCelsius': 5,
-            # 'maxThresholdCelsius': 35}
+        response["thermostatTemperatureRange"] = {
+            'minThresholdCelsius': -20,
+            'maxThresholdCelsius': 40}
         
         if domain == tempDOMAIN:
             response["queryOnlyTemperatureSetting"] = True
