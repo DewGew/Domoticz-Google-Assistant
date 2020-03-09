@@ -20,7 +20,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
                    REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN,
                    selectorDOMAIN, hiddenDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP,
-                   ATTRS_PERCENTAGE, VERSION)
+                   ATTRS_PERCENTAGE, VERSION, heaterDOMAIN)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
@@ -107,6 +107,9 @@ def AogGetDomain(device):
         elif 'Image_Override' in configuration and 'Fan' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Fan']:
             return fanDOMAIN
+        elif 'Image_Override' in configuration and 'Heating' in configuration['Image_Override'] and device["Image"] in \
+                configuration['Image_Override']['Heating']:
+            return heaterDOMAIN
         else:
             return lightDOMAIN
     elif 'Blinds' == device["Type"]:	
