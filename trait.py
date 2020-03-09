@@ -9,7 +9,7 @@ from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDO
                    climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
                    cameraDOMAIN, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, fanDOMAIN,
                    ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
-                   ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
+                   ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED, heaterDOMAIN)
 
 from helpers import SmartHomeError, configuration, logger, tempConvert
 
@@ -125,6 +125,7 @@ class OnOffTrait(_Trait):
             speakerDOMAIN,
             sensorDOMAIN,
             fanDOMAIN,
+            heaterDOMAIN,
         )
 
     def sync_attributes(self):
