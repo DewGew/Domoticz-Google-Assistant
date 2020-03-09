@@ -89,6 +89,7 @@ doorDOMAIN = 'DoorSensor'
 selectorDOMAIN = 'Selector'
 fanDOMAIN = 'Fan'
 hiddenDOMAIN = 'Hidden'
+heaterDOMAIN = 'Heater'
 
 ATTRS_BRIGHTNESS = 1
 ATTRS_THERMSTATSETPOINT = 1
@@ -118,6 +119,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     doorDOMAIN: TYPE_DOOR,
     selectorDOMAIN: TYPE_SWITCH,
     fanDOMAIN: TYPE_FAN,
+    heaterDOMAIN: TYPE_HEATER,
 }
 
 TEMPLATE = """
