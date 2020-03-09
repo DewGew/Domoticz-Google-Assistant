@@ -20,7 +20,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
                    REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN,
                    selectorDOMAIN, hiddenDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP,
-                   ATTRS_PERCENTAGE, VERSION, heaterDOMAIN)
+                   ATTRS_PERCENTAGE, VERSION, heaterDOMAIN, smokeDOMAIN, kettleDOMAIN)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
@@ -70,7 +70,7 @@ update = checkupdate()
 
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
-    if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY']:
+    if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
         if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US',
                                     'Blinds Percentage', 'Blinds Percentage Inverted']:
             return blindsDOMAIN
@@ -86,6 +86,8 @@ def AogGetDomain(device):
             return sensorDOMAIN
         elif 'Selector' == device["SwitchType"]:
             return selectorDOMAIN
+        elif 'Smoke Detector' == device["SwitchType"]:
+            return smokeDOMAIN
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
                 configuration['Camera_Stream']['Enabled']:
             return cameraDOMAIN
@@ -110,6 +112,9 @@ def AogGetDomain(device):
         elif 'Image_Override' in configuration and 'Heating' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Heating']:
             return heaterDOMAIN
+        elif 'Image_Override' in configuration and 'Kettle' in configuration['Image_Override'] and device["Image"] in \
+                configuration['Image_Override']['Kettle']:
+            return kettleDOMAIN
         else:
             return lightDOMAIN
     elif 'Blinds' == device["Type"]:	
