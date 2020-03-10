@@ -2,6 +2,7 @@
 
 import base64
 import json
+from datetime import datetime
 
 import requests
 
@@ -32,6 +33,7 @@ TRAIT_ARM_DISARM = PREFIX_TRAITS + 'ArmDisarm'
 TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
 TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
 TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
+TRAIT_TIMER = PREFIX_TRAITS + 'Timer'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -57,6 +59,8 @@ COMMAND_SET_VOLUME = PREFIX_COMMANDS + 'setVolume'
 COMMAND_VOLUME_RELATIVE = PREFIX_COMMANDS + 'volumeRelative'
 COMMAND_GET_CAMERA_STREAM = PREFIX_COMMANDS + 'GetCameraStream'
 COMMAND_TOGGLES = PREFIX_COMMANDS + 'SetToggles'
+COMMAND_TIMER_START = PREFIX_COMMANDS + 'TimerStart'
+COMMAND_TIMER_CANCEL = PREFIX_COMMANDS + 'TimerCancel'
 
 TRAITS = []
 
@@ -507,6 +511,65 @@ class TemperatureSettingTrait(_Trait):
 
 
 @register_trait
+class TemperatureControlTrait(_Trait):
+    """Trait to offer handling temperature point functionality.
+
+    https://developers.google.com/actions/smarthome/traits/temperaturecontrol
+    """
+
+    name = TRAIT_TEMPERATURE_CONTROL
+    commands = [
+        COMMAND_SET_TEMPERATURE,
+    ]
+    
+    
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in []
+
+    def sync_attributes(self):
+        """Return temperature point and modes attributes for a sync request."""
+        domain = self.state.domain
+        units = self.state.tempunit
+        response = {"temperatureUnitForUX": _google_temp_unit(units)}
+        response = {"temperatureStepCelsius": 1}
+        response["temperatureRange"] = {
+            'minThresholdCelsius': 30,
+            'maxThresholdCelsius': 300}
+        
+        return response
+
+    def query_attributes(self):
+        """Return temperature point and modes query attributes."""
+        domain = self.state.domain
+        units = self.state.tempunit
+        response = {}
+        if self.state.battery <= configuration['Low_battery_limit']:
+            response['exceptionCode'] = 'lowBattery'
+
+        current_temp = float(self.state.state)
+        if current_temp is not None:
+            response['temperatureAmbientCelsius'] = current_temp
+        setpoint = float(self.state.setpoint)
+        if setpoint is not None:
+            response['temperatureSetpointCelsius'] = setpoint
+
+        return response
+
+    def execute(self, command, params):
+        """Execute a temperature point or mode command."""
+        # All sent in temperatures are always in Celsius
+               
+        if command == COMMAND_SET_TEMPERATURE:               
+
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(
+                    params['temperature'])
+
+            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            
+            
+@register_trait
 class LockUnlockTrait(_Trait):
     """Trait to lock or unlock a lock.
     https://developers.google.com/actions/smarthome/traits/lockunlock
@@ -910,5 +973,63 @@ class TooglesTrait(_Trait):
             err = status.get('status')
             if err == 'ERROR':
                 raise SmartHomeError(ERR_WRONG_PIN,
+                                     'Unable to execute {} for {} check your settings'.format(command,
+                                                                                              self.state.entity_id))
+
+@register_trait
+class Timer(_Trait):
+    """Trait to offer StartStop functionality.
+    https://developers.google.com/actions/smarthome/traits/timer
+    """
+
+    name = TRAIT_TIMER
+    commands = [COMMAND_TIMER_START,
+                COMMAND_TIMER_CANCEL
+                ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in [lightDOMAIN,
+                          colorDOMAIN,
+                          switchDOMAIN,
+                          heaterDOMAIN,
+                          kettleDOMAIN,
+                          fanDOMAIN,
+                          ]
+
+    def sync_attributes(self):
+        """Return Timer attributes for a sync request."""
+        return {"maxTimerLimitSec": 7200}
+
+    def query_attributes(self):
+        """Return Timer query attributes."""    
+        response = {}
+        # response['timerRemainingSec'] = self.state.timer
+        
+        return response
+
+    def execute(self, command, params):
+        """Execute a Timer command."""
+        version = self.state.dzvents
+        # date_str = datetime.strptime(self.state.lastupdate, "%Y-%m-%d %H:%M:%S")
+        # timestamp = datetime.timestamp(date_str)
+        # print("date =", date_str)
+        # print("timestamp =", timestamp)
+        if version is not None and version >= '3.0.0':
+            if command == COMMAND_TIMER_START:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"time":' + str(params['timerTimeSec']) + ',"on":true}'
+
+                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+
+        
+            if command == COMMAND_TIMER_CANCEL:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"cancel":true}'
+
+                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        else:
+            logger.error('To use Timer function you need to run Domoticz version above 4.11687')
+            logger.error('and have dzVents Dzga_Timer script installed and active')
+            raise SmartHomeError('functionNotSupported',
                                      'Unable to execute {} for {} check your settings'.format(command,
                                                                                               self.state.entity_id))
