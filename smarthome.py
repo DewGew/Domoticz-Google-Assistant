@@ -20,7 +20,7 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
                    REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN,
                    selectorDOMAIN, hiddenDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP,
-                   ATTRS_PERCENTAGE, VERSION, heaterDOMAIN, smokeDOMAIN, kettleDOMAIN)
+                   ATTRS_PERCENTAGE, VERSION, heaterDOMAIN, smokeDOMAIN, kettleDOMAIN, DOMOTICZ_GET_VERSION, mergedDOMAIN)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
@@ -210,6 +210,8 @@ def getAog(device):
     aog.hardware = device.get("HardwareName")
     aog.selectorLevelName = device.get("LevelNames")
     aog.language = settings.get("Language")
+    aog.lastupdate = device.get("LastUpdate")
+    aog.dzvents = settings.get("dzVents")
 
     if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -253,7 +255,7 @@ def getAog(device):
                 aog.actual_temp_idx = at_idx
                 try:
                     aog.state = str(aogDevs[tempDOMAIN + at_idx].temp)
-                    aogDevs[tempDOMAIN + at_idx].domain = hiddenDOMAIN
+                    aogDevs[tempDOMAIN + at_idx].domain = mergedDOMAIN + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find temp device with idx %s', at_idx)
                     logger.error('Make sure temp device has a idx below %s', aog.id)
@@ -263,7 +265,7 @@ def getAog(device):
                 try:
                     aog.level = aogDevs[selectorDOMAIN + modes_idx].level
                     aog.selectorLevelName = aogDevs[selectorDOMAIN + modes_idx].selectorLevelName
-                    aogDevs[selectorDOMAIN + modes_idx].domain = hiddenDOMAIN
+                    aogDevs[selectorDOMAIN + modes_idx].domain = mergedDOMAIN + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
                     logger.error('Make sure selector has a idx below %s', aog.id)
@@ -307,6 +309,7 @@ def getDevices(devices="all", idx="0"):
                 req[aog.name]['idx'] = int(aog.id)
                 req[aog.name]['type'] = aog.domain
                 req[aog.name]['state'] = aog.state
+                req[aog.name]['lastupdate'] = aog.lastupdate
                 if aog.nicknames is not None:
                     req[aog.name]['nicknames'] = aog.nicknames
                 if aog.modes_idx is not None:
@@ -336,10 +339,7 @@ def deep_update(target, source):
             target[key] = value
     return target
 
-
 settings = {}
-
-
 def getSettings():
     """Get domoticz settings."""
     global settings
@@ -353,9 +353,22 @@ def getSettings():
         settings["SecOnDelay"] = devs["SecOnDelay"]
         settings['TempUnit'] = devs['TempUnit']
         settings['Language'] = devs['Language']
+    
+    getVersion()
 
     logger.debug(json.dumps(settings, indent=2, sort_keys=False, ensure_ascii=False))
 
+def getVersion():
+    """Get domoticz settings."""
+    global settings
+
+    url = DOMOTICZ_URL + DOMOTICZ_GET_VERSION
+    r = requests.get(url, auth=CREDITS)
+
+    if r.status_code == 200:
+        vers = r.json()
+        settings['dzversion'] = vers['version']
+        settings['dzVents'] = vers['dzvents_version']
 
 def restartServer():
     """Restart."""
