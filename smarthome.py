@@ -285,7 +285,7 @@ def getAog(device):
         hide = desc.get('hide', False)
         if hide:
             aog.domain = domains['hidden']
-    if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle']:
+    if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle']]:
         aog.report_state = False
         
     return aog
