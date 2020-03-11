@@ -1,0 +1,111 @@
+# Configuration:
+port_number: 3030
+# Debug, Info or Error
+loglevel: 'Info'
+# Set logtofile: 'false' logs will not show in the LOG tab. Set logtofile: 'Overwrite' or true Log file will be overwritten when dzga server restarts
+# Set logtofile: 'Append' Logs will append to logfile when dzga server restarts
+logtofile: false
+# If pathToLogFile is commented, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder
+pathToLogFile: ''
+# Enable or disable UI
+userinterface: true
+# Check for updates
+CheckForUpdates: true
+
+# Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
+# When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. 
+# Create account at ngrok.com and paste the token in this file.
+# Ngrok assigns random urls. When server restart the server gets a new url.
+ngrok_tunnel: false
+ngrok_auth_token: 'auth_token'
+
+# Use SSL encryption in HTTP server if not using ngrok
+use_ssl: false
+ssl_key:  # /path/to/privkey.pem
+ssl_cert: # /path/to/fullchain.pem
+
+# Login on Google Home app and configuration interface
+auth_user: 'admin'
+auth_pass: 'admin'
+  
+# Domoticz Settings:
+Domoticz:
+  ip: 'http://192.168.1.100'
+  port: '8080'
+  roomplan: '0'
+  username: 'username'
+  password: 'password'
+  switchProtectionPass: '1234' #Set this to false if ask for pin function is not needed
+
+# Report low battry
+Low_battery_limit: 9
+
+# Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
+# So to differentiate them additionaly image names are used.
+Image_Override:
+  Switch:
+    - 'Generic'
+  Light:
+    - 'Light'
+  Media:
+    - 'Media'
+    - 'TV'
+  Outlet:
+    - 'WallSocket'
+  Speaker:
+    - 'Speaker'
+  Fan:
+    - 'Fan'
+    
+#Additional nicknames and room configuration
+#Comment out or delete section below if not needed
+Device_Config:
+  123:
+    ack: true
+    room: 'Livingroom'
+    nicknames:
+      - 'Celing light'
+      - 'Smart light'
+  234:
+    room: 'Bedroom'
+    report_state: false
+    hide: true
+  345: # For thermostat devices only, Bug Thermostat idx must be a number above Temp idx
+    room: 'Hallway'
+    actual_temp_idx: '321' # Merge Actual temp from another temp device
+    selector_modes_idx: '392' # Merge Modes from selector device
+    
+Scene_Config:
+  3:
+    room: 'Kitchen'
+    nicknames:
+        - 'Cool scene'
+
+# Stream security Camera:
+# In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera).
+Camera_Stream:
+  Enabled: false
+  Cameras:
+    Idx:
+      - '123'
+      - '234'
+      - '345'
+    Camera_URL:
+      - 'http://your.web.server/cam/cam.m3u8'
+      - 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8'
+      - 'http://user:password@192.168.1.102:8080/mp4/cctv/camera2/s.mp4'
+      
+# User-friendly name for the level in your language..
+# See: https://developers.google.com/actions/smarthome/traits/#supported-languages
+Armhome:
+  level_synonym:
+    - 'zuhause und bewachen'
+    - 'Level 1'
+    - 'SL1'
+  lang: 'de'
+Armaway:
+  level_synonym:
+    - 'weg und bewachen'
+    - 'Level 2'
+    - 'SL2'
+  lang: 'de'
