@@ -14,13 +14,10 @@ import requests
 import trait
 from auth import *
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
-                   TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, DOMOTICZ_GET_ALL_DEVICES_URL,
-                   DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, groupDOMAIN,
-                   sceneDOMAIN, CONFIGFILE, LOGFILE, lightDOMAIN, switchDOMAIN, blindsDOMAIN, pushDOMAIN, climateDOMAIN,
-                   tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN, cameraDOMAIN,
-                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN,
-                   selectorDOMAIN, hiddenDOMAIN, fanDOMAIN, ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP,
-                   ATTRS_PERCENTAGE, VERSION, heaterDOMAIN, smokeDOMAIN, kettleDOMAIN, DOMOTICZ_GET_VERSION, mergedDOMAIN)
+                   TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, DOMOTICZ_GET_ALL_DEVICES_URL, domains,
+                   DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, CONFIGFILE, LOGFILE,
+                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, ATTRS_BRIGHTNESS, ATTRS_FANSPEED,
+                   ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
@@ -73,76 +70,79 @@ def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
         if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US',
                                     'Blinds Percentage', 'Blinds Percentage Inverted']:
-            return blindsDOMAIN
+            return domains['blinds']
         elif 'Door Lock' == device["SwitchType"]:
-            return lockDOMAIN
+            return domains['lock']
         elif 'Door Lock Inverted' == device["SwitchType"]:
-            return invlockDOMAIN
+            return domains['invlock']
         elif "Door Contact" == device["SwitchType"]:
-            return doorDOMAIN
+            return domains['door']
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
-            return pushDOMAIN
+            return domains['push']
         elif 'Motion Sensor' == device["SwitchType"]:
-            return sensorDOMAIN
+            return domains['sensor']
         elif 'Selector' == device["SwitchType"]:
-            return selectorDOMAIN
+            if device['Image'] == 'Fan':
+                return domains['fan']
+            else:
+                return domains['selector']
         elif 'Smoke Detector' == device["SwitchType"]:
-            return smokeDOMAIN
+            return domains['smoke']
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
                 configuration['Camera_Stream']['Enabled']:
-            return cameraDOMAIN
+            return domains['camera']
         elif 'Image_Override' in configuration and 'Switch' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Switch']:
-            return switchDOMAIN
+            return domains['switch']
         elif 'Image_Override' in configuration and 'Light' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Light']:
-            return lightDOMAIN
+            return domains['light']
         elif 'Image_Override' in configuration and 'Media' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Media']:
-            return mediaDOMAIN
+            return domains['media']
         elif 'Image_Override' in configuration and 'Outlet' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Outlet']:
-            return outletDOMAIN
+            return domains['outlet']
         elif 'Image_Override' in configuration and 'Speaker' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Speaker']:
-            return speakerDOMAIN
+            return domains['speaker']
         elif 'Image_Override' in configuration and 'Fan' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Fan']:
-            return fanDOMAIN
+            return domains['fan']
         elif 'Image_Override' in configuration and 'Heating' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Heating']:
-            return heaterDOMAIN
+            return domains['heater']
         elif 'Image_Override' in configuration and 'Kettle' in configuration['Image_Override'] and device["Image"] in \
                 configuration['Image_Override']['Kettle']:
-            return kettleDOMAIN
+            return domains['kettle']
         else:
-            return lightDOMAIN
+            return domains['light']
     elif 'Blinds' == device["Type"]:	
-        return blindsDOMAIN
+        return domains['blinds']
     elif 'Group' == device["Type"]:
-        return groupDOMAIN
+        return domains['group']
     elif 'Scene' == device["Type"]:
-        return sceneDOMAIN
+        return domains['scene']
     elif device["Type"] in ['Temp', 'Temp + Humidity', 'Temp + Humidity + Baro']:
-        return tempDOMAIN
+        return domains['temp']
     elif 'Thermostat' == device['Type']:
-        return climateDOMAIN
+        return domains['climate']
     elif 'Color Switch' == device["Type"]: 
         if "Dimmer" == device["SwitchType"]:
-            return colorDOMAIN
+            return domains['color']
         elif "On/Off" == device["SwitchType"]:
             logger.info('%s (Idx: %s) is a color switch. To get all functions, set this device as Dimmer in Domoticz', device["Name"], device[
                 "idx"])
-            return lightDOMAIN
+            return domains['light']
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
-            return pushDOMAIN
+            return domains['push']
     elif 'Security' == device["Type"]:
-        return securityDOMAIN
+        return domains['security']
     return None
 
 
 def getDesc(state):
-    if state.domain == sceneDOMAIN or state.domain == groupDOMAIN:
+    if state.domain == domains['scene'] or state.domain == domains['group']:
         if 'Scene_Config' in configuration and configuration['Scene_Config'] is not None:
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
@@ -213,19 +213,21 @@ def getAog(device):
     aog.lastupdate = device.get("LastUpdate")
     aog.dzvents = settings.get("dzVents")
 
-    if lightDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
+    if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if outletDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
+    if domains['fan'] == aog.domain and "Selector" == device["SwitchType"]:
+        aog.attributes = ATTRS_FANSPEED
+    if domains['outlet'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if colorDOMAIN == aog.domain and "Dimmer" == device["SwitchType"]:
+    if domains['color'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if colorDOMAIN == aog.domain and "RGBWW" == device["SubType"]:
+    if domains['color'] == aog.domain and "RGBWW" == device["SubType"]:
         aog.attributes = ATTRS_COLOR_TEMP
-    if climateDOMAIN == aog.domain and "Thermostat" == device["Type"]:
+    if domains['climate'] == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
-    if blindsDOMAIN == aog.domain and "Blinds Percentage" == device["SwitchType"]:
+    if domains['blinds'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
-    if blindsDOMAIN == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
+    if domains['blinds'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
 
     # Try to get device specific voice control configuration from Domoticz
@@ -248,14 +250,14 @@ def getAog(device):
         if not ReportState.enable_report_state():
             aog.report_state = False
         if not report_state:
-            aog.report_state = report_state
-        if climateDOMAIN == aog.domain:
+            aog.report_state = report_state            
+        if domains['climate'] == aog.domain:
             at_idx = desc.get('actual_temp_idx', None)
             if at_idx is not None:
                 aog.actual_temp_idx = at_idx
                 try:
-                    aog.state = str(aogDevs[tempDOMAIN + at_idx].temp)
-                    aogDevs[tempDOMAIN + at_idx].domain = mergedDOMAIN + aog.id + ')'
+                    aog.state = str(aogDevs[domains['temp'] + at_idx].temp)
+                    aogDevs[domains['temp'] + at_idx].domain = domains['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find temp device with idx %s', at_idx)
                     logger.error('Make sure temp device has a idx below %s', aog.id)
@@ -263,16 +265,27 @@ def getAog(device):
             if modes_idx is not None:
                 aog.modes_idx = modes_idx
                 try:
-                    aog.level = aogDevs[selectorDOMAIN + modes_idx].level
-                    aog.selectorLevelName = aogDevs[selectorDOMAIN + modes_idx].selectorLevelName
-                    aogDevs[selectorDOMAIN + modes_idx].domain = mergedDOMAIN + aog.id + ')'
+                    aog.level = aogDevs[domains['selector'] + modes_idx].level
+                    aog.selectorLevelName = aogDevs[domains['selector'] + modes_idx].selectorLevelName
+                    aogDevs[domains['selector'] + modes_idx].domain = domains['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
                     logger.error('Make sure selector has a idx below %s', aog.id)
+        if aog.domain in [domains['heater'], domains['kettle']]:
+            tc_idx = desc.get('merge_thermo_idx', None)
+            if tc_idx is not None:
+                aog.merge_thermo_idx = tc_idx
+                try:
+                    aog.temp = aogDevs[domains['climate'] + tc_idx].state
+                    aog.setpoint = aogDevs[domains['climate'] + tc_idx].setpoint
+                    aogDevs[domains['climate'] + tc_idx].domain = domains['merged'] + aog.id + ')'
+                except:
+                    logger.error('Merge Error, Cant find thermostat device with idx %s', tc_idx)
+                    logger.error('Make sure thermostat device has a idx below %s', aog.id)
         hide = desc.get('hide', False)
         if hide:
-            aog.domain = hiddenDOMAIN
-    if aog.domain in [cameraDOMAIN, selectorDOMAIN, blindsDOMAIN]:
+            aog.domain = domains['hidden']
+    if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle']:
         aog.report_state = False
         
     return aog
@@ -318,6 +331,8 @@ def getDevices(devices="all", idx="0"):
                     req[aog.name]['hidden'] = aog.hide
                 if aog.actual_temp_idx is not None:
                     req[aog.name]['actual_temp_idx'] = aog.actual_temp_idx
+                if aog.merge_thermo_idx is not None:
+                    req[aog.name]['merge_thermo_idx'] = aog.merge_thermo_idx
                 req[aog.name]['willReportState'] = aog.report_state
                 logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
 
@@ -478,9 +493,9 @@ class _GoogleEntity:
                 else:
                     protect = False
 
-                if protect or self.state.domain == securityDOMAIN:
+                if protect or self.state.domain == domains['security']:
                     pin = configuration['Domoticz']['switchProtectionPass']
-                    if self.state.domain == securityDOMAIN:
+                    if self.state.domain == domains['security']:
                         pin = self.state.seccode
                     ack = False
                     if challenge is None:
@@ -495,7 +510,7 @@ class _GoogleEntity:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-                    elif self.state.domain == securityDOMAIN and pin != hashlib.md5(
+                    elif self.state.domain == domains['security'] and pin != hashlib.md5(
                             str.encode(challenge.get('pin'))).hexdigest():
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
@@ -522,7 +537,7 @@ class _GoogleEntity:
     def async_update(self):
         """Update the entity with latest info from Domoticz."""
 
-        if self.state.domain == groupDOMAIN or self.state.domain == sceneDOMAIN:
+        if self.state.domain == domains['group'] or self.state.domain == domains['scene']:
             getDevices('scene')
         else:
             getDevices('id', self.state.id)
