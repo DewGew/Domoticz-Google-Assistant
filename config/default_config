@@ -41,7 +41,7 @@ Domoticz:
 Low_battery_limit: 9
 
 # Ligths, switches, media, etc. are using domoticz's 'Light/Switch' type
-# So to differentiate them additionaly image names are used. Custom icon works also.
+# So to differentiate them additionaly image names are used. Names for custom icons works also.
 Image_Override:
   Fan:
     - 'Fan'
@@ -51,9 +51,11 @@ Image_Override:
     - 'Kettle' # Custom icon
   Light:
     - 'Light'
+    - 'custom_icon_name'
   Media:
     - 'Media'
     - 'TV'
+    - 'custom_icon_name'
   Outlet:
     - 'WallSocket'
   Speaker:
