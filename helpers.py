@@ -209,6 +209,8 @@ class AogState:
         self.hide = False
         self.modes_idx = None
         self.lastupdate = ''
+        self.selectorLevelName = ''
+        self.merge_thermo_idx = None
 
 
 def uptime():
