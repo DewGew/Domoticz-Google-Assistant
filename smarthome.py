@@ -605,7 +605,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         self._request_id = message.get('requestId')
 
-        logger.info("Request " + json.dumps(message, indent=2, sort_keys=False, ensure_ascii=False))
+        logger.info("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
         response = self.smarthome_process(message, token)
 
         try:
@@ -615,7 +615,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
 
-        logger.info("Response " + json.dumps(response, indent=2, sort_keys=False, ensure_ascii=False))
+        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
 
     def smarthome(self, s):
         s.send_message(500, "not supported")
@@ -820,7 +820,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             e = _GoogleEntity(state)
             devices[devid] = e.query_serialize()
-
+            devices[devid].update({'status':'SUCCESS'})
         return {'devices': devices}
 
     def smarthome_exec(self, payload, token):
