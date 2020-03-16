@@ -34,7 +34,8 @@ Just open a terminal window and execute this command. Then set up [Actions on Go
 bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)
 ```
 
-### [Installation and configuration](https://github.com/DewGew/Domoticz-Google-Assistant/wiki)
+### [Installation and configuration wiki](https://github.com/DewGew/Domoticz-Google-Assistant/wiki)
+### [Docker install](https://github.com/DewGew/Domoticz-Google-Assistant/wiki/DZGA-with-Docker)
 <!--stackedit_data:
 eyJoaXN0b3J5IjpbNjY2NTI2ODUyXX0=
 -->

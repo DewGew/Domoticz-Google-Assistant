@@ -2,14 +2,12 @@
 
 import base64
 import json
+from datetime import datetime
 
 import requests
 
-from const import (groupDOMAIN, sceneDOMAIN, lightDOMAIN, switchDOMAIN, blindsDOMAIN, screenDOMAIN, pushDOMAIN,
-                   climateDOMAIN, tempDOMAIN, lockDOMAIN, invlockDOMAIN, colorDOMAIN, mediaDOMAIN, speakerDOMAIN,
-                   cameraDOMAIN, securityDOMAIN, outletDOMAIN, sensorDOMAIN, doorDOMAIN, selectorDOMAIN, fanDOMAIN,
-                   ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
-                   ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED)
+from const import (ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, domains,
+                   ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED, ATTRS_FANSPEED)
 
 from helpers import SmartHomeError, configuration, logger, tempConvert
 
@@ -32,6 +30,7 @@ TRAIT_ARM_DISARM = PREFIX_TRAITS + 'ArmDisarm'
 TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
 TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
 TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
+TRAIT_TIMER = PREFIX_TRAITS + 'Timer'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -47,6 +46,7 @@ COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE = (
         PREFIX_COMMANDS + 'ThermostatTemperatureSetRange')
 COMMAND_THERMOSTAT_SET_MODE = PREFIX_COMMANDS + 'ThermostatSetMode'
 COMMAND_THERMOSTAT_TEMPERATURE_RELATIVE = PREFIX_COMMANDS + 'TemperatureRelative'
+COMMAND_SET_TEMPERATURE = PREFIX_COMMANDS + 'SetTemperature'
 COMMAND_LOCKUNLOCK = PREFIX_COMMANDS + 'LockUnlock'
 COMMAND_FANSPEED = PREFIX_COMMANDS + 'SetFanSpeed'
 COMMAND_MODES = PREFIX_COMMANDS + 'SetModes'
@@ -56,6 +56,8 @@ COMMAND_SET_VOLUME = PREFIX_COMMANDS + 'setVolume'
 COMMAND_VOLUME_RELATIVE = PREFIX_COMMANDS + 'volumeRelative'
 COMMAND_GET_CAMERA_STREAM = PREFIX_COMMANDS + 'GetCameraStream'
 COMMAND_TOGGLES = PREFIX_COMMANDS + 'SetToggles'
+COMMAND_TIMER_START = PREFIX_COMMANDS + 'TimerStart'
+COMMAND_TIMER_CANCEL = PREFIX_COMMANDS + 'TimerCancel'
 
 TRAITS = []
 
@@ -115,16 +117,19 @@ class OnOffTrait(_Trait):
         """Test if state is supported."""
 
         return domain in (
-            groupDOMAIN,
-            switchDOMAIN,
-            lightDOMAIN,
-            colorDOMAIN,
-            mediaDOMAIN,
-            outletDOMAIN,
-            pushDOMAIN,
-            speakerDOMAIN,
-            sensorDOMAIN,
-            fanDOMAIN,
+            domains['group'],
+            domains['switch'],
+            domains['light'],
+            domains['color'],
+            domains['media'],
+            domains['outlet'],
+            domains['push'],
+            domains['speaker'],
+            domains['sensor'],
+            domains['fan'],
+            domains['heater'],
+            domains['smoke'],
+            domains['kettle'],
         )
 
     def sync_attributes(self):
@@ -136,11 +141,11 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
 
         response = {}
-        if domain == pushDOMAIN:
+        if domain == domains['push']:
             response['on'] = False
         else:
             response['on'] = self.state.state != 'Off'
-        if domain != groupDOMAIN and self.state.battery <= configuration['Low_battery_limit']:
+        if domain != domains['group'] and self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
         return response
@@ -150,8 +155,8 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
         protected = self.state.protected
 
-        if domain != sensorDOMAIN:
-            if domain == groupDOMAIN:
+        if domain not in [domains['sensor'], domains['smoke']]:
+            if domain == domains['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
             else:
@@ -185,7 +190,7 @@ class SceneTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in sceneDOMAIN
+        return domain in domains['scene']
 
     def sync_attributes(self):
         """Return scene attributes for a sync request."""
@@ -229,7 +234,7 @@ class BrightnessTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain in (lightDOMAIN, colorDOMAIN, outletDOMAIN):
+        if domain in (domains['light'], domains['color'], domains['outlet']):
             return features & ATTRS_BRIGHTNESS
 
         return False
@@ -243,12 +248,9 @@ class BrightnessTrait(_Trait):
         domain = self.state.domain
         response = {}
 
-        if domain == lightDOMAIN or domain == outletDOMAIN:
-            brightness = self.state.level
-            response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
-        if domain == colorDOMAIN:
-            brightness = self.state.level
-            response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
+        brightness = self.state.level
+        response['brightness'] = int(brightness * 100 / self.state.maxdimlevel)
+        
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
@@ -297,7 +299,7 @@ class OpenCloseTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in [blindsDOMAIN, doorDOMAIN]
+        return domain in [domains['blinds'], domains['door']]
 
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
@@ -365,7 +367,7 @@ class StartStopTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain == blindsDOMAIN
+        return domain == domains['blinds']
 
     def sync_attributes(self):
         """Return StartStop attributes for a sync request."""
@@ -373,7 +375,7 @@ class StartStopTrait(_Trait):
 
     def query_attributes(self):
         """Return StartStop query attributes."""
-        if self.state.domain == blindsDOMAIN:
+        if self.state.domain == domains['blinds']:
             response['isRunning'] = True
         
         return response
@@ -386,6 +388,89 @@ class StartStopTrait(_Trait):
             
             r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
             
+
+# @register_trait
+# class FanSpeedTrait(_Trait):
+    # """Trait to control speed of Fan.
+    # https://developers.google.com/actions/smarthome/traits/fanspeed
+    # """
+
+    # name = TRAIT_FANSPEED
+    # commands = [COMMAND_FANSPEED]
+
+    # speed_synonyms = {
+        # 'off': ["stop", "off"],
+        # 'speed_low': ["slow", "low", "slowest", "lowest"],
+        # 'speed_medium': ["medium", "mid", "middle"],
+        # 'speed_high': ["high", "max", "fast", "highest", "fastest", "maximum"],
+    # }
+    
+    # modes = ['off', 'speed_low', 'speed_medium','speed_high']
+
+    # @staticmethod
+    # def supported(domain, features):
+        # """Test if state is supported."""
+        # if domain in [
+            # domains['fan']
+            # ]:
+            # return features & ATTRS_FANSPEED
+
+        # return False
+
+    # def sync_attributes(self):
+        # """Return speed point and modes attributes for a sync request."""
+        # modes = self.modes
+        # speeds = []
+        # for mode in modes:
+            # if mode not in self.speed_synonyms:
+                # continue
+            # speed = {
+                # "speed_name": mode,
+                # "speed_values": [
+                    # {"speed_synonym": self.speed_synonyms.get(mode), "lang": "en"}
+                # ],
+            # }
+            # speeds.append(speed)
+
+        # return {
+            # "availableFanSpeeds": {"speeds": speeds, "ordered": True},
+        # }
+
+    # def query_attributes(self):
+        # """Return speed point and modes query attributes."""
+        # response = {}
+
+        # speed = self.state.state
+        # if speed is not None:
+            # response["on"] = speed != 'Off'
+            # response["online"] = True
+            # response["currentFanSpeedSetting"] = speed.lower()
+
+        # return response
+
+    # def execute(self, command, params):
+        # """Execute an SetFanSpeed command."""
+        # modes = self.modes
+        # protected = self.state.protected
+        # for key in params['fanSpeed']:
+            # if key in modes:
+                # level = str(modes.index(key) * 10)
+
+        # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + level
+
+        # if protected:
+            # url = url + '&passcode=' + configuration['switchProtectionPass']
+
+        # r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+
+        # if protected:
+            # status = r.json()
+            # err = status.get('status')
+            # if err == 'ERROR':
+                # raise SmartHomeError(ERR_WRONG_PIN,
+                                     # 'Unable to execute {} for {} check your settings'.format(command,
+                                                                                              # self.state.entity_id))
+
 
 @register_trait
 class TemperatureSettingTrait(_Trait):
@@ -405,24 +490,24 @@ class TemperatureSettingTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == climateDOMAIN:
+        if domain == domains['climate']:
             return features & ATTRS_THERMSTATSETPOINT
         else:
-            return domain in tempDOMAIN
+            return domain in domains['temp']
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
-        # response["thermostatTemperatureRange"] = {
-            # 'minThresholdCelsius': 5,
-            # 'maxThresholdCelsius': 35}
+        response["thermostatTemperatureRange"] = {
+            'minThresholdCelsius': -20,
+            'maxThresholdCelsius': 40}
         
-        if domain == tempDOMAIN:
+        if domain == domains['temp']:
             response["queryOnlyTemperatureSetting"] = True
 
-        elif domain == climateDOMAIN:
+        elif domain == domains['climate']:
             if self.state.modes_idx is not None:
                 response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
             else:
@@ -438,7 +523,7 @@ class TemperatureSettingTrait(_Trait):
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
-        if domain == tempDOMAIN:
+        if domain == domains['temp']:
             response['thermostatMode'] = 'heat'
             current_temp = self.state.temp
             if current_temp is not None:
@@ -448,7 +533,7 @@ class TemperatureSettingTrait(_Trait):
             if current_humidity is not None:
                 response['thermostatHumidityAmbient'] = current_humidity
 
-        if domain == climateDOMAIN:
+        if domain == domains['climate']:
             if self.state.modes_idx is not None:
                 levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
                 level = self.state.level
@@ -503,6 +588,68 @@ class TemperatureSettingTrait(_Trait):
 
 
 @register_trait
+class TemperatureControlTrait(_Trait):
+    """Trait to offer handling temperature point functionality.
+
+    https://developers.google.com/actions/smarthome/traits/temperaturecontrol
+    """
+
+    name = TRAIT_TEMPERATURE_CONTROL
+    commands = [
+        COMMAND_SET_TEMPERATURE,
+    ]
+    
+    
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in [domains['heater'], domains['kettle']]
+
+    def sync_attributes(self):
+        """Return temperature point attributes for a sync request."""
+        domain = self.state.domain
+        units = self.state.tempunit
+        response = {}
+        if self.state.merge_thermo_idx is not None:
+            response = {"temperatureUnitForUX": _google_temp_unit(units)}
+            response = {"temperatureStepCelsius": 1}
+            response["temperatureRange"] = {
+                'minThresholdCelsius': 30,
+                'maxThresholdCelsius': 300}
+        
+        return response
+
+    def query_attributes(self):
+        """Return temperature point query attributes."""
+        domain = self.state.domain
+        units = self.state.tempunit
+        response = {}
+        if self.state.merge_thermo_idx is not None:
+            if self.state.battery <= configuration['Low_battery_limit']:
+                response['exceptionCode'] = 'lowBattery'
+
+            current_temp = float(self.state.temp)
+            if current_temp is not None:
+                response['temperatureAmbientCelsius'] = current_temp
+            setpoint = float(self.state.setpoint)
+            if setpoint is not None:
+                response['temperatureSetpointCelsius'] = setpoint
+
+        return response
+
+    def execute(self, command, params):
+        """Execute a temperature point command."""
+        # All sent in temperatures are always in Celsius
+        if self.state.merge_thermo_idx is not None:
+            if command == COMMAND_SET_TEMPERATURE:               
+
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.merge_thermo_idx + '&setpoint=' + str(
+                        params['temperature'])
+
+                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            
+            
+@register_trait
 class LockUnlockTrait(_Trait):
     """Trait to lock or unlock a lock.
     https://developers.google.com/actions/smarthome/traits/lockunlock
@@ -516,8 +663,8 @@ class LockUnlockTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in (lockDOMAIN,
-                          invlockDOMAIN)
+        return domain in (domains['lock'],
+                          domains['invlock'])
 
     def sync_attributes(self):
         """Return LockUnlock attributes for a sync request."""
@@ -539,7 +686,7 @@ class LockUnlockTrait(_Trait):
         state = self.state.state
         protected = self.state.protected
 
-        if domain == lockDOMAIN:
+        if domain == domains['lock']:
             if params['lock'] == True and state == 'Unlocked':
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=On'
             elif params['lock'] == False and state == 'Locked':
@@ -587,7 +734,7 @@ class ColorSettingTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == colorDOMAIN:
+        if domain == domains['color']:
             return (features & ATTRS_COLOR or
                     features & ATTRS_COLOR_TEMP)
 
@@ -660,7 +807,7 @@ class ArmDisarmTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in securityDOMAIN
+        return domain in domains['security']
 
     def sync_attributes(self):
         """Return ArmDisarm attributes for a sync request."""
@@ -752,7 +899,7 @@ class VolumeTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in speakerDOMAIN
+        return domain in domains['speaker']
 
     def sync_attributes(self):
         """Return volume attributes for a sync request."""
@@ -811,7 +958,7 @@ class CameraStreamTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in cameraDOMAIN
+        return domain in domains['camera']
 
     def sync_attributes(self):
         """Return stream attributes for a sync request."""
@@ -848,7 +995,7 @@ class TooglesTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in selectorDOMAIN
+        return domain in domains['selector']
 
     def sync_attributes(self):
         """Return mode attributes for a sync request."""
@@ -906,5 +1053,63 @@ class TooglesTrait(_Trait):
             err = status.get('status')
             if err == 'ERROR':
                 raise SmartHomeError(ERR_WRONG_PIN,
+                                     'Unable to execute {} for {} check your settings'.format(command,
+                                                                                              self.state.entity_id))
+
+@register_trait
+class Timer(_Trait):
+    """Trait to offer StartStop functionality.
+    https://developers.google.com/actions/smarthome/traits/timer
+    """
+
+    name = TRAIT_TIMER
+    commands = [COMMAND_TIMER_START,
+                COMMAND_TIMER_CANCEL
+                ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in [domains['light'],
+                          domains['color'],
+                          domains['switch'],
+                          domains['heater'],
+                          domains['kettle'],
+                          domains['fan'],
+                          ]
+
+    def sync_attributes(self):
+        """Return Timer attributes for a sync request."""
+        return {"maxTimerLimitSec": 7200}
+
+    def query_attributes(self):
+        """Return Timer query attributes."""    
+        response = {}
+        # response['timerRemainingSec'] = self.state.timer
+        
+        return response
+
+    def execute(self, command, params):
+        """Execute a Timer command."""
+        version = self.state.dzvents
+        # date_str = datetime.strptime(self.state.lastupdate, "%Y-%m-%d %H:%M:%S")
+        # timestamp = datetime.timestamp(date_str)
+        # print("date =", date_str)
+        # print("timestamp =", timestamp)
+        if version is not None and version >= '3.0.0':
+            if command == COMMAND_TIMER_START:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"time":' + str(params['timerTimeSec']) + ',"on":true}'
+
+                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+
+        
+            if command == COMMAND_TIMER_CANCEL:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"cancel":true}'
+
+                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        else:
+            logger.error('To use Timer function you need to run Domoticz version above 4.11687')
+            logger.error('and have dzVents Dzga_Timer script installed and active')
+            raise SmartHomeError('functionNotSupported',
                                      'Unable to execute {} for {} check your settings'.format(command,
                                                                                               self.state.entity_id))
