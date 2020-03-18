@@ -51,7 +51,7 @@ def startServer():
             secure(server)
 
         logger.info('========')
-        logger.info('Started DZGA v%s (%s) server at port %s', VERSION, repo.active_branch.name, configuration['port_number'])
+        logger.info('Started DZGA v%s server at port %s', VERSION, configuration['port_number'])
         logger.info(' ')
         if 'userinterface' in configuration and configuration['userinterface'] is True:
             protocol = 'https' if use_ssl else 'http'
