@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.6.5'
+VERSION = '1.6.6'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -78,6 +78,7 @@ ERR_WRONG_PIN = 'pinIncorrect'
 
 domains = {
     'blinds': 'Blinds',
+    'blindspercent': 'Blinds',
     'camera': 'Camera',
     'climate': 'Thermostat',
     'coffe': 'Coffemaker',
@@ -88,7 +89,7 @@ domains = {
     'group': 'Group',
     'heater': 'Heater',
     'hidden': 'Hidden',
-    'invlock': 'DoorLockInverted',
+    'invlock': 'DoorLock',
     'kettle': 'Kettle',
     'light': 'Light',
     'lock': 'DoorLock',
@@ -108,6 +109,8 @@ domains = {
     'speaker': 'Speaker',
     'switch': 'Switch',
     'temp': 'Temp',
+    'mower': 'Mower',
+    'vacuum': 'Vacuum'
     }
 
 ATTRS_BRIGHTNESS = 1
@@ -119,6 +122,7 @@ ATTRS_FANSPEED = 1
 
 DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['blinds']: TYPE_BLINDS,
+    domains['blindspercent']: TYPE_BLINDS,
     domains['camera']: TYPE_CAMERA,
     domains['climate']: TYPE_THERMOSTAT,
     domains['coffe']: TYPE_COFFEE,
@@ -145,6 +149,8 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['speaker']: TYPE_SPEAKER,
     domains['switch']: TYPE_SWITCH,
     domains['temp']: TYPE_THERMOSTAT,
+    domains['mower']: TYPE_MOWER,
+    domains['vacuum']: TYPE_VACUUM,
 }
 
 TEMPLATE = """
@@ -427,6 +433,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;&nbsp;&nbsp;- 'Generic'<br>
             &nbsp;&nbsp;<b>Light:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;- 'Light'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'custom_icon_name'<br>
             &nbsp;&nbsp;<b>Media:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;- 'Media'<br>
             &nbsp;&nbsp;&nbsp;&nbsp;- 'TV'<br>
@@ -435,7 +442,11 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;<b>Speaker:</b><br>
             &nbsp;&nbsp;&nbsp;&nbsp;- 'Speaker'<br>
             &nbsp;&nbsp;<b>Fan:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Fan'</code><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Fan'<br>
+            &nbsp;&nbsp;<b>Heating:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Heating'<br>
+            &nbsp;&nbsp;<b>Kettle:</b><br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'custom_icon_name'</code><br>
             <small class="text-muted">Support device types <code>Switch Light Media Outlet Speaker Fan</code>. Its possible to remove those that you don't need.</small></p>
             <p><code><b>Camera_Stream:</b></code><br><small class="text-muted">In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. <a href="#C3">Read more below</a>.</small><p>
             <p><small class="text-muted">User-friendly name for the arm level in your language.</small><br>
@@ -502,6 +513,17 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;<b>456:</b></code><br>
             <code>&nbsp;&nbsp;&nbsp;&nbsp;actual_temp_idx: '123'<br>
             &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
+            </code>
+            <small class="text-muted"><b>For Heater/Kettle.</b><br> Function to merge thermostat. Bug Thermostat idx <b>must</b> be a number <b>above</b> Temp/selector idx. Merged device will automaticly hidden. Levels from selector device supported is: Off - Heat - Cool - Auto - Eco</small><br>
+            <code>
+            &lt;voicecontrol&gt;<br />
+            &nbsp;&nbsp;merge_thermo_idx = 123<br />
+            &lt;/voicecontrol&gt;<br />
+            </code>
+            <small class="text-muted">or in config.yaml:</small><br>
+            <code><b>Device_Config:</b><br>
+            &nbsp;&nbsp;<b>456:</b></code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;merge_thermo_idx: '234'<br>
             </code>
             
             </p>

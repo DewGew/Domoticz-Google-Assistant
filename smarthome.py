@@ -68,9 +68,10 @@ update = checkupdate()
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
-        if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US',
-                                    'Blinds Percentage', 'Blinds Percentage Inverted']:
+        if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US']:
             return domains['blinds']
+        if device["SwitchType"] in ['Blinds Percentage', 'Blinds Percentage Inverted']:
+            return domains['blindspercent']
         elif 'Door Lock' == device["SwitchType"]:
             return domains['lock']
         elif 'Door Lock Inverted' == device["SwitchType"]:
@@ -118,7 +119,10 @@ def AogGetDomain(device):
         else:
             return domains['light']
     elif 'Blinds' == device["Type"]:	
-        return domains['blinds']
+        if device["SwitchType"] in ['Blinds Percentage', 'Blinds Percentage Inverted']:	
+            return domains['blindspercent']
+        else:
+            return domains['blinds']
     elif 'Group' == device["Type"]:
         return domains['group']
     elif 'Scene' == device["Type"]:
@@ -225,9 +229,9 @@ def getAog(device):
         aog.attributes = ATTRS_COLOR_TEMP
     if domains['climate'] == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
-    if domains['blinds'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
+    if domains['blindspercent'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
-    if domains['blinds'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
+    if domains['blindspercent'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
 
     # Try to get device specific voice control configuration from Domoticz
@@ -812,7 +816,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         for device in payload.get('devices', []):
             devid = device['id']
             #_GoogleEntity(aogDevs.get(devid, None)).async_update()
-            state = aogDevs.get(devid, None)           
+            state = aogDevs.get(devid, None)
             if not state:
                 # If we can't find a state, the device is offline
                 devices[devid] = {'online': False}
