@@ -31,6 +31,8 @@ TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
 TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
 TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
 TRAIT_TIMER = PREFIX_TRAITS + 'Timer'
+TRAIT_STATUSREPORT = PREFIX_TRAITS + 'StatusReport'
+TRAIT_SENSORSTATE = PREFIX_TRAITS + 'SensorState'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -58,6 +60,8 @@ COMMAND_GET_CAMERA_STREAM = PREFIX_COMMANDS + 'GetCameraStream'
 COMMAND_TOGGLES = PREFIX_COMMANDS + 'SetToggles'
 COMMAND_TIMER_START = PREFIX_COMMANDS + 'TimerStart'
 COMMAND_TIMER_CANCEL = PREFIX_COMMANDS + 'TimerCancel'
+
+CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
 
 TRAITS = []
 
@@ -96,7 +100,7 @@ class _Trait:
         """Test if command can be executed."""
         return command in self.commands
 
-    async def execute(self, command, params):
+    def execute(self, command, params):
         """Execute a trait command."""
         raise NotImplementedError
 
@@ -126,9 +130,9 @@ class OnOffTrait(_Trait):
             domains['push'],
             domains['speaker'],
             domains['sensor'],
+            domains['smoke'],
             domains['fan'],
             domains['heater'],
-            domains['smoke'],
             domains['kettle'],
         )
 
@@ -166,7 +170,7 @@ class OnOffTrait(_Trait):
             if protected:
                 url = url + '&passcode=' + configuration['switchProtectionPass']
 
-            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            r = requests.get(url, auth=CREDITS)
             if protected:
                 status = r.json()
                 err = status.get('status')
@@ -210,7 +214,7 @@ class SceneTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
         if protected:
             status = r.json()
             err = status.get('status')
@@ -275,7 +279,7 @@ class BrightnessTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
         if protected:
             status = r.json()
             err = status.get('status')
@@ -299,7 +303,7 @@ class OpenCloseTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in [domains['blinds'], domains['door']]
+        return domain in [domains['blinds'], domains['blindspercent'], domains['door']]
 
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
@@ -346,7 +350,7 @@ class OpenCloseTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
         if protected:
             status = r.json()
             err = status.get('status')
@@ -386,91 +390,8 @@ class StartStopTrait(_Trait):
             if params["start"] is False:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Stop'
             
-            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            r = requests.get(url, auth=CREDITS)
             
-
-# @register_trait
-# class FanSpeedTrait(_Trait):
-    # """Trait to control speed of Fan.
-    # https://developers.google.com/actions/smarthome/traits/fanspeed
-    # """
-
-    # name = TRAIT_FANSPEED
-    # commands = [COMMAND_FANSPEED]
-
-    # speed_synonyms = {
-        # 'off': ["stop", "off"],
-        # 'speed_low': ["slow", "low", "slowest", "lowest"],
-        # 'speed_medium': ["medium", "mid", "middle"],
-        # 'speed_high': ["high", "max", "fast", "highest", "fastest", "maximum"],
-    # }
-    
-    # modes = ['off', 'speed_low', 'speed_medium','speed_high']
-
-    # @staticmethod
-    # def supported(domain, features):
-        # """Test if state is supported."""
-        # if domain in [
-            # domains['fan']
-            # ]:
-            # return features & ATTRS_FANSPEED
-
-        # return False
-
-    # def sync_attributes(self):
-        # """Return speed point and modes attributes for a sync request."""
-        # modes = self.modes
-        # speeds = []
-        # for mode in modes:
-            # if mode not in self.speed_synonyms:
-                # continue
-            # speed = {
-                # "speed_name": mode,
-                # "speed_values": [
-                    # {"speed_synonym": self.speed_synonyms.get(mode), "lang": "en"}
-                # ],
-            # }
-            # speeds.append(speed)
-
-        # return {
-            # "availableFanSpeeds": {"speeds": speeds, "ordered": True},
-        # }
-
-    # def query_attributes(self):
-        # """Return speed point and modes query attributes."""
-        # response = {}
-
-        # speed = self.state.state
-        # if speed is not None:
-            # response["on"] = speed != 'Off'
-            # response["online"] = True
-            # response["currentFanSpeedSetting"] = speed.lower()
-
-        # return response
-
-    # def execute(self, command, params):
-        # """Execute an SetFanSpeed command."""
-        # modes = self.modes
-        # protected = self.state.protected
-        # for key in params['fanSpeed']:
-            # if key in modes:
-                # level = str(modes.index(key) * 10)
-
-        # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + level
-
-        # if protected:
-            # url = url + '&passcode=' + configuration['switchProtectionPass']
-
-        # r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
-
-        # if protected:
-            # status = r.json()
-            # err = status.get('status')
-            # if err == 'ERROR':
-                # raise SmartHomeError(ERR_WRONG_PIN,
-                                     # 'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              # self.state.entity_id))
-
 
 @register_trait
 class TemperatureSettingTrait(_Trait):
@@ -561,7 +482,7 @@ class TemperatureSettingTrait(_Trait):
                 if params['thermostatMode'] in levelName:
                     level = str(levelName.index(params['thermostatMode']) * 10)
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.modes_idx + '&switchcmd=Set%20Level&level=' + level
-                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+                r = requests.get(url, auth=CREDITS)
             else:
                 raise SmartHomeError('notSupported',
                                      'Unable to execute {} for {} check your settings'.format(command, self.state.entity_id))
@@ -584,7 +505,7 @@ class TemperatureSettingTrait(_Trait):
             url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(
                     params['thermostatTemperatureSetpoint'])
 
-            r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+            r = requests.get(url, auth=CREDITS)
 
 
 @register_trait
@@ -646,7 +567,7 @@ class TemperatureControlTrait(_Trait):
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.merge_thermo_idx + '&setpoint=' + str(
                         params['temperature'])
 
-                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+                r = requests.get(url, auth=CREDITS)
             
             
 @register_trait
@@ -708,7 +629,7 @@ class LockUnlockTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
         if protected:
             status = r.json()
             err = status.get('status')
@@ -790,7 +711,7 @@ class ColorSettingTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=setcolbrightnessvalue&idx=' + self.state.id + '&hex=' + color_hex_str
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
 
 
 @register_trait
@@ -881,7 +802,7 @@ class ArmDisarmTrait(_Trait):
                 self.state.state = "Normal"
                 url = DOMOTICZ_URL + "/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=" + seccode
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
 
 
 @register_trait
@@ -920,7 +841,7 @@ class VolumeTrait(_Trait):
 
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
             int(level * self.state.maxdimlevel / 100))
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
 
     def _execute_volume_relative(self, params):
         # This could also support up/down commands using relativeSteps
@@ -929,7 +850,7 @@ class VolumeTrait(_Trait):
 
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
             int(current + relative * self.state.maxdimlevel / 100))
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
 
     def execute(self, command, params):
         """Execute a volume command."""
@@ -1046,7 +967,7 @@ class TooglesTrait(_Trait):
         if protected:
             url = url + '&passcode=' + configuration['switchProtectionPass']
 
-        r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+        r = requests.get(url, auth=CREDITS)
 
         if protected:
             status = r.json()
@@ -1100,13 +1021,13 @@ class Timer(_Trait):
             if command == COMMAND_TIMER_START:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"time":' + str(params['timerTimeSec']) + ',"on":true}'
 
-                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+                r = requests.get(url, auth=CREDITS)
 
         
             if command == COMMAND_TIMER_CANCEL:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"cancel":true}'
 
-                r = requests.get(url, auth=(configuration['Domoticz']['username'], configuration['Domoticz']['password']))
+                r = requests.get(url, auth=CREDITS)
         else:
             logger.error('To use Timer function you need to run Domoticz version above 4.11687')
             logger.error('and have dzVents Dzga_Timer script installed and active')
