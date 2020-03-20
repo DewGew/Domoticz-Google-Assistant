@@ -381,6 +381,7 @@ class StartStopTrait(_Trait):
 
     def query_attributes(self):
         """Return StartStop query attributes."""
+        response = {}
         if self.state.domain == domains['blinds']:
             response['isRunning'] = True
         
