@@ -113,25 +113,36 @@ class OnOffTrait(_Trait):
     commands = [
         COMMAND_ONOFF
     ]
-
+    
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
 
         return domain in (
-            domains['group'],
-            domains['switch'],
-            domains['light'],
+            domains['ac_unit'],
+            domains['bathtub'],
+            domains['coffemaker'],
             domains['color'],
-            domains['media'],
-            domains['outlet'],
-            domains['push'],
-            domains['speaker'],
-            domains['sensor'],
+            domains['cooktop'],
+            domains['dishwasher'],
+            domains['dryer'],
             domains['fan'],
+            domains['group'],
             domains['heater'],
-            domains['smoke'],
             domains['kettle'],
+            domains['light'],
+            domains['media'],
+            domains['microwave'],
+            domains['mower'],
+            domains['outlet'],
+            domains['oven'],
+            domains['push'],
+            domains['sensor'],
+            domains['smokedetektor'],
+            domains['speaker'],
+            domains['switch'],
+            domains['vacuum'],
+            domains['waterheater'],
         )
 
     def sync_attributes(self):
@@ -157,7 +168,7 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
         protected = self.state.protected
 
-        if domain not in [domains['sensor'], domains['smoke']]:
+        if domain not in [domains['sensor'], domains['smokedetektor']]:
             if domain == domains['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
@@ -301,7 +312,14 @@ class OpenCloseTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in [domains['blinds'], domains['door']]
+        return domain in (
+                domains['blinds'],
+                domains['door'],
+                domains['window'],
+                domains['gate'],
+                domains['garage'],
+                domains['valve']
+            )
 
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
@@ -381,7 +399,6 @@ class StartStopTrait(_Trait):
 
     def query_attributes(self):
         """Return StartStop query attributes."""
-        response = {}
         if self.state.domain == domains['blinds']:
             response['isRunning'] = True
         
@@ -497,10 +514,10 @@ class TemperatureSettingTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == domains['climate']:
+        if domain == domains['thermostat']:
             return features & ATTRS_THERMSTATSETPOINT
         else:
-            return domain in domains['temp']
+            return domain in domains['temperature']
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""
@@ -511,10 +528,10 @@ class TemperatureSettingTrait(_Trait):
             'minThresholdCelsius': -20,
             'maxThresholdCelsius': 40}
         
-        if domain == domains['temp']:
+        if domain == domains['temperature']:
             response["queryOnlyTemperatureSetting"] = True
 
-        elif domain == domains['climate']:
+        elif domain == domains['thermostat']:
             if self.state.modes_idx is not None:
                 response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
             else:
@@ -530,7 +547,7 @@ class TemperatureSettingTrait(_Trait):
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
-        if domain == domains['temp']:
+        if domain == domains['temperature']:
             response['thermostatMode'] = 'heat'
             current_temp = self.state.temp
             if current_temp is not None:
@@ -540,7 +557,7 @@ class TemperatureSettingTrait(_Trait):
             if current_humidity is not None:
                 response['thermostatHumidityAmbient'] = current_humidity
 
-        if domain == domains['climate']:
+        if domain == domains['thermostat']:
             if self.state.modes_idx is not None:
                 levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
                 level = self.state.level
@@ -671,7 +688,7 @@ class LockUnlockTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         return domain in (domains['lock'],
-                          domains['invlock'])
+                          domains['lockinv'])
 
     def sync_attributes(self):
         """Return LockUnlock attributes for a sync request."""
@@ -1087,12 +1104,13 @@ class Timer(_Trait):
 
     def sync_attributes(self):
         """Return Timer attributes for a sync request."""
-        return {"maxTimerLimitSec": 7200}
+        return {"maxTimerLimitSec": 7200,
+                "commandOnlyTimer": True}
 
     def query_attributes(self):
         """Return Timer query attributes."""    
         response = {}
-        # response['timerRemainingSec'] = self.state.timer
+        # response['timerRemainingSec'] = -1
         
         return response
 
