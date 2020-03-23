@@ -142,6 +142,7 @@ class OnOffTrait(_Trait):
             domains['speaker'],
             domains['switch'],
             domains['vacuum'],
+            domains['washer'],
             domains['waterheater'],
         )
 
@@ -627,7 +628,7 @@ class TemperatureControlTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in [domains['heater'], domains['kettle']]
+        return domain in [domains['heater'], domains['kettle'], domains['waterheater'], domains['oven']]
 
     def sync_attributes(self):
         """Return temperature point attributes for a sync request."""
