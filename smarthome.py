@@ -74,7 +74,7 @@ def AogGetDomain(device):
         elif 'Door Lock' == device["SwitchType"]:
             return domains['lock']
         elif 'Door Lock Inverted' == device["SwitchType"]:
-            return domains['invlock']
+            return domains['lockinv']
         elif "Door Contact" == device["SwitchType"]:
             return domains['door']
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
@@ -87,7 +87,7 @@ def AogGetDomain(device):
             else:
                 return domains['selector']
         elif 'Smoke Detector' == device["SwitchType"]:
-            return domains['smoke']
+            return domains['smokedetektor']
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
                 configuration['Camera_Stream']['Enabled']:
             return domains['camera']
@@ -124,9 +124,9 @@ def AogGetDomain(device):
     elif 'Scene' == device["Type"]:
         return domains['scene']
     elif device["Type"] in ['Temp', 'Temp + Humidity', 'Temp + Humidity + Baro']:
-        return domains['temp']
+        return domains['temperature']
     elif 'Thermostat' == device['Type']:
-        return domains['climate']
+        return domains['thermostat']
     elif 'Color Switch' == device["Type"]: 
         if "Dimmer" == device["SwitchType"]:
             return domains['color']
@@ -213,23 +213,6 @@ def getAog(device):
     aog.lastupdate = device.get("LastUpdate")
     aog.dzvents = settings.get("dzVents")
 
-    if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
-        aog.attributes = ATTRS_BRIGHTNESS
-    if domains['fan'] == aog.domain and "Selector" == device["SwitchType"]:
-        aog.attributes = ATTRS_FANSPEED
-    if domains['outlet'] == aog.domain and "Dimmer" == device["SwitchType"]:
-        aog.attributes = ATTRS_BRIGHTNESS
-    if domains['color'] == aog.domain and "Dimmer" == device["SwitchType"]:
-        aog.attributes = ATTRS_BRIGHTNESS
-    if domains['color'] == aog.domain and "RGBWW" == device["SubType"]:
-        aog.attributes = ATTRS_COLOR_TEMP
-    if domains['climate'] == aog.domain and "Thermostat" == device["Type"]:
-        aog.attributes = ATTRS_THERMSTATSETPOINT
-    if domains['blinds'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
-        aog.attributes = ATTRS_PERCENTAGE
-    if domains['blinds'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
-        aog.attributes = ATTRS_PERCENTAGE
-
     # Try to get device specific voice control configuration from Domoticz
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
     desc = getDeviceConfig(device.get("Description"))
@@ -237,6 +220,17 @@ def getAog(device):
         desc = getDesc(aog)
 
     if desc is not None:
+        dt = desc.get('devicetype', None)
+        if dt is not None:
+            if aog.domain in [domains['light']]:
+                if dt.lower() in ['light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
+                    aog.domain = domains[dt.lower()]
+            if aog.domain in [domains['door']]:
+                if dt.lower() in ['window', 'gate', 'garage']:
+                    aog.domain = domains[dt.lower()]    
+            if aog.domain in [domains['selector']]:
+                if dt.lower() in ['vacuum']:
+                    aog.domain = domains[dt.lower()]
         n = desc.get('nicknames', None)
         if n is not None:
             aog.nicknames = n
@@ -251,16 +245,16 @@ def getAog(device):
             aog.report_state = False
         if not report_state:
             aog.report_state = report_state            
-        if domains['climate'] == aog.domain:
+        if domains['thermostat'] == aog.domain:
             at_idx = desc.get('actual_temp_idx', None)
             if at_idx is not None:
                 aog.actual_temp_idx = at_idx
                 try:
-                    aog.state = str(aogDevs[domains['temp'] + at_idx].temp)
-                    aogDevs[domains['temp'] + at_idx].domain = domains['merged'] + aog.id + ')'
+                    aog.state = str(aogDevs[domains['temperature'] + at_idx].temp)
+                    aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.error('Merge Error, Cant find temp device with idx %s', at_idx)
-                    logger.error('Make sure temp device has a idx below %s', aog.id)
+                    logger.error('Merge Error, Cant find temperature device with idx %s', at_idx)
+                    logger.error('Make sure temperature device has a idx below %s', aog.id)
             modes_idx = desc.get('selector_modes_idx', None)
             if modes_idx is not None:
                 aog.modes_idx = modes_idx
@@ -271,22 +265,40 @@ def getAog(device):
                 except:
                     logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
                     logger.error('Make sure selector has a idx below %s', aog.id)
-        if aog.domain in [domains['heater'], domains['kettle']]:
+        if aog.domain in [domains['heater'], domains['kettle'], domains['waterheater'], domains['oven']]:
             tc_idx = desc.get('merge_thermo_idx', None)
             if tc_idx is not None:
                 aog.merge_thermo_idx = tc_idx
                 try:
-                    aog.temp = aogDevs[domains['climate'] + tc_idx].state
-                    aog.setpoint = aogDevs[domains['climate'] + tc_idx].setpoint
-                    aogDevs[domains['climate'] + tc_idx].domain = domains['merged'] + aog.id + ')'
+                    aog.temp = aogDevs[domains['thermostat'] + tc_idx].state
+                    aog.setpoint = aogDevs[domains['thermostat'] + tc_idx].setpoint
+                    aogDevs[domains['thermostat'] + tc_idx].domain = domains['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find thermostat device with idx %s', tc_idx)
                     logger.error('Make sure thermostat device has a idx below %s', aog.id)
         hide = desc.get('hide', False)
         if hide:
             aog.domain = domains['hidden']
-    if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle']]:
+            
+    if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle'], domains['bathtub']]:
         aog.report_state = False
+        
+    if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
+        aog.attributes = ATTRS_BRIGHTNESS
+    if domains['fan'] == aog.domain and "Selector" == device["SwitchType"]:
+        aog.attributes = ATTRS_FANSPEED
+    if domains['outlet'] == aog.domain and "Dimmer" == device["SwitchType"]:
+        aog.attributes = ATTRS_BRIGHTNESS
+    if domains['color'] == aog.domain and "Dimmer" == device["SwitchType"]:
+        aog.attributes = ATTRS_BRIGHTNESS
+    if domains['color'] == aog.domain and "RGBWW" == device["SubType"]:
+        aog.attributes = ATTRS_COLOR_TEMP
+    if domains['thermostat'] == aog.domain and "Thermostat" == device["Type"]:
+        aog.attributes = ATTRS_THERMSTATSETPOINT
+    if domains['blinds'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
+        aog.attributes = ATTRS_PERCENTAGE
+    if domains['blinds'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
+        aog.attributes = ATTRS_PERCENTAGE
         
     return aog
 
