@@ -54,7 +54,6 @@ TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
 TYPE_SENSOR = PREFIX_TYPES + 'SENSOR'
 TYPE_SMOKE_DETECTOR = PREFIX_TYPES + 'SMOKE_DETECTOR'
 TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
-TYPE_SPRINKLER = PREFIX_TYPES + 'SPRINKLER'
 TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
 TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
 TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
@@ -77,24 +76,30 @@ ERR_VALUE_OUT_OF_RANGE = "valueOutOfRange"
 ERR_WRONG_PIN = 'pinIncorrect'
 
 domains = {
+    'ac_unit': 'AcUnit',
+    'bathtub': 'Bathtub',
     'blinds': 'Blinds',
     'camera': 'Camera',
-    'climate': 'Thermostat',
-    'coffe': 'Coffemaker',
+    'coffemaker': 'Coffemaker',
     'color': 'ColorSwitch',
     'cooktop': 'Cooktop',
     'door': 'DoorSensor',
+    'dishwasher': 'Dishwasher',
+    'dryer': 'Dryer',
     'fan': 'Fan',
+    'garage': 'GarageSensor',
+    'gate': 'Gate',
     'group': 'Group',
     'heater': 'Heater',
     'hidden': 'Hidden',
-    'invlock': 'DoorLock',
     'kettle': 'Kettle',
     'light': 'Light',
     'lock': 'DoorLock',
+    'lockinv': 'DoorLock',
     'media': 'Media',
     'merged': 'Merged(Idx:',
     'microwave': 'Microwave',
+    'mower': 'Mower',
     'outlet': 'Outlet',
     'oven': 'Oven',
     'push': 'Push',
@@ -104,12 +109,15 @@ domains = {
     'security': 'Security',
     'selector': 'Selector',
     'sensor': 'Sensor',
-    'smoke': 'SmokeDetektor',
+    'smokedetektor': 'SmokeDetektor',
     'speaker': 'Speaker',
     'switch': 'Switch',
-    'temp': 'Temp',
-    'mower': 'Mower',
-    'vacuum': 'Vacuum'
+    'temperature': 'Temperture',
+    'thermostat': 'Thermostat',
+    'valve': 'Valve',
+    'vacuum': 'Vacuum',
+    'waterheater': 'Waterheater',
+    'window': 'Window'
     }
 
 ATTRS_BRIGHTNESS = 1
@@ -120,21 +128,28 @@ ATTRS_PERCENTAGE = 1
 ATTRS_FANSPEED = 1
 
 DOMOTICZ_TO_GOOGLE_TYPES = {
+    domains['ac_unit']: TYPE_AC_UNIT,
+    domains['bathtub']: TYPE_BATHTUB,
     domains['blinds']: TYPE_BLINDS,
     domains['camera']: TYPE_CAMERA,
-    domains['climate']: TYPE_THERMOSTAT,
-    domains['coffe']: TYPE_COFFEE,
+    domains['coffemaker']: TYPE_COFFEE,
     domains['color']: TYPE_LIGHT,
+    domains['cooktop']: TYPE_COOKTOP,
+    domains['dishwasher']: TYPE_DISHWASHER,
     domains['door']: TYPE_DOOR,
+    domains['dryer']: TYPE_DRYER,
     domains['fan']: TYPE_FAN,
+    domains['garage']: TYPE_GARAGE,
+    domains['gate']: TYPE_GATE,
     domains['group']: TYPE_SWITCH,
     domains['heater']: TYPE_HEATER,
-    domains['invlock']: TYPE_LOCK,
     domains['kettle']: TYPE_KETTLE,
     domains['light']: TYPE_LIGHT,
     domains['lock']: TYPE_LOCK,
+    domains['lockinv']: TYPE_LOCK,
     domains['media']: TYPE_MEDIA,
     domains['microwave']: TYPE_MICRO,
+    domains['mower']: TYPE_MOWER,
     domains['outlet']: TYPE_OUTLET,
     domains['oven']: TYPE_OVEN,
     domains['push']: TYPE_SWITCH,
@@ -143,12 +158,15 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['security']: TYPE_SECURITY,
     domains['selector']: TYPE_SWITCH,
     domains['sensor']: TYPE_SENSOR,
-    domains['smoke']: TYPE_SMOKE_DETECTOR,
+    domains['smokedetektor']: TYPE_SMOKE_DETECTOR,
     domains['speaker']: TYPE_SPEAKER,
     domains['switch']: TYPE_SWITCH,
-    domains['temp']: TYPE_THERMOSTAT,
-    domains['mower']: TYPE_MOWER,
+    domains['temperature']: TYPE_THERMOSTAT,
+    domains['thermostat']: TYPE_THERMOSTAT,
     domains['vacuum']: TYPE_VACUUM,
+    domains['valve']: TYPE_VALVE,
+    domains['waterheater']: TYPE_WATERHEATER,
+    domains['window']: TYPE_WINDOW,
 }
 
 TEMPLATE = """
