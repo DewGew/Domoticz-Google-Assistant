@@ -116,6 +116,7 @@ domains = {
     'thermostat': 'Thermostat',
     'valve': 'Valve',
     'vacuum': 'Vacuum',
+    'washer': 'Washer',
     'waterheater': 'Waterheater',
     'window': 'Window'
     }
@@ -165,6 +166,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['thermostat']: TYPE_THERMOSTAT,
     domains['vacuum']: TYPE_VACUUM,
     domains['valve']: TYPE_VALVE,
+    domains['washer']: TYPE_WASHER,
     domains['waterheater']: TYPE_WATERHEATER,
     domains['window']: TYPE_WINDOW,
 }
