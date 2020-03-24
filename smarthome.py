@@ -888,8 +888,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': new_state})
             if state.report_state:
                 try:
-                    # states[entity.entity_id] = entity.query_serialize()
-                    states[entity.entity_id] = new_state
+                    states[entity.entity_id] = entity.query_serialize()
+                    # states[entity.entity_id] = new_state
                 except:
                     continue
 
