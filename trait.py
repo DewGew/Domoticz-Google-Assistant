@@ -142,7 +142,7 @@ class OnOffTrait(_Trait):
             domains['smokedetektor'],
             domains['speaker'],
             domains['switch'],
-            domains['vacuum'],
+            #domains['vacuum'],
             domains['washer'],
             domains['waterheater'],
         )
@@ -393,7 +393,9 @@ class StartStopTrait(_Trait):
             if features & ATTRS_PERCENTAGE:
                 return False
             else:
-                return domain == domains['blinds']
+                return domain in domains['blinds']
+        else:
+            return domain in domains['vacuum']
 
     def sync_attributes(self):
         """Return StartStop attributes for a sync request."""
@@ -401,18 +403,39 @@ class StartStopTrait(_Trait):
 
     def query_attributes(self):
         """Return StartStop query attributes."""
-        if self.state.domain == domains['blinds']:
+        domain = self.state.domain 
+        response = {}
+        if domain == domains['blinds']:
             response['isRunning'] = True
+        else:
+            response['isRunning'] = self.state.state != 'Off'
         
         return response
 
     def execute(self, command, params):
         """Execute a StartStop command."""
-        if command == COMMAND_STARTSTOP:
-            if params["start"] is False:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Stop'
-            
+        domain = self.state.domain
+        protected = self.state.protected
+        
+        if command == COMMAND_STARTSTOP: 
+            if domain == domains['blinds']:
+                if params['start'] is False:
+                    url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Stop'
+            else:
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + (
+                    'On' if params['start'] else 'Off')
+ 
+            if protected:
+                url = url + '&passcode=' + configuration['switchProtectionPass']
+
             r = requests.get(url, auth=CREDITS)
+            if protected:
+                status = r.json()
+                err = status.get('status')
+                if err == 'ERROR':
+                    raise SmartHomeError(ERR_WRONG_PIN,
+                                         'Unable to execute {} for {} check your settings'.format(command,
+                                                                                                  self.state.entity_id))
             
 
 # @register_trait
