@@ -336,7 +336,7 @@ class OpenCloseTrait(_Trait):
         if features & ATTRS_PERCENTAGE:
             response['openPercent'] = self.state.level
         else:
-            if self.state.state == 'Open':
+            if self.state.state in ['Open', 'On']:
                 response['openPercent'] = 100
             else:
                 response['openPercent'] = 0
