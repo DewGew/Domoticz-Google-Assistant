@@ -280,8 +280,8 @@ def getAog(device):
         if hide:
             aog.domain = domains['hidden']
             
-    if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle'], domains['bathtub']]:
-        aog.report_state = False
+    #if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle'], domains['bathtub']]:
+     #   aog.report_state = False
         
     if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
