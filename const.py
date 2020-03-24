@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.6.5'
+VERSION = '1.7.0'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -127,6 +127,7 @@ ATTRS_COLOR = 2
 ATTRS_COLOR_TEMP = 3
 ATTRS_PERCENTAGE = 1
 ATTRS_FANSPEED = 1
+ATTRS_VACCUM_MODES = 1
 
 DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['ac_unit']: TYPE_AC_UNIT,
