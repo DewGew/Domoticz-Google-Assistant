@@ -299,6 +299,8 @@ def getAog(device):
         aog.attributes = ATTRS_PERCENTAGE
     if domains['blinds'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
+    if domains['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
+        aog.attributes = ATTRS_VACCUM_MODES
         
     return aog
 
