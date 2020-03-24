@@ -6,8 +6,9 @@ from datetime import datetime
 
 import requests
 
-from const import (ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, domains,
-                   ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED, ATTRS_FANSPEED)
+from const import (ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
+                   ATTRS_VACCUM_MODES, domains, ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED,
+                   ATTRS_FANSPEED)
 
 from helpers import SmartHomeError, configuration, logger, tempConvert
 
@@ -1020,7 +1021,10 @@ class TooglesTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in domains['selector']
+        if domain == domains['vacuum']:
+            return features & ATTRS_VACCUM_MODES
+        else:
+            return domain in domains['selector']
 
     def sync_attributes(self):
         """Return mode attributes for a sync request."""
