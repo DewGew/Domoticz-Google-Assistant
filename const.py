@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.7.0'
+VERSION = '1.7.1'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -269,7 +269,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <li>Acknowledgement with Yes or No. (limited language support)</li>
                     <li>Arm Disarm Securitypanel (limited language support)</li>
                     <li>Supports Ngrok and SSL</li>
-                    <li><b>NEW:</b>Modes for thermostat</li>
+                    <li><b class="text-danger">NEW:</b> <i class="text-info">Function to change device type, icon and some behavior depending on the device.</i></li>
                 </ul>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
                 <p class="lead">
@@ -544,6 +544,21 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;<b>456:</b></code><br>
             <code>&nbsp;&nbsp;&nbsp;&nbsp;merge_thermo_idx: '234'<br>
             </code>
+            <small class="text-muted"><b>Device Type</b><br> Function to change device type, icon and some behavior depending on the device (e.g open/close instead of on/off).</small><br>
+            <code>
+            &lt;voicecontrol&gt;<br />
+            &nbsp;&nbsp;devicetype = oven<br />
+            &lt;/voicecontrol&gt;<br />
+            </code>
+            <small class="text-muted">or in config.yaml:</small><br>
+            <code><b>Device_Config:</b><br>
+            &nbsp;&nbsp;<b>456:</b></code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;devicetype: 'oven'<br>
+            </code>
+            <small class="text-muted">Light Device types to choose from is:<br>
+            <i class="text-info">light, ac_unit, bathtub, coffemaker, dishwasher, dryer, fan, heater, kettle, media, microwave, outlet, oven, speaker, switch, vacuum, washer, waterheater, window, gate, garage.</i><br>
+            For <i class="text-info">heater, kettle, waterheater, oven</i> you can still use <code>merge_thermo_idx</code> to merge thermostat to control temperature.<br>
+            Door Contact devices can choose <i class="text-info">window, gate</i> or <i class="text-info">garage</i><br>Selector devices can choose only <i class="text-info">vacuum</i></small><br>
             
             </p>
 
