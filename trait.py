@@ -1161,7 +1161,7 @@ class Timer(_Trait):
 
                 r = requests.get(url, auth=CREDITS)
         else:
-            logger.error('To use Timer function you need to run Domoticz version above 4.11687')
+            logger.error('To use Timer function you need to run Domoticz version above 2020.1.11804')
             logger.error('and have dzVents Dzga_Timer script installed and active')
             raise SmartHomeError('functionNotSupported',
                                      'Unable to execute {} for {} check your settings'.format(command,
