@@ -280,8 +280,8 @@ def getAog(device):
         if hide:
             aog.domain = domains['hidden']
             
-    #if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle'], domains['bathtub']]:
-     #   aog.report_state = False
+    # if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle'], domains['bathtub']]:
+        # aog.report_state = False
         
     if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -682,10 +682,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
         logs = readFile(os.path.join(logfilepath, LOGFILE))
         template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                   conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
 
         s.send_message(200, template)
-
+    
     def settings_post(self, s):
         enableReport = ReportState.enable_report_state()
         update = checkupdate()
@@ -704,7 +705,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
 
             s.send_message(200, template)
 
@@ -715,7 +717,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.info(message)
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
 
             s.send_message(200, template)
 
@@ -726,7 +729,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logs = ''
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
 
             s.send_message(200, template)
             restartServer()
@@ -743,14 +747,16 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices here!'
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
             s.send_message(200, template)
 
         if s.form.get("reload"):
             message = ''
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
             s.send_message(200, template)
 
         if s.form.get("deletelogs"):
@@ -762,7 +768,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Logs removed'
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
             s.send_message(200, template)
 
         if s.form.get("update"):
@@ -772,7 +779,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<meta http-equiv="refresh" content="20">'
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update, branch=repo.active_branch.name)
+                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
+                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
             s.send_message(200, template)
             
             subprocess.call(['pip', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
