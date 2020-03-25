@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.6.5'
+VERSION = '1.7.1'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -54,7 +54,6 @@ TYPE_SECURITY = PREFIX_TYPES + 'SECURITYSYSTEM'
 TYPE_SENSOR = PREFIX_TYPES + 'SENSOR'
 TYPE_SMOKE_DETECTOR = PREFIX_TYPES + 'SMOKE_DETECTOR'
 TYPE_SPEAKER = PREFIX_TYPES + 'SPEAKER'
-TYPE_SPRINKLER = PREFIX_TYPES + 'SPRINKLER'
 TYPE_SWITCH = PREFIX_TYPES + 'SWITCH'
 TYPE_THERMOSTAT = PREFIX_TYPES + 'THERMOSTAT'
 TYPE_VACUUM = PREFIX_TYPES + 'VACUUM'
@@ -77,24 +76,30 @@ ERR_VALUE_OUT_OF_RANGE = "valueOutOfRange"
 ERR_WRONG_PIN = 'pinIncorrect'
 
 domains = {
+    'ac_unit': 'AcUnit',
+    'bathtub': 'Bathtub',
     'blinds': 'Blinds',
     'camera': 'Camera',
-    'climate': 'Thermostat',
-    'coffe': 'Coffemaker',
+    'coffemaker': 'Coffemaker',
     'color': 'ColorSwitch',
     'cooktop': 'Cooktop',
     'door': 'DoorSensor',
+    'dishwasher': 'Dishwasher',
+    'dryer': 'Dryer',
     'fan': 'Fan',
+    'garage': 'GarageSensor',
+    'gate': 'Gate',
     'group': 'Group',
     'heater': 'Heater',
     'hidden': 'Hidden',
-    'invlock': 'DoorLock',
     'kettle': 'Kettle',
     'light': 'Light',
     'lock': 'DoorLock',
+    'lockinv': 'DoorLock',
     'media': 'Media',
     'merged': 'Merged(Idx:',
     'microwave': 'Microwave',
+    'mower': 'Mower',
     'outlet': 'Outlet',
     'oven': 'Oven',
     'push': 'Push',
@@ -104,12 +109,16 @@ domains = {
     'security': 'Security',
     'selector': 'Selector',
     'sensor': 'Sensor',
-    'smoke': 'SmokeDetektor',
+    'smokedetektor': 'SmokeDetektor',
     'speaker': 'Speaker',
     'switch': 'Switch',
-    'temp': 'Temp',
-    'mower': 'Mower',
-    'vacuum': 'Vacuum'
+    'temperature': 'Temperture',
+    'thermostat': 'Thermostat',
+    'valve': 'Valve',
+    'vacuum': 'Vacuum',
+    'washer': 'Washer',
+    'waterheater': 'Waterheater',
+    'window': 'Window'
     }
 
 ATTRS_BRIGHTNESS = 1
@@ -118,23 +127,31 @@ ATTRS_COLOR = 2
 ATTRS_COLOR_TEMP = 3
 ATTRS_PERCENTAGE = 1
 ATTRS_FANSPEED = 1
+ATTRS_VACCUM_MODES = 1
 
 DOMOTICZ_TO_GOOGLE_TYPES = {
+    domains['ac_unit']: TYPE_AC_UNIT,
+    domains['bathtub']: TYPE_BATHTUB,
     domains['blinds']: TYPE_BLINDS,
     domains['camera']: TYPE_CAMERA,
-    domains['climate']: TYPE_THERMOSTAT,
-    domains['coffe']: TYPE_COFFEE,
+    domains['coffemaker']: TYPE_COFFEE,
     domains['color']: TYPE_LIGHT,
+    domains['cooktop']: TYPE_COOKTOP,
+    domains['dishwasher']: TYPE_DISHWASHER,
     domains['door']: TYPE_DOOR,
+    domains['dryer']: TYPE_DRYER,
     domains['fan']: TYPE_FAN,
+    domains['garage']: TYPE_GARAGE,
+    domains['gate']: TYPE_GATE,
     domains['group']: TYPE_SWITCH,
     domains['heater']: TYPE_HEATER,
-    domains['invlock']: TYPE_LOCK,
     domains['kettle']: TYPE_KETTLE,
     domains['light']: TYPE_LIGHT,
     domains['lock']: TYPE_LOCK,
+    domains['lockinv']: TYPE_LOCK,
     domains['media']: TYPE_MEDIA,
     domains['microwave']: TYPE_MICRO,
+    domains['mower']: TYPE_MOWER,
     domains['outlet']: TYPE_OUTLET,
     domains['oven']: TYPE_OVEN,
     domains['push']: TYPE_SWITCH,
@@ -143,12 +160,16 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['security']: TYPE_SECURITY,
     domains['selector']: TYPE_SWITCH,
     domains['sensor']: TYPE_SENSOR,
-    domains['smoke']: TYPE_SMOKE_DETECTOR,
+    domains['smokedetektor']: TYPE_SMOKE_DETECTOR,
     domains['speaker']: TYPE_SPEAKER,
     domains['switch']: TYPE_SWITCH,
-    domains['temp']: TYPE_THERMOSTAT,
-    domains['mower']: TYPE_MOWER,
+    domains['temperature']: TYPE_THERMOSTAT,
+    domains['thermostat']: TYPE_THERMOSTAT,
     domains['vacuum']: TYPE_VACUUM,
+    domains['valve']: TYPE_VALVE,
+    domains['washer']: TYPE_WASHER,
+    domains['waterheater']: TYPE_WATERHEATER,
+    domains['window']: TYPE_WINDOW,
 }
 
 TEMPLATE = """
@@ -248,7 +269,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <li>Acknowledgement with Yes or No. (limited language support)</li>
                     <li>Arm Disarm Securitypanel (limited language support)</li>
                     <li>Supports Ngrok and SSL</li>
-                    <li><b>NEW:</b>Modes for thermostat</li>
+                    <li><b class="text-danger">NEW:</b> <i class="text-info">Function to change device type, icon and some behavior depending on the device.</i></li>
                 </ul>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
                 <p class="lead">
@@ -283,12 +304,12 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                 <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> Sytem Uptime:<br>{uptime}</small>
               </div>
               <div class="col">
-                <small class="text-muted">DZGA Version:<br>V""" + VERSION + """ {branch}</small><br>
-                <small class="text-muted" id="updates"></small>
+                <small class="text-muted"><b>DZGA Version:</b><br> """ + VERSION + """ {branch} <i class="text-muted; text-info" id="updates"></i><br>
+                <b>Domoticz Version:</b><br> {dzversion}</small><br><br>
+                
               </div>
               <div class="col" id="buttonUpdate"></div>
               <div class="col-4">
-                <small class="text-muted">Encourage the development.</small>
                 <form action="https://www.paypal.me/dzga" target="_blank" rel="noopener" aria-label="Paypal">
                 <button class="btn btn-raised btn-info" title="Sponsor with PayPal" alt="Sponsor with PayPal">
                 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" aria-hidden="true" focusable="false" width="32" height="32" style="-ms-transform: rotate(360deg); -webkit-transform: rotate(360deg); transform: rotate(360deg); vertical-align: middle;" preserveAspectRatio="xMidYMid meet" viewBox="0 0 24 24"><path d="M8.32 21.97a.546.546 0 0 1-.26-.32c-.03-.15-.06.11.6-4.09c.6-3.8.59-3.74.67-3.85c.13-.17.11-.17 1.61-.18c1.32-.03 1.6-.03 2.19-.12c3.25-.45 5.26-2.36 5.96-5.66c.04-.22.08-.41.09-.41c0-.01.07.04.15.1c1.03.78 1.38 2.22.99 4.14c-.46 2.29-1.68 3.81-3.58 4.46c-.81.28-1.49.39-2.69.42c-.8.04-.82.04-1.05.19c-.17.17-.16.14-.55 2.55c-.27 1.7-.37 2.25-.41 2.35c-.07.16-.21.3-.37.38l-.11.07H10c-1.29 0-1.62 0-1.68-.03m-4.5-2.23c-.19-.1-.32-.27-.32-.47C3.5 19 6.11 2.68 6.18 2.5c.09-.18.32-.37.5-.44L6.83 2h3.53c3.91 0 3.76 0 4.64.2c2.62.55 3.82 2.3 3.37 4.93c-.5 2.93-1.98 4.67-4.5 5.3c-.87.21-1.48.27-3.14.27c-1.31 0-1.41.01-1.67.15c-.26.15-.47.42-.56.75c-.04.07-.27 1.47-.53 3.1a241.3 241.3 0 0 0-.47 3.02l-.03.06H5.69c-1.58 0-1.8 0-1.87-.04z" fill="#FFF"/><rect x="0" y="0" width="24" height="24" fill="rgba(0, 0, 0, 0)" /></svg>
@@ -523,6 +544,21 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             &nbsp;&nbsp;<b>456:</b></code><br>
             <code>&nbsp;&nbsp;&nbsp;&nbsp;merge_thermo_idx: '234'<br>
             </code>
+            <small class="text-muted"><b>Device Type</b><br> Function to change device type, icon and some behavior depending on the device (e.g open/close instead of on/off).</small><br>
+            <code>
+            &lt;voicecontrol&gt;<br />
+            &nbsp;&nbsp;devicetype = oven<br />
+            &lt;/voicecontrol&gt;<br />
+            </code>
+            <small class="text-muted">or in config.yaml:</small><br>
+            <code><b>Device_Config:</b><br>
+            &nbsp;&nbsp;<b>456:</b></code><br>
+            <code>&nbsp;&nbsp;&nbsp;&nbsp;devicetype: 'oven'<br>
+            </code>
+            <small class="text-muted">Light Device types to choose from is:<br>
+            <i class="text-info">light, ac_unit, bathtub, coffemaker, dishwasher, dryer, fan, heater, kettle, media, microwave, outlet, oven, speaker, switch, vacuum, washer, waterheater, window, gate, garage.</i><br>
+            For <i class="text-info">heater, kettle, waterheater, oven</i> you can still use <code>merge_thermo_idx</code> to merge thermostat to control temperature.<br>
+            Door Contact devices can choose <i class="text-info">window, gate</i> or <i class="text-info">garage</i><br>Selector devices can choose only <i class="text-info">vacuum</i></small><br>
             
             </p>
 
@@ -703,11 +739,11 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         var updates = {update}
         document.getElementById("logsheader").innerHTML = 'Logs <br><small class="text-muted">Loglevel: ' + config.loglevel + '</small>';
         if (updates) {{
-          document.getElementById("updates").innerHTML = "Updates are Availible.";
+          document.getElementById("updates").innerHTML = "(Updates are Availible)";
           // document.getElementById("modalLabel").innerHTML = "Updates are Availible!";
           // document.getElementById("message").innerHTML = '<p>Updates are Availible. Just press update button to get latest Dzga version.</p><p><center><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form></center></p>';
           // $('#messageModal').modal('show')
-          $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update</button></form>');
+          $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-raised btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">update</i> Update dzga</button></form>');
         }};
 
         $('body').bootstrapMaterialDesign();
