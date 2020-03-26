@@ -1193,7 +1193,7 @@ class EnergyStorageTrait(_Trait):
                 domains['thermostat'],
                 domains['temperature']
                 )
-
+  
     def sync_attributes(self):
         """Return EnergyStorge attributes for a sync request."""
         response = {}
@@ -1204,16 +1204,17 @@ class EnergyStorageTrait(_Trait):
 
     def query_attributes(self):
         """Return EnergyStorge query attributes."""
+        battery = self.state.battery
         response = {}
-        if self.state.battery is not 255:
-            response['capacityRemaining'] = [{
-                'unit': 'PERCENTAGE',
-                'rawValue': self.state.battery
-              }]
-        else:
-            raise SmartHomeError('functionNotSupported',
-                                     'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              self.state.entity_id))
+        if battery is not 255:
+            if battery <= 99:
+                response['capacityRemaining'] = [{
+                    'unit': 'PERCENTAGE',
+                    'rawValue': battery
+                  }]
+            else:
+                response['descriptiveCapacityRemaining'] = 'FULL'
+           
         return response
 
     def execute(self, command, params):
