@@ -1196,6 +1196,7 @@ class EnergyStorageTrait(_Trait):
   
     def sync_attributes(self):
         """Return EnergyStorge attributes for a sync request."""
+        battery = self.state.battery
         response = {}
         if battery is not None or battery is not 255:
             response['queryOnlyEnergyStorage'] = True
