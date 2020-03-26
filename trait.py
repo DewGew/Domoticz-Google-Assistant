@@ -32,6 +32,7 @@ TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
 TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
 TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
 TRAIT_TIMER = PREFIX_TRAITS + 'Timer'
+TRAIT_ENERGY = PREFIX_TRAITS + 'EnergyStorage'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -59,6 +60,7 @@ COMMAND_GET_CAMERA_STREAM = PREFIX_COMMANDS + 'GetCameraStream'
 COMMAND_TOGGLES = PREFIX_COMMANDS + 'SetToggles'
 COMMAND_TIMER_START = PREFIX_COMMANDS + 'TimerStart'
 COMMAND_TIMER_CANCEL = PREFIX_COMMANDS + 'TimerCancel'
+COMMAND_CHARGE = PREFIX_COMMANDS + 'Charge'
 
 TRAITS = []
 
@@ -409,6 +411,9 @@ class StartStopTrait(_Trait):
             response['isRunning'] = True
         else:
             response['isRunning'] = self.state.state != 'Off'
+            
+        if self.state.battery <= configuration['Low_battery_limit']:
+            response['exceptionCode'] = 'lowBattery'
         
         return response
 
@@ -1166,3 +1171,68 @@ class Timer(_Trait):
             raise SmartHomeError('functionNotSupported',
                                      'Unable to execute {} for {} check your settings'.format(command,
                                                                                               self.state.entity_id))
+
+@register_trait
+class EnergyStorageTrait(_Trait):
+    """Trait to offer EnergyStorge functionality.
+    https://developers.google.com/actions/smarthome/traits/energystorage
+    """
+
+    name = TRAIT_ENERGY
+    commands = [COMMAND_CHARGE]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in (
+                domains['vacuum'],
+                domains['blinds'],
+                domains['smokedetektor'],
+                domains['sensor'],
+                domains['mower'],
+                domains['thermostat'],
+                domains['temperature']
+                )
+
+    def sync_attributes(self):
+        """Return EnergyStorge attributes for a sync request."""
+        response = {}
+        if self.state.battery is not 255:
+            response['queryOnlyEnergyStorage'] = True
+        
+        return response
+
+    def query_attributes(self):
+        """Return EnergyStorge query attributes."""
+        response = {}
+        if self.state.battery is not 255:
+            response['capacityRemaining'] = [{
+                'unit': 'PERCENTAGE',
+                'rawValue': self.state.battery
+              }]
+        else:
+            raise SmartHomeError('functionNotSupported',
+                                     'Unable to execute {} for {} check your settings'.format(command,
+                                                                                              self.state.entity_id))
+        return response
+
+    def execute(self, command, params):
+        """Execute a EnergyStorge command."""
+        # domain = self.state.domain
+        # protected = self.state.protected
+        
+        # if domain in (domains['vacuum'], domains['mower']):
+            # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + (
+                # 'On' if params['charge'] else 'Off')
+
+            # if protected:
+                # url = url + '&passcode=' + configuration['switchProtectionPass']
+
+            # r = requests.get(url, auth=CREDITS)
+            # if protected:
+                # status = r.json()
+                # err = status.get('status')
+                # if err == 'ERROR':
+                    # raise SmartHomeError(ERR_WRONG_PIN,
+                                         # 'Unable to execute {} for {} check your settings'.format(command,
+                                                                                                  # self.state.entity_id))
