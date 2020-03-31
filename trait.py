@@ -181,7 +181,7 @@ class OnOffTrait(_Trait):
                     'On' if params['on'] else 'Off')
 
             if protected:
-                url = url + '&passcode=' + configuration['switchProtectionPass']
+                url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
             r = requests.get(url, auth=CREDITS)
             if protected:
@@ -225,7 +225,7 @@ class SceneTrait(_Trait):
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
 
         if protected:
-            url = url + '&passcode=' + configuration['switchProtectionPass']
+            url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
         r = requests.get(url, auth=CREDITS)
         if protected:
@@ -290,7 +290,7 @@ class BrightnessTrait(_Trait):
             int(params['brightness'] * self.state.maxdimlevel / 100))
 
         if protected:
-            url = url + '&passcode=' + configuration['switchProtectionPass']
+            url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
         r = requests.get(url, auth=CREDITS)
         if protected:
@@ -368,7 +368,7 @@ class OpenCloseTrait(_Trait):
                 url += 'On'
 
         if protected:
-            url = url + '&passcode=' + configuration['switchProtectionPass']
+            url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
         r = requests.get(url, auth=CREDITS)
         if protected:
@@ -431,7 +431,7 @@ class StartStopTrait(_Trait):
                     'On' if params['start'] else 'Off')
  
             if protected:
-                url = url + '&passcode=' + configuration['switchProtectionPass']
+                url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
             r = requests.get(url, auth=CREDITS)
             if protected:
@@ -513,7 +513,7 @@ class StartStopTrait(_Trait):
         # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + level
 
         # if protected:
-            # url = url + '&passcode=' + configuration['switchProtectionPass']
+            # url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
         # r = requests.get(url, auth=CREDITS)
 
@@ -760,7 +760,7 @@ class LockUnlockTrait(_Trait):
                                                                                              self.state.entity_id))
 
         if protected:
-            url = url + '&passcode=' + configuration['switchProtectionPass']
+            url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
         r = requests.get(url, auth=CREDITS)
         if protected:
@@ -1101,7 +1101,7 @@ class TooglesTrait(_Trait):
         url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + level
 
         if protected:
-            url = url + '&passcode=' + configuration['switchProtectionPass']
+            url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
         r = requests.get(url, auth=CREDITS)
 
@@ -1228,7 +1228,7 @@ class EnergyStorageTrait(_Trait):
                 # 'On' if params['charge'] else 'Off')
 
             # if protected:
-                # url = url + '&passcode=' + configuration['switchProtectionPass']
+                # url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
             # r = requests.get(url, auth=CREDITS)
             # if protected:
