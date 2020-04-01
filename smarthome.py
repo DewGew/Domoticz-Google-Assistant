@@ -280,8 +280,8 @@ def getAog(device):
         if hide:
             aog.domain = domains['hidden']
             
-    # if aog.domain in [domains['camera'], domains['selector'], domains['blinds'], domains['heater'], domains['kettle'], domains['bathtub']]:
-        # aog.report_state = False
+    if aog.domain in [domains['camera']]:
+        aog.report_state = False
         
     if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
@@ -584,7 +584,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
         inputs = message.get('inputs')  # type: list
 
         if len(inputs) != 1:
-            return {'requestId': request_id, 'payload': {'errorCode': ERR_PROTOCOL_ERROR}}
+            return {
+                'requestId': request_id,
+                'payload': {'errorCode': ERR_PROTOCOL_ERROR}
+                }
 
         handler = smarthomeControlMappings.get(inputs[0].get('intent'))
 
@@ -624,12 +627,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         try:
             if 'errorCode' in response['payload']:
-                logger.info('Error handling message %s: %s' % (message, response['payload']))
+                logger.error('Error handling message %s: %s' % (message, response['payload']))
         except:
             pass
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
-
-        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
 
     def smarthome(self, s):
         s.send_message(500, "not supported")
@@ -828,6 +829,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """Handle action.devices.QUERY request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
         """
+        enableReport = ReportState.enable_report_state()
+        response = {}
         devices = {}
         getDevices()
         
@@ -842,7 +845,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             e = _GoogleEntity(state)
             devices[devid] = e.query_serialize()
-            devices[devid].update({'status':'SUCCESS'})
+                        
+        response = {'devices': devices}
+        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
+        
+        if state.report_state == True and enableReport == True:
+            self.report_state(devices, token)
+               
         return {'devices': devices}
 
     def smarthome_exec(self, payload, token):
@@ -851,14 +860,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         entities = {}
         results = {}
-        states = {}
-        enableReport = ReportState.enable_report_state()
 
         for command in payload['commands']:
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
-                new_state = execution.get('params')
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
                     continue
@@ -892,18 +898,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             if entity.entity_id in results:
                 continue
             entity.async_update()
-            #final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': new_state})
-            if state.report_state:
-                try:
-                    states[entity.entity_id] = entity.query_serialize()
-                    # states[entity.entity_id] = new_state
-                except:
-                    continue
-
-            if state.report_state == True and enableReport == True:
-                self.report_state(states, token)
-
+            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
+            
         return {'commands': final_results}
 
     def smarthome_disconnect(self, payload, token):
