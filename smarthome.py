@@ -291,7 +291,7 @@ def getAog(device):
         aog.attributes = ATTRS_BRIGHTNESS
     if domains['color'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if domains['color'] == aog.domain and "RGBWW" == device["SubType"]:
+    if domains['color'] == aog.domain and device["SubType"] in ["RGBWW", "White"]:
         aog.attributes = ATTRS_COLOR_TEMP
     if domains['thermostat'] == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
