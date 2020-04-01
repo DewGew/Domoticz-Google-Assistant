@@ -387,7 +387,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Create a new Service account</li>
             <li>Use the role Service Account > Service Account Token Creator</li>
             </ul>
-            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
+            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant/config folder as <code>smart-home-key.json</code>.</li>
             </ul></li><br>
 
             <li><p>Navigate back to the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</p>
