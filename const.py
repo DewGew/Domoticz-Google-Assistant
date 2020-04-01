@@ -269,7 +269,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <li>Acknowledgement with Yes or No. (limited language support)</li>
                     <li>Arm Disarm Securitypanel (limited language support)</li>
                     <li>Supports Ngrok and SSL</li>
-                    <li><b class="text-danger">NEW:</b> <i class="text-info">Function to change device type, icon and some behavior depending on the device.</i></li>
+                    <li>Function to change device type, icon and some behavior depending on the device.</i></li>
                 </ul>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
                 <p class="lead">
