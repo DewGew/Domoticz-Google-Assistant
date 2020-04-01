@@ -371,5 +371,5 @@ class ReportState:
 
         r.raise_for_status()
 
-        logger.info("Device state reported %s" % (json.dumps(data, indent=2, sort_keys=False)))
+        logger.debug("Device state reported %s" % (json.dumps(data, indent=2, sort_keys=True)))
         return r.status_code == requests.codes.ok

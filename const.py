@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.7.3'
+VERSION = '1.7.4'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -269,7 +269,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                     <li>Acknowledgement with Yes or No. (limited language support)</li>
                     <li>Arm Disarm Securitypanel (limited language support)</li>
                     <li>Supports Ngrok and SSL</li>
-                    <li><b class="text-danger">NEW:</b> <i class="text-info">Function to change device type, icon and some behavior depending on the device.</i></li>
+                    <li>Function to change device type, icon and some behavior depending on the device.</i></li>
                 </ul>
                 <p class="lead">Please feel free to modify, extend and improve it!</p>
                 <p class="lead">
@@ -387,7 +387,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <li>Create a new Service account</li>
             <li>Use the role Service Account > Service Account Token Creator</li>
             </ul>
-            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant folder as <code>smart-home-key.json</code>.</li>
+            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant/config folder as <code>smart-home-key.json</code>.</li>
             </ul></li><br>
 
             <li><p>Navigate back to the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</p>

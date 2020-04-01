@@ -13,7 +13,7 @@ Required:
 - Make local deployment available trough HTTPS with valid certificate with one below:
   - SSL with own domain or dynamic DNS, require ssl key and ssl certficate
   - Use ngrok for a secure SSL tunnel with valid public HTTPS URL
-  - Configure reverse proxy with valid certificate using Lets Encrypt
+  - Configure reverse proxy with valid certificate using Let's Encrypt
 
 Domoticz-Google-Assistant delivers: 
 - The oauth authorization and smarthome endpoint for the google assistant.
@@ -24,7 +24,8 @@ Domoticz-Google-Assistant delivers:
 - Stream surveillance camera to chromecast.
 - Toggle Selector switches.
 - Ngrok, instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
-- **NEW** Modes for thermostat
+- Modes for thermostat
+- Function to change device type, icon and some behavior depending on the device
 
 Please feel free to modify it, extend and improve
 
