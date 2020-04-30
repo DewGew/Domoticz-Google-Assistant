@@ -1,6 +1,5 @@
 import socketserver
 
-from pid import PidFile
 from const import PUBLIC_URL
 from server import *
 from smarthome import *
@@ -31,7 +30,7 @@ class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer)
 
 
 def startServer():
-    with PidFile('dzga') as p:
+    with pidfile as p:
         global tunnel
         # Create tunnel if ngrok_tunnel set to true
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] is True:
