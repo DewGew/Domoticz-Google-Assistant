@@ -3,7 +3,7 @@
 
 NAME="Domoticz-Google-Assistant"
 INSTALL_DIR="$(realpath $(dirname ${BASH_SOURCE[0]}))"
-PID_FILE="var/run/dzga.pid"
+PID_FILE="/var/run/dzga.pid"
 LOG_FILE="$INSTALL_DIR/dzga.log"
 
 start_daemon ()
