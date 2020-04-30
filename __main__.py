@@ -32,7 +32,6 @@ class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer)
 
 def startServer():
     with PidFile('dzga') as p:
-        print(p.piddir)
         global tunnel
         # Create tunnel if ngrok_tunnel set to true
         if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] is True:
