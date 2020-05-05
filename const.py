@@ -112,7 +112,7 @@ domains = {
     'smokedetektor': 'SmokeDetektor',
     'speaker': 'Speaker',
     'switch': 'Switch',
-    'temperature': 'Temperture',
+    'temperature': 'Temperature',
     'thermostat': 'Thermostat',
     'valve': 'Valve',
     'vacuum': 'Vacuum',
