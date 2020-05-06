@@ -78,7 +78,7 @@ ERR_WRONG_PIN = 'pinIncorrect'
 domains = {
     'ac_unit': 'AcUnit',
     'bathtub': 'Bathtub',
-    'blinds': 'Blinds',
+    'blinds': 'Blind',
     'camera': 'Camera',
     'coffemaker': 'Coffemaker',
     'color': 'ColorSwitch',
@@ -102,7 +102,7 @@ domains = {
     'mower': 'Mower',
     'outlet': 'Outlet',
     'oven': 'Oven',
-    'push': 'Push',
+    'push': 'PushButton',
     'radiator': 'Radiator',
     'scene': 'Scene',
     'screen': 'Screen',
