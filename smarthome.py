@@ -372,6 +372,8 @@ def deep_update(target, source):
     return target
 
 settings = {}
+settings['dzversion'] = "Unavailable"
+settings['dzVents'] = "1.0.0"
 
 def getSettings():
     """Get domoticz settings."""
@@ -394,8 +396,6 @@ def getSettings():
 def getVersion():
     """Get domoticz settings."""
     global settings
-    settings['dzversion'] = None
-    settings['dzVents'] = None
 
     url = DOMOTICZ_URL + DOMOTICZ_GET_VERSION
     r = requests.get(url, auth=CREDITS)
