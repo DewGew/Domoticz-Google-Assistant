@@ -394,6 +394,8 @@ def getSettings():
 def getVersion():
     """Get domoticz settings."""
     global settings
+    settings['dzversion'] = None
+    settings['dzVents'] = None
 
     url = DOMOTICZ_URL + DOMOTICZ_GET_VERSION
     r = requests.get(url, auth=CREDITS)
