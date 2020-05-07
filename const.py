@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.7.4'
+VERSION = '1.7.7'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -78,7 +78,7 @@ ERR_WRONG_PIN = 'pinIncorrect'
 domains = {
     'ac_unit': 'AcUnit',
     'bathtub': 'Bathtub',
-    'blinds': 'Blinds',
+    'blinds': 'Blind',
     'camera': 'Camera',
     'coffemaker': 'Coffemaker',
     'color': 'ColorSwitch',
@@ -102,7 +102,7 @@ domains = {
     'mower': 'Mower',
     'outlet': 'Outlet',
     'oven': 'Oven',
-    'push': 'Push',
+    'push': 'PushButton',
     'radiator': 'Radiator',
     'scene': 'Scene',
     'screen': 'Screen',
@@ -112,7 +112,7 @@ domains = {
     'smokedetektor': 'SmokeDetektor',
     'speaker': 'Speaker',
     'switch': 'Switch',
-    'temperature': 'Temperture',
+    'temperature': 'Temperature',
     'thermostat': 'Thermostat',
     'valve': 'Valve',
     'vacuum': 'Vacuum',

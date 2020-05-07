@@ -3,21 +3,21 @@
 
 NAME="Domoticz-Google-Assistant"
 INSTALL_DIR="$(realpath $(dirname ${BASH_SOURCE[0]}))"
-PID_FILE="$INSTALL_DIR/dzga.pid"
+PID_FILE="/var/run/dzga.pid"
 LOG_FILE="$INSTALL_DIR/dzga.log"
 
 start_daemon ()
 {	
 	source ${INSTALL_DIR}/${NAME}/env/bin/activate
 	nohup python3 ${INSTALL_DIR}/${NAME} > ${LOG_FILE} &
-	echo $! > ${PID_FILE}
+	# echo $! > ${PID_FILE}
 	sleep 10
 }
 
 stop_daemon ()
 {
-    kill `cat ${PID_FILE}`
-	wait_for_status 1 20 || kill -9 `cat ${PID_FILE}`
+    # kill `cat ${PID_FILE}`
+    wait_for_status 1 10 || kill -9 `cat ${PID_FILE}`
     rm -f ${PID_FILE}
 }
 

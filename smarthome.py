@@ -8,6 +8,7 @@ import sys
 import threading
 from collections.abc import Mapping
 from itertools import product
+from pid import PidFile
 
 import requests
 
@@ -23,6 +24,8 @@ from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHom
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
+
+pidfile = PidFile('dzga')
 
 try:
     logger.info("Connecting to Domoticz on %s" % DOMOTICZ_URL)
@@ -369,6 +372,9 @@ def deep_update(target, source):
     return target
 
 settings = {}
+settings['dzversion'] = "Unavailable"
+settings['dzVents'] = "1.0.0"
+
 def getSettings():
     """Get domoticz settings."""
     global settings
@@ -404,6 +410,8 @@ def restartServer():
     logger.info(' ')
     logger.info("Restart server")
     logger.info(' ')
+    
+    pidfile.close()
 
     os.execv(sys.executable, ['python'] + sys.argv)
 
