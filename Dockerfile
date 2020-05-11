@@ -1,14 +1,14 @@
 # Dockerfile for Domoticz-Google-Assistant
 
 # Install minimal Python 3.
-FROM jfloff/alpine-python:3.7-slim
-
+FROM arm32v6/python:3.7-alpine
+WORKDIR /usr/src/app
 RUN mkdir -p config
 
 COPY *.py /
 COPY *.html /
 COPY requirements/pip-requirements.txt /requirements.txt
-
+RUN pip install --no-cache-dir -r /requirements.txt
 # Create volume
 VOLUME /config
 
