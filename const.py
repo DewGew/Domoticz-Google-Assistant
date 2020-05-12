@@ -657,6 +657,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
     <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/yaml/yaml.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/javascript/javascript.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/addon/display/autorefresh.js"></script>
     <script>
     function sortTable(n) {{
@@ -797,6 +798,17 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             textTosave = editor.getValue();
             document.getElementById("save").value = textTosave;
          }});
+        var logs = CodeMirror.fromTextArea(document.getElementById("logs"), {{
+            lineNumbers: false,
+            mode: "javascript",
+            autoRefresh:true
+        }});
+        logs.setOption("extraKeys", {{
+          Tab: function(cm) {{
+            var spaces = Array(cm.getOption("indentUnit") + 1).join(" ");
+            cm.replaceSelection(spaces);
+          }}
+        }});
 
         document.getElementById("save").value = document.getElementById("code").value
 
