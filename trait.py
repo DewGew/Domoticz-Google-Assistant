@@ -871,7 +871,7 @@ class ArmDisarmTrait(_Trait):
 
         Armaway = {}
         if 'Armaway' in configuration:
-            Armhome = configuration['Armaway']
+            Armaway = configuration['Armaway']
         return {
             "availableArmLevels": {
                 "levels": [{
