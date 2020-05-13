@@ -554,14 +554,15 @@ class TemperatureSettingTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
-        response["thermostatTemperatureRange"] = {
-            'minThresholdCelsius': -20,
-            'maxThresholdCelsius': 40}
+        # response["thermostatTemperatureRange"] = {
+            # 'minThresholdCelsius': -20,
+            # 'maxThresholdCelsius': 40}
         
         if domain == domains['temperature']:
             response["queryOnlyTemperatureSetting"] = True
+            response["availableThermostatModes"] = 'heat'
 
-        elif domain == domains['thermostat']:
+        if domain == domains['thermostat']:
             if self.state.modes_idx is not None:
                 response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
             else:
@@ -579,8 +580,9 @@ class TemperatureSettingTrait(_Trait):
 
         if domain == domains['temperature']:
             response['thermostatMode'] = 'heat'
-            current_temp = self.state.temp
+            current_temp = float(self.state.temp)
             if current_temp is not None:
+                test_temp = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
             current_humidity = self.state.humidity
@@ -902,7 +904,7 @@ class ArmDisarmTrait(_Trait):
         response["isArmed"] = state != "Normal"
         response['exitAllowance'] = int(delay)
 
-        if state in ["Arm Home", "Arm Away"]:
+        if response["isArmed"]:
             response["currentArmLevel"] = state
 
         return response
