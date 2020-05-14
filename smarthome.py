@@ -38,8 +38,10 @@ except Exception as e:
 try:
     import git
     repo = git.Repo(FILE_DIR)
+    branch = repo.active_branch.name
 except:
     repo = None
+    branch = ''
     
 ReportState = ReportState()
 if not ReportState.enable_report_state():
@@ -48,10 +50,10 @@ if not ReportState.enable_report_state():
 
 
 def checkupdate():
-    if 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
+    if repo is not None and 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
         try:
             r = requests.get(
-                'https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + repo.active_branch.name + '/const.py')
+                'https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch + '/const.py')
             text = r.text
             if VERSION not in text:
                 update = 1
@@ -692,7 +694,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         logs = readFile(os.path.join(logfilepath, LOGFILE))
         template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
 
         s.send_message(200, template)
     
@@ -715,7 +717,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
 
             s.send_message(200, template)
 
@@ -727,7 +729,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
 
             s.send_message(200, template)
 
@@ -739,7 +741,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
 
             s.send_message(200, template)
             restartServer()
@@ -757,7 +759,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
             s.send_message(200, template)
 
         if s.form.get("reload"):
@@ -765,7 +767,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
             s.send_message(200, template)
 
         if s.form.get("deletelogs"):
@@ -778,18 +780,18 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
             s.send_message(200, template)
 
         if s.form.get("update"):
             repo.git.reset('--hard')
             repo.remotes.origin.pull()
-            message = 'Updating to latest ' + repo.active_branch.name + ', please wait a minute!'
+            message = 'Updating to latest ' + branch + ', please wait a minute!'
             meta = '<meta http-equiv="refresh" content="20">'
 
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=repo.active_branch.name, dzversion=settings['dzversion'])
+                                       branch=branch, dzversion=settings['dzversion'])
             s.send_message(200, template)
             
             subprocess.call(['pip', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
