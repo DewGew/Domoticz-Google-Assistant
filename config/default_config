@@ -5,12 +5,12 @@ loglevel: 'Info'
 # Set logtofile: 'false' logs will not show in the LOG tab. Set logtofile: 'Overwrite' or true Log file will be overwritten when dzga server restarts
 # Set logtofile: 'Append' Logs will append to logfile when dzga server restarts
 logtofile: false
-# If pathToLogFile is commented, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder
-pathToLogFile: ''
+# If pathToLogFile is commented, removed or set to '', within docker container
+pathToLogFile: '/config'
 # Enable or disable UI
 userinterface: true
 # Check for updates, not working for docker
-CheckForUpdates: false
+# CheckForUpdates: false
 
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
 # When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. 
