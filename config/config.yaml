@@ -9,8 +9,8 @@ logtofile: false
 pathToLogFile: ''
 # Enable or disable UI
 userinterface: true
-# Check for updates
-CheckForUpdates: true
+# Check for updates, not working for docker
+CheckForUpdates: false
 
 # Instantly create a public HTTPS URL. Don't have to open any port on router and do not require a reverse proxy.
 # When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. 
