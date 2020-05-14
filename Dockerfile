@@ -2,7 +2,7 @@
 
 # Install minimal Python 3.
 FROM arm32v6/python:3.7-alpine
-WORKDIR /usr/src/app
+
 RUN mkdir -p config
 
 COPY *.py /
