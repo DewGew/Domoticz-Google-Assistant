@@ -4,7 +4,7 @@
 VERSION = '1.7.8'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
-LOGFILE = 'dzga.log'
+LOGFILE = 'config/dzga.log'
 KEYFILE = 'config/smart-home-key.json'
 
 HOMEGRAPH_URL = "https://homegraph.googleapis.com/"
