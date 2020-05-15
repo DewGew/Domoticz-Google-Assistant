@@ -59,7 +59,7 @@ except yaml.YAMLError as exc:
 except FileNotFoundError as err:
     print('No config.yaml found...')
     print('Loading default configuration...')
-    content = readFile(os.path.join(FILE_DIR, 'systemd/default_config'))
+    content = readFile(os.path.join(FILE_DIR, 'config/default_config'))
     print('Create config.yaml...')
     saveFile(CONFIGFILE, content)
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
