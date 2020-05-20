@@ -6,6 +6,7 @@ PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
 KEYFILE = 'config/smart-home-key.json'
+PIDFILE = '/var/run/dzga.pid'
 
 HOMEGRAPH_URL = "https://homegraph.googleapis.com/"
 HOMEGRAPH_SCOPE = "https://www.googleapis.com/auth/homegraph"
