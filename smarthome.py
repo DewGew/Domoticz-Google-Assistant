@@ -24,8 +24,9 @@ from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHom
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
+pid_file = '/var/run/dzga.pid'
 
-pidfile = PidFile('dzga')
+pidfile = PidFile(pidname=pid_file)
 
 try:
     logger.info("Connecting to Domoticz on %s" % DOMOTICZ_URL)
