@@ -28,7 +28,7 @@ def readFile(filename):
         file.close()
         return readcontent
     except(ValueError, Exception):
-        if filename == LOGFILE:
+        if filename.endswith(".log"):
             readcontent = " ** If you want to show the logs here, set 'logtofile: true' in configuration **"
         else:
             readcontent = "Problem opening this file"
