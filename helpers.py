@@ -45,12 +45,6 @@ def saveFile(filename, text):
 
 
 try:
-    if (os.path.exists(os.path.join(FILE_DIR, 'config.yaml'))):
-        print('Config.yaml exist in root dir. Move file to /config...')
-        os.popen('cp ' + os.path.join(FILE_DIR, 'config.yaml') + ' ' + os.path.join(FILE_DIR, CONFIGFILE))
-        time.sleep(2)
-        os.popen('rm ' + os.path.join(FILE_DIR, 'config.yaml'))
-        time.sleep(3)
     print('Loading configuration...')
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
         configuration = yaml.safe_load(conf)
