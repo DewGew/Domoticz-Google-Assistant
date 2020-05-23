@@ -262,8 +262,7 @@ def getAog(device):
                     aog.state = str(aogDevs[domains['temperature'] + at_idx].temp)
                     aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.error('Merge Error, Cant find temperature device with idx %s', at_idx)
-                    logger.error('Make sure temperature device has a idx below %s', aog.id)
+                    logger.debug('Merge Error, Cant find temperature device with idx %s', at_idx)
             modes_idx = desc.get('selector_modes_idx', None)
             if modes_idx is not None:
                 aog.modes_idx = modes_idx
@@ -272,8 +271,7 @@ def getAog(device):
                     aog.selectorLevelName = aogDevs[domains['selector'] + modes_idx].selectorLevelName
                     aogDevs[domains['selector'] + modes_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
-                    logger.error('Make sure selector has a idx below %s', aog.id)
+                    logger.debug('Merge Error, Cant find selector device with idx %s', modes_idx)
         if aog.domain in [domains['heater'], domains['kettle'], domains['waterheater'], domains['oven']]:
             tc_idx = desc.get('merge_thermo_idx', None)
             if tc_idx is not None:
@@ -283,8 +281,7 @@ def getAog(device):
                     aog.setpoint = aogDevs[domains['thermostat'] + tc_idx].setpoint
                     aogDevs[domains['thermostat'] + tc_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.error('Merge Error, Cant find thermostat device with idx %s', tc_idx)
-                    logger.error('Make sure thermostat device has a idx below %s', aog.id)
+                    logger.debug('Merge Error, Cant find thermostat device with idx %s', tc_idx)
         hide = desc.get('hide', False)
         if hide:
             aog.domain = domains['hidden']
