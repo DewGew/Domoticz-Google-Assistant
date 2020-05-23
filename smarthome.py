@@ -26,7 +26,7 @@ DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
 
 if 'PidFile' in configuration:
-    pidfile = PidFile(pidname=os.path.join(FILE_DIR, configuration['PidFile']))
+    pidfile = PidFile(pidname=configuration['PidFile'])
 else:
     pidfile = PidFile('dzga')
 
