@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.7.10'
+VERSION = '1.7.11'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
 KEYFILE = 'config/smart-home-key.json'
-PIDFILE = '/var/run/dzga.pid'
 
 HOMEGRAPH_URL = "https://homegraph.googleapis.com/"
 HOMEGRAPH_SCOPE = "https://www.googleapis.com/auth/homegraph"
