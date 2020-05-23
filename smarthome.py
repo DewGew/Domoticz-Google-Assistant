@@ -17,7 +17,7 @@ from auth import *
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
                    TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, DOMOTICZ_GET_ALL_DEVICES_URL, domains,
                    DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, CONFIGFILE, LOGFILE,
-                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, ATTRS_BRIGHTNESS, ATTRS_FANSPEED, PIDFILE,
+                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, ATTRS_BRIGHTNESS, ATTRS_FANSPEED,
                    ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
@@ -25,9 +25,8 @@ from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHom
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
 
-# Travis override
-if os.environ.get('TRAVIS') != 'true':
-    pidfile = PidFile(pidname=PIDFILE)
+if 'PidFile' in configuration:
+    pidfile = PidFile(pidname=os.path.join(FILE_DIR, configuration['PidFile']))
 else:
     pidfile = PidFile('dzga')
 
