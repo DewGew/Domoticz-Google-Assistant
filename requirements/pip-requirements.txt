@@ -8,3 +8,4 @@ requests>=2.22.0
 urllib3>=1.25.7
 GitPython>=3.0.5
 google-auth>=1.8.1
+wheel>=0.34.2
