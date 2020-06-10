@@ -224,6 +224,9 @@ def getAog(device):
     # Try to get device specific voice control configuration from Domoticz
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
     desc = getDeviceConfig(device.get("Description"))
+    if desc is not None:
+        logger.debug('<voicecontrol> tags found for idx ' + aog.id + ' in domoticz description.')
+        logger.debug('Device_Config for idx ' + aog.id + ' will be ignored in config.yaml!')
     if desc is None:
         desc = getDesc(aog)
 
