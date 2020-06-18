@@ -265,9 +265,9 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
                 <p class="lead">Domoticz-Google-Assistant delivers:<br />
                 <ul class="text-muted">
                     <li>The oauth authorization and smarthome endpoint for the google assistant</li>
-                    <li>Two-factor authentication pin for domoticz protected devices (limited language support)</li>
-                    <li>Acknowledgement with Yes or No. (limited language support)</li>
-                    <li>Arm Disarm Securitypanel (limited language support)</li>
+                    <li>Two-factor authentication pin for domoticz protected devices</li>
+                    <li>Acknowledgement with Yes or No</li>
+                    <li>Arm Disarm Securitypanel</li>
                     <li>Supports Ngrok and SSL</li>
                     <li>Function to change device type, icon and some behavior depending on the device.</i></li>
                 </ul>
