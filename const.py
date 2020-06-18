@@ -446,27 +446,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.<br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
             </p>
             <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
-            <p><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name (e.g. - 'Light').</small><br>
-            <code><b>Image_Override:</b><br>
-            <b>&nbsp;&nbsp;Switch:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Generic'<br>
-            &nbsp;&nbsp;<b>Light:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Light'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'custom_icon_name'<br>
-            &nbsp;&nbsp;<b>Media:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Media'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'TV'<br>
-            &nbsp;&nbsp;<b>Outlet:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'WallSocket'<br>
-            &nbsp;&nbsp;<b>Speaker:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Speaker'<br>
-            &nbsp;&nbsp;<b>Fan:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Fan'<br>
-            &nbsp;&nbsp;<b>Heating:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Heating'<br>
-            &nbsp;&nbsp;<b>Kettle:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'custom_icon_name'</code><br>
-            <small class="text-muted">Support device types <code>Switch Light Media Outlet Speaker Fan</code>. Its possible to remove those that you don't need.</small></p>
+            
             <p><code><b>Camera_Stream:</b></code><br><small class="text-muted">In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. <a href="#C3">Read more below</a>.</small><p>
             <p><small class="text-muted">User-friendly name for the arm level in your language.</small><br>
             <code><b>Armhome:</b><br>
