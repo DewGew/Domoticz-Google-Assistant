@@ -294,6 +294,11 @@ def getAog(device):
     if domains['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
         aog.attributes = ATTRS_VACCUM_MODES
         
+    if aog.room == None:
+        if aog.domain not in [domains['scene'], domains['group']]:
+            if aog.plan is not "0":
+                aog.room = getPlans(aog.plan)
+        
     return aog
 
 aogDevs = {}
@@ -477,12 +482,6 @@ class _GoogleEntity:
         room = state.room
         if room:
             device['roomHint'] = room
-            return device
-            
-        # Get plan name from domoticz
-        if state.domain not in [domains['scene'], domains['group']]:
-            if state.plan is not "0":
-                device['roomHint'] = getPlans(state.plan)
                
         return device
 
