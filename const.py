@@ -321,7 +321,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         <div id="menu1" class="tab-pane fade" role="tabpanel">
             <br>
             <h5>Device list</h5>
-            <small class="text-muted">List of devices the server recived from domoticz. Room and Nicknames is added from configuration. <b>Click on Header to sort asc or desc</b><br><b>NOTE:</b> If you don't see any device check your connection to domoticz.</small>
+            <small class="text-muted">List of devices the server recived from domoticz. <b>Click on Header to sort asc or desc</b><br><b>NOTE:</b> If you don't see any device check your connection to domoticz.</small>
             <table class="table" id="deviceTable">
               <thead>
                 <tr>
