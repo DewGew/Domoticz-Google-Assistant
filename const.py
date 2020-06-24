@@ -228,10 +228,10 @@ TEMPLATE = """
         <a data-toggle="tab" class="nav-link" href="#menu2"><i class="material-icons">settings_ethernet</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Help">
-        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">help_outline</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">help_outline</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Log">
-        <a data-toggle="tab" class="nav-link" href="#menu5"><i class="material-icons">notes</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">notes</i></a>
       </li>
     </ul>
         <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
@@ -349,19 +349,17 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
               </div>
             </div>
         </div>
-        <div id="menu4" class="tab-pane fade" role="tabpanel">
-            <br>
-            <h5 id="top">Help</h5> 
-            <p>For help or more information about configuration and to setup Action on Google:<br>
-            <a href="https://github.com/DewGew/Domoticz-Google-Assistant/wiki" target="_blank" rel="noopener">Domoticz Google Assistant wiki</a> or at 
+        <div id="menu3" class="tab-pane fade" role="tabpanel">
+            </br>
+            <h5>Help</h5> 
+            <p>For help or more information about configuration and to setup Action on Google:</br>
+            <a href="https://github.com/DewGew/Domoticz-Google-Assistant/wiki" target="_blank" rel="noopener">Domoticz Google Assistant wiki</a> 
             <a href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">Discord</a></p>
 
             <h6>Manual update</h6>
-            <p>
-            <kbd>bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)</kbd><br>
-            <small class="text-muted"></p>
+            <p><kbd>bash &#60;(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)</kbd></p>
         </div>
-        <div id="menu5" class="tab-pane fade" role="tabpanel">
+        <div id="menu4" class="tab-pane fade" role="tabpanel">
             <br>
             <h5 id="logsheader">Logs</h5>
             <textarea id="logs" rows="20" style="font-size: 10pt; width: 100%;">{logs}</textarea>
