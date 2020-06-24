@@ -353,7 +353,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             </br>
             <h5>Help</h5> 
             <p>For help or more information about configuration and to setup Action on Google:</br>
-            <a href="https://github.com/DewGew/Domoticz-Google-Assistant/wiki" target="_blank" rel="noopener">Domoticz Google Assistant wiki</a> 
+            <a href="https://github.com/DewGew/Domoticz-Google-Assistant/wiki" target="_blank" rel="noopener">Domoticz Google Assistant wiki</a> or at 
             <a href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">Discord</a></p>
 
             <h6>Manual update</h6>
