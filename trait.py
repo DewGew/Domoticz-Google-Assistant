@@ -352,6 +352,8 @@ class OpenCloseTrait(_Trait):
         """Execute a OpenClose command."""
         features = self.state.attributes
         protected = self.state.protected
+        state = self.state.state
+        
         if features & ATTRS_PERCENTAGE:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
                 100 - params['openPercent'])
@@ -360,12 +362,16 @@ class OpenCloseTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
 
-            if p == 100:
+            if p == 100 and state in ['Closed', 'Stopped']:
                 # open
                 url += 'Off'
-            elif p == 0:
+            elif p == 0 and state in ['Open', 'Stopped']:
                 # close
                 url += 'On'
+            else:
+                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                     'Unable to execute {} for {}. Already in state '.format(command,
+                                                                                             self.state.entity_id))
 
         if protected:
             url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']

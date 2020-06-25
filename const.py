@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.7.12'
+VERSION = '1.8.3'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -227,14 +227,11 @@ TEMPLATE = """
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Configuration">
         <a data-toggle="tab" class="nav-link" href="#menu2"><i class="material-icons">settings_ethernet</i></a>
       </li>
-      <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Setup Actions on Google">
-        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">perm_device_information</i></a>
-      </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Help">
-        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">help_outline</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu3"><i class="material-icons">help_outline</i></a>
       </li>
       <li class="nav-item" data-toggle="tooltip" data-placement="bottom" title="Log">
-        <a data-toggle="tab" class="nav-link" href="#menu5"><i class="material-icons">notes</i></a>
+        <a data-toggle="tab" class="nav-link" href="#menu4"><i class="material-icons">notes</i></a>
       </li>
     </ul>
         <ul class="navbar-nav flex-row ml-md-auto d-none d-md-flex">
@@ -261,7 +258,8 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
         <div id="home" class="tab-pane fade show active" role="tabpanel">
             <div class="row">
               <div class="col-8">
-                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244" target="_blank" rel="noopener" aria-label="Domoticz Forum">domoticz forum</a><br><p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p>
+                <p class="lead"><br>This project is based on Pawcio's script at <a href="https://www.domoticz.com/forum/viewtopic.php?f=69&amp;t=27244" target="_blank" rel="noopener" aria-label="Domoticz Forum">domoticz forum</a><br>
+                <p class="lead text-info">Before you can use dzga. Setup Action on Google and configure settings in configuration.</p>
                 <p class="lead">Domoticz-Google-Assistant delivers:<br />
                 <ul class="text-muted">
                     <li>The oauth authorization and smarthome endpoint for the google assistant</li>
@@ -352,288 +350,16 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             </div>
         </div>
         <div id="menu3" class="tab-pane fade" role="tabpanel">
-            <br>
-            <h5>Setup Actions on Google Console Instructions</h5>
-            <ul>
-            <li><p>Use the <a href="https://console.actions.google.com/" target="_blank" rel="noopener" aria-label="Actions on Google">Actions on Google Console</a> to add a new project with a name of your choosing and click     - Create Project.</p>
+            </br>
+            <h5>Help</h5> 
+            <p>For help or more information about configuration and to setup Action on Google:</br>
+            <a href="https://github.com/DewGew/Domoticz-Google-Assistant/wiki" target="_blank" rel="noopener">Domoticz Google Assistant wiki</a> or at 
+            <a href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">Discord</a></p>
 
-            <ul>
-            <li>Click Home Control, then click Smart Home.</li>
-            <li>On the top menu click Develop, then on the left navigation menu click on Invocation.</li>
-            <li>Add your App's name. Click Save.</li>
-            <li>Click 'Save'.</li>
-            </ul></li><br>
-
-            <li><p>Add Credentials (Optional not required)</p>
-            <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console API & Service page</a> for your project id.</li>
-            <li>Click 'Create credentials'</li>
-            <li>Click 'OAuth client ID'</li>
-            <li>Choose 'other'</li>
-            <li>Add name e.g. 'SmartHomeClientID'</li>
-            <li>Copy the client ID shown and insert it in <code>clientID</code> in config.yaml</li>
-            <li>Copy the client secret shown and insert it in <code>clientSecret</code> in config.yaml</li>
-            </ul></li><br>
-
-            <li><p>Add Request Sync and Report State (Optional but recomended)</p>
-            <p>The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request. The Report State feature allows a cloud integration to proactively provide the current state of devices to the Home Graph without a QUERY request. These are done securely through JWT (JSON web tokens).</p>
-
-            <ul>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/library" target="_blank" rel="noopener">Google Cloud Console API Manager</a> for your project id.</li>
-            <li>Enable the <a href="https://console.cloud.google.com/apis/api/homegraph.googleapis.com/overview" target="_blank" rel="noopener">HomeGraph API</a></li>
-            <li>Navigate to the <a href="https://console.cloud.google.com/apis/credentials" target="_blank" rel="noopener">Google Cloud Console API & Services page</a></li>
-            <li>Select <b>Create Credentials</b> and create a <b>Service account key</b></li>
-            <ul>
-            <li>Create a new Service account</li>
-            <li>Use the role Service Account > Service Account Token Creator</li>
-            </ul>
-            <li>Create the account and download a JSON file. Save this in Domoticz-Google-Assisstant/config folder as <code>smart-home-key.json</code>.</li>
-            </ul></li><br>
-
-            <li><p>Navigate back to the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</p>
-            <ul>
-            <li>On the top menu click Develop, then on the left navigation menu click on Actions.
-            Enter the URL for fulfillment, e.g. <code>{public_url}/smarthome</code>, click Done.</li>
-            <li>On the left navigation menu under Account Linking.</li>
-            <li>Under Client Information, enter <code>sampleClientId</code> as client ID and <code>sampleClientSecret</code> as secret.(If using optional credentials above, enter the client ID and secret from earlier.)</li>
-            <li>Change Authorization URL to <code>{public_url}/oauth</code>.</li>
-            <li>Change Token URL to <code>{public_url}/token</code>.</li>
-            <li>Do NOT check 'Google to transmit clientID and secret via HTTP basic auth header'.</li>
-            <li>Click 'Save' at the top right corner, then click 'Test' to generate a new draft version of the Test App.</li>
-            </ul></li>
-            </ul>
+            <h6>Manual update</h6>
+            <p><kbd>bash &#60;(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)</kbd></p>
         </div>
         <div id="menu4" class="tab-pane fade" role="tabpanel">
-            <br>
-            <h5 id="top">Help</h5>
-            <p>
-            <a href="#C1">Configuration Settings</a><br>
-            <a href="#C2">Device Settings</a><br>
-            <a href="#C3">Stream camera to chromecast</a><br>
-            <a href="#C4">Other</a><br>
-            </p>
-            <h5 id="C1">Configuration Settings</h5>
-
-            <p><code><b>port_settings:</b> 3030</code><br><small class="text-muted">Set the local port. Default is 3030</small></p>
-            <p><code><b>loglevel:</b> 'Info'</code><br><small class="text-muted">Set log level <code>Debug</code>, <code>Info</code> or <code>Error</code>. Default is <code>Info</code></small><br>
-            <code><b>logtofile:</b> false</code><br><small class="text-muted">Enable or disable write log to file. Set logtofile to <code>false</code> logs will not show in the LOG tab. Set logtofile to <code>'Overwrite'</code> or <code>true</code> Log file will be overwritten when dzga server restarts. Set logtofile to <code>'Append'</code> Logs will append to logfile if dzga server restarts.</small><br>
-            <code><b>pathToLogFile:</b> '/tmp'</code><br><small class="text-muted">Path to log file. If pathToLogFile is commented out, removed or set to '', logs will be saved in Domoticz-Google-Assistant folder</small></p>
-            <p><code><b>userinterface:</b> true</code><br><small class="text-muted">Enable or disable UI</small></p>
-            <p><code><b>CheckForUpates:</b> true</code><br><small class="text-muted">Enable or disable check for updates</small></p>
-            <p><code><b>ngrok_tunnel:</b> true</code><br><small class="text-muted">Use Ngrok tunnel true or false. Instantly create a public HTTPS URL.<br>Don't have to open any port on router and do not require a reverse proxy.<br><b>NOTE:</b> When ngrok_tunnel set to True the auth token is required to keep the tunnel alive. Create account at ngrok.com and paste the token in this file.<br>Ngrok assigns random urls. When server restart the server gets a new url.</small>
-            <br><code><b>ngrok_auth_token:</b> 'auth_token'</code><br><small class="text-muted">If you use the ngrok tunnel option without account the tunnel will be terminated after 5 or 6 hours. Create account at <a href="https://dashboard.ngrok.com/signup" target="_blank" rel="noopener" aria-label="ngrok.com">ngrok.com</a> and paste the token.</small></p>
-            <p>
-            <code><b>use_ssl:</b> false</code><br><small class="text-muted">Use SSL encryption in HTTP server if not using ngrok or reverse proxy</small><br>
-            <code><b>ssl_key:</b> /path/to/privkey.pem</code><br>
-            <code><b>ssl_cert:</b> /path/to/fullchain.pem</code>
-            </p>
-
-            <p><code><b>auth_user:</b> 'admin'</code><br><small class="text-muted">Set the authorization username.</small><br>
-            <code><b>auth_pass:</b> 'admin'</code><br><small class="text-muted">Set the authorization password.</small></p>
-
-            <p><small class="text-muted">Add correct ipaddress, port, domoticz credientials to connect to domoticz.</small><br>
-                <code><b>Domoticz:</b></code><br>
-            <code>&nbsp;&nbsp;<b>ip:</b> 'http://192.168.1.100'</code><br>
-            <code>&nbsp;&nbsp;<b>port:</b> '8080'</code><br>
-            <code>&nbsp;&nbsp;<b>username:</b>'user'</code><br>
-            <code>&nbsp;&nbsp;<b>password:</b>'password'</code><br>
-            <code>&nbsp;&nbsp;<b>roomplan:</b> '0'</code><br>
-            <code>&nbsp;&nbsp;<b>switchProtectionPass:</b> '1234'</code><br>
-            <small class="text-muted">Assign a roomplan. <code>'0'</code> is all devices. Set <code>switchProtectionPass:</code> equal to 'Light/Switch Protection' in domoticz settings. Required to be in numbers to work properly. Set this to <code>false</code> if ask for pin function is not needed.</small></p>
-
-            <p><code><b>ClientID:</b> 'ADD_YOUR_CLIENT_ID_HERE'</code><br>
-            <code><b>ClientSecret:</b> 'ADD_YOUR_CLIENT_SECRET_HERE'</code><br><small class="text-muted">Optional Not required. Set the Google credientials.</small><br>
-            <code><b>Homegraph_API_Key:</b> 'ADD_YOUR HOMEGRAPH_API_KEY_HERE' # Not required.</code><br><small class="text-muted">Homegraph API key from Google. The Request Sync feature allows a cloud integration to send a request to the Home Graph to send a new SYNC request.<br>** NOTE: This is not needed if you are using Service account (smart-home-key.json).</small><br>
-            </p>
-            <p><code><b>Low_battery_limit:</b> 9</code><br><small class="text-muted">Set threhold for report low battery.</small></p>
-            <p><small class="text-muted">Ligths, switches, media, etc. are using domoticz's "Light/Switch" type. To differentiate them additionaly add image name (e.g. - 'Light').</small><br>
-            <code><b>Image_Override:</b><br>
-            <b>&nbsp;&nbsp;Switch:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Generic'<br>
-            &nbsp;&nbsp;<b>Light:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Light'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'custom_icon_name'<br>
-            &nbsp;&nbsp;<b>Media:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Media'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'TV'<br>
-            &nbsp;&nbsp;<b>Outlet:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'WallSocket'<br>
-            &nbsp;&nbsp;<b>Speaker:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Speaker'<br>
-            &nbsp;&nbsp;<b>Fan:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Fan'<br>
-            &nbsp;&nbsp;<b>Heating:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Heating'<br>
-            &nbsp;&nbsp;<b>Kettle:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'custom_icon_name'</code><br>
-            <small class="text-muted">Support device types <code>Switch Light Media Outlet Speaker Fan</code>. Its possible to remove those that you don't need.</small></p>
-            <p><code><b>Camera_Stream:</b></code><br><small class="text-muted">In domoticz you need to attach a switch to your camera, Add switch idx and camera stream url. <a href="#C3">Read more below</a>.</small><p>
-            <p><small class="text-muted">User-friendly name for the arm level in your language.</small><br>
-            <code><b>Armhome:</b><br>
-            &nbsp;&nbsp;<b>level_synonym:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'låg säkerhet'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 1'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'hemmaläge'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL1'<br>
-            &nbsp;&nbsp;<b>lang:</b> 'sv'<br>
-            <b>Armaway:</b><br>
-            &nbsp;&nbsp;<b>level_synonym:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'hög säkerhet'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 2'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'bortaläge'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL2'<br>
-            &nbsp;&nbsp;<b>lang:</b> 'sv'
-            </code></p>
-
-            <h5 id="C2">Device Settings</h5>
-
-            <p><small class="text-muted">Nicknames, rooms, ack, hide etc. can be set in the Domoticz user interface. Simply put the device configuration in the device description, in a section between &lt;voicecontrol&gt; tags like:
-            </small><br />
-            <code>
-            &lt;voicecontrol&gt;<br />
-            &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br />
-            &nbsp;&nbsp;room = Kitchen<br />
-            &nbsp;&nbsp;ack = True<br />
-            &nbsp;&nbsp;report_state = False<br />
-            &nbsp;&nbsp;hide = True<br />
-            &lt;/voicecontrol&gt;<br />
-            </code>
-            <small class="text-muted">Other parts of the description are ignored, so you can still leave other useful descriptions.
-            Every variable should be on a separate line.
-            If there is no such configuration in the Domoticz device it will still try the config:</small><br>
-            <code><b>Device_Config:</b><br>
-            &nbsp;&nbsp;<b>123:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;ack: true'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Kitchen Blind One'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Left Blind'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Blue Blind'<br>
-            &nbsp;&nbsp;<b>243:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Bedroom'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;report_state: false<br>
-            &nbsp;&nbsp;<b>345:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;hide: true<br>
-            <b>Scene_Config:</b><br>
-            &nbsp;&nbsp;<b>3:</b><br>
-            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Cool scene'<br>
-            </code>
-            <small class="text-muted"><b>For thermostat devices only.</b><br> Function to merge actual temperature from another temp device or modes from selector device to thermostat. Bug Thermostat idx <b>must</b> be a number <b>above</b> Temp/selector idx. Merged device will automaticly hidden. Levels from selector device supported is: Off - Heat - Cool - Auto - Eco</small><br>
-            <code>
-            &lt;voicecontrol&gt;<br />
-            &nbsp;&nbsp;actual_temp_idx = 123<br />
-            &nbsp;&nbsp;selector_modes_idx = 234<br />
-            &lt;/voicecontrol&gt;<br />
-            </code>
-            <small class="text-muted">or in config.yaml:</small><br>
-            <code><b>Device_Config:</b><br>
-            &nbsp;&nbsp;<b>456:</b></code><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;actual_temp_idx: '123'<br>
-            &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
-            </code>
-            <small class="text-muted"><b>For Heater/Kettle.</b><br> Function to merge thermostat. Bug Thermostat idx <b>must</b> be a number <b>above</b> Temp/selector idx. Merged device will automaticly hidden. Levels from selector device supported is: Off - Heat - Cool - Auto - Eco</small><br>
-            <code>
-            &lt;voicecontrol&gt;<br />
-            &nbsp;&nbsp;merge_thermo_idx = 123<br />
-            &lt;/voicecontrol&gt;<br />
-            </code>
-            <small class="text-muted">or in config.yaml:</small><br>
-            <code><b>Device_Config:</b><br>
-            &nbsp;&nbsp;<b>456:</b></code><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;merge_thermo_idx: '234'<br>
-            </code>
-            <small class="text-muted"><b>Device Type</b><br> Function to change device type, icon and some behavior depending on the device (e.g open/close instead of on/off).</small><br>
-            <code>
-            &lt;voicecontrol&gt;<br />
-            &nbsp;&nbsp;devicetype = oven<br />
-            &lt;/voicecontrol&gt;<br />
-            </code>
-            <small class="text-muted">or in config.yaml:</small><br>
-            <code><b>Device_Config:</b><br>
-            &nbsp;&nbsp;<b>456:</b></code><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;devicetype: 'oven'<br>
-            </code>
-            <small class="text-muted">Light Device types to choose from is:<br>
-            <i class="text-info">light, ac_unit, bathtub, coffemaker, dishwasher, dryer, fan, heater, kettle, media, microwave, outlet, oven, speaker, switch, vacuum, washer, waterheater, window, gate, garage.</i><br>
-            For <i class="text-info">heater, kettle, waterheater, oven</i> you can still use <code>merge_thermo_idx</code> to merge thermostat to control temperature.<br>
-            Door Contact devices can choose <i class="text-info">window, gate</i> or <i class="text-info">garage</i><br>Selector devices can choose only <i class="text-info">vacuum</i></small><br>
-            
-            </p>
-
-            <h5 id="C3">Stream camera to chromecast</h5>
-
-            <p><small class="text-muted">Stream security camera to chromecast. Supports hls, dash, smooth streaming, Progressive MP4 urls. More info: https://developers.google.com/actions/smarthome/traits/camerastream#video-formats. You need a to convert your video url to one of above. Try with ffmpeg or with a surveillance software system. Try out http://shinobi.video. <br />
-            In domoticz you need to attach a switch to your camera (create a switch then in Settings/Camera, add the switch to the camera)</small></p>
-            <p><code><b>Camera_Stream: </b></code><br>
-            <code>&nbsp;&nbsp;<b>Enabled:</b> true </code><small class="text-muted"># Enable/disable cast to chromecast</small><br>
-            <code>&nbsp;&nbsp;<b>Cameras:</b> </code><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Idx:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- '123' </code><small class="text-muted"># Idx of camera attached device</small><br>
-            <code>&nbsp;&nbsp;&nbsp;&nbsp;<b>Camera_URL:</b><br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'https://content.jwplatform.com/manifests/yp34SRmf.m3u8' </code><small class="text-muted"># Stream url</small><br>
-            </p>
-            <p><small class="text-muted">Example convert rtsp to hls or mp4 using ffmpeg:</small><br />
-            <code>
-            ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
-              -acodec copy \
-              -vcodec copy \
-              -hls_wrap 40 \
-              -flags -global_header \
-              /var/www/html/cam/cam.m3u8
-            </code><br />
-            <code>
-            ffmpeg -rtsp_transport tcp -i rtsp://admin:123456@192.168.0.218/live/ch1 \
-              -c:a aac \
-              -vcodec copy \
-              -f mp4 \
-              -y \
-              -flags -global_header \
-              /var/www/html/cam/cam.mp4
-            </code>
-            </p>
-
-            <h5 id="C4">Other</h5>
-
-            <small class="text-muted"><h6>Connect smart home devices to your Google Home device</h6>
-            <ul>
-            <li>On your mobile device, open the Google Home app.</li>
-            <li>On the Home tab, tap the “Add” quick action .</li>
-            <li>Tap Set up a device</li>
-            <li>Tap Have something already set up?</li>
-            <li>Select your device app e.g: "[test]Your Appname"</li>
-            <li>Login with auth credentials from config</li>
-            </ul>
-            </small>
-
-            <h6>Share devices</h6>
-
-            <p><small class="text-muted">If you want to allow other household users to control the devices:<br />
-            <ul>
-            <li>Go to the settings for the project you created in the <a href="https://console.actions.google.com/" target="_blank" rel="noopener">Actions on Google Console</a>.</li>
-            <li>Click three dots icon next to your profile icon, then click <code>Manage user access</code></li>
-            <li>In <a href="https://console.cloud.google.com/iam-admin/iam" target="_blank" rel="noopener">Google Cloud Platform</a> click <code>ADD</code>.</li>
-            <li>type the new user’s Google Account mail address as <code>New member</code>.</li>
-            <li>Select role <code>Project -&gt; Viewer</code>.</li>
-            <li>Click <code>SAVE</code>.</li>
-            <li>Have the new user go to their Google Home app to add "[test]Your Appname" to their account. Login with Oauth credentials from configuration</li>
-            </ul></small></p>
-
-            <h6>Update</h6>
-
-            <p>
-            <kbd>bash <(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)</kbd><br>
-            <small class="text-muted">or</small><br>
-            <code>
-            cd /home/${{USER}}/Domoticz-Google-Assistant/<br>
-            git pull
-            </code><br />
-            <small class="text-muted">If needed, restart service:</small><br />
-            <code>
-            sudo systemctl restart dzga.service
-            </code><br /></p>
-            <p><a href="#top">Goto Top</a></p>
-        </div>
-        <div id="menu5" class="tab-pane fade" role="tabpanel">
             <br>
             <h5 id="logsheader">Logs</h5>
             <textarea id="logs" rows="20" style="font-size: 10pt; width: 100%;">{logs}</textarea>

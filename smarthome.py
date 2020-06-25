@@ -48,17 +48,15 @@ except:
     
 ReportState = ReportState()
 if not ReportState.enable_report_state():
-    logger.error("Service account key is not found.")
-    logger.error("Report state will be unavailable")
-
+    logger.error("Service account key is not found. Report state will be unavailable")
 
 def checkupdate():
     if repo is not None and 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
         try:
             r = requests.get(
                 'https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch + '/const.py')
-            text = r.text
-            if VERSION not in text:
+            response = r.text
+            if VERSION not in response:
                 update = 1
                 logger.info("========")
                 logger.info("   New version is availible on Github!")
@@ -99,30 +97,18 @@ def AogGetDomain(device):
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
                 configuration['Camera_Stream']['Enabled']:
             return domains['camera']
-        elif 'Image_Override' in configuration and 'Switch' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Switch']:
+        elif device["Image"] == 'Generic':
             return domains['switch']
-        elif 'Image_Override' in configuration and 'Light' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Light']:
-            return domains['light']
-        elif 'Image_Override' in configuration and 'Media' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Media']:
+        elif device["Image"] in ['Media', 'TV']:
             return domains['media']
-        elif 'Image_Override' in configuration and 'Outlet' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Outlet']:
+        elif device["Image"] == 'WallSocket':
             return domains['outlet']
-        elif 'Image_Override' in configuration and 'Speaker' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Speaker']:
+        elif device["Image"] == 'Speaker':
             return domains['speaker']
-        elif 'Image_Override' in configuration and 'Fan' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Fan']:
+        elif device["Image"] == 'Fan':
             return domains['fan']
-        elif 'Image_Override' in configuration and 'Heating' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Heating']:
+        elif device["Image"] == 'Heating':
             return domains['heater']
-        elif 'Image_Override' in configuration and 'Kettle' in configuration['Image_Override'] and device["Image"] in \
-                configuration['Image_Override']['Kettle']:
-            return domains['kettle']
         else:
             return domains['light']
     elif 'Blinds' == device["Type"]:	
@@ -148,9 +134,8 @@ def AogGetDomain(device):
         return domains['security']
     return None
 
-
 def getDesc(state):
-    if state.domain == domains['scene'] or state.domain == domains['group']:
+    if state.domain in [domains['scene'], domains['group']]:
         if 'Scene_Config' in configuration and configuration['Scene_Config'] is not None:
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
@@ -160,7 +145,6 @@ def getDesc(state):
         return desc
     else:
         return None
-
 
 def getDeviceConfig(descstr):
     ISLIST = ['nicknames']
@@ -192,7 +176,6 @@ def getDeviceConfig(descstr):
         return cfgdict
     return None
 
-
 def getAog(device):
     domain = AogGetDomain(device)
     if domain is None:
@@ -203,6 +186,7 @@ def getAog(device):
     aog.domain = domain
     aog.id = device["idx"]
     aog.entity_id = domain + aog.id
+    aog.plan = device.get("PlanID")                               
     aog.state = device.get("Data", "Scene")
     aog.level = device.get("LevelInt", 0)
     aog.temp = device.get("Temp")
@@ -225,8 +209,8 @@ def getAog(device):
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
     desc = getDeviceConfig(device.get("Description"))
     if desc is not None:
-        logger.debug('<voicecontrol> tags found for idx ' + aog.id + ' in domoticz description.')
-        logger.debug('Device_Config for idx ' + aog.id + ' will be ignored in config.yaml!')
+        logger.debug('<voicecontrol> tags found for idx %s in domoticz description.', aog.id)
+        logger.debug('Device_Config for idx %s will be ignored in config.yaml!', aog.id)
     if desc is None:
         desc = getDesc(aog)
 
@@ -310,12 +294,15 @@ def getAog(device):
     if domains['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
         aog.attributes = ATTRS_VACCUM_MODES
         
+    if aog.room == None:
+        if aog.domain not in [domains['scene'], domains['group']]:
+            if aog.plan is not "0":
+                aog.room = getPlans(aog.plan)
+        
     return aog
-
 
 aogDevs = {}
 deviceList = {}
-
 
 def getDevices(devices="all", idx="0"):
     global aogDevs
@@ -362,10 +349,8 @@ def getDevices(devices="all", idx="0"):
     devlist.sort(key=takeSecond)
     deviceList = json.dumps(devlist)
 
-
 def takeSecond(elem):
     return elem[1]
-
 
 def deep_update(target, source):
     """Update a nested dictionary with another nested dictionary."""
@@ -399,7 +384,7 @@ def getSettings():
     logger.debug(json.dumps(settings, indent=2, sort_keys=False, ensure_ascii=False))
 
 def getVersion():
-    """Get domoticz settings."""
+    """Get domoticz version."""
     global settings
 
     url = DOMOTICZ_URL + DOMOTICZ_GET_VERSION
@@ -410,6 +395,18 @@ def getVersion():
         settings['dzversion'] = vers['version']
         settings['dzVents'] = vers['dzvents_version']
 
+def getPlans(idx):
+    """Get domoticz plan name."""
+    global settings
+    
+    url = DOMOTICZ_URL + '/json.htm?type=plans&order=name&used=true'
+    r = requests.get(url, auth=CREDITS)
+
+    if r.status_code == 200:
+        rooms = r.json()['result']
+        plan = [i for i in rooms if i['idx'] == idx][0]
+        return plan['Name']
+
 def restartServer():
     """Restart."""
     logger.info(' ')
@@ -419,7 +416,6 @@ def restartServer():
     pidfile.close()
 
     os.execv(sys.executable, ['python'] + sys.argv)
-
 
 class _GoogleEntity:
     """Adaptation of Entity expressed in Google's terms."""
@@ -442,7 +438,7 @@ class _GoogleEntity:
              if Trait.supported(domain, features)]
         return t
 
-    def sync_serialize(self):
+    def sync_serialize(self, agent_user_id):
         """Serialize entity for a SYNC response.
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
@@ -477,16 +473,16 @@ class _GoogleEntity:
         # use aliases
         aliases = state.nicknames
         if aliases:
-            device['name']['nicknames'] = aliases
-
-        # add room hint if annotated
+            device['name']['nicknames'] = [state.name] + aliases
+        
+        for trt in traits:
+            device['attributes'].update(trt.sync_attributes())
+            
+        # Add room hint if annotated                     
         room = state.room
         if room:
             device['roomHint'] = room
-
-        for trt in traits:
-            device['attributes'].update(trt.sync_attributes())
-
+               
         return device
 
     def query_serialize(self):
@@ -512,8 +508,8 @@ class _GoogleEntity:
         for trt in self.traits():
             if trt.can_execute(command, params):
 
-                ack = self.state.ack  # ack is now stored in state
-                pin = False
+                acknowledge = self.state.ack  # ack is now stored in state
+                pincode = False
 
                 if configuration['Domoticz']['switchProtectionPass']:
                     protect = self.state.protected
@@ -521,10 +517,10 @@ class _GoogleEntity:
                     protect = False
 
                 if protect or self.state.domain == domains['security']:
-                    pin = configuration['Domoticz']['switchProtectionPass']
+                    pincode = configuration['Domoticz']['switchProtectionPass']
                     if self.state.domain == domains['security']:
-                        pin = self.state.seccode
-                    ack = False
+                        pincode = self.state.seccode
+                    acknowledge = False
                     if challenge is None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
@@ -533,17 +529,17 @@ class _GoogleEntity:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-                    elif True == protect and pin != challenge.get('pin'):
+                    elif True == protect and pincode != challenge.get('pin'):
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-                    elif self.state.domain == domains['security'] and pin != hashlib.md5(
+                    elif self.state.domain == domains['security'] and pincode != hashlib.md5(
                             str.encode(challenge.get('pin'))).hexdigest():
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
 
-                if ack:
+                if acknowledge:
                     if challenge is None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'ackNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
@@ -568,7 +564,6 @@ class _GoogleEntity:
             getDevices('scene')
         else:
             getDevices('id', self.state.id)
-
 
 class SmartHomeReqHandler(OAuthReqHandler):
     global smarthomeControlMappings
@@ -814,11 +809,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
         getDevices()  # sync all devices
         getSettings()
         enableReport = ReportState.enable_report_state()
+        agent_user_id = token.get('userAgentId', None)
 
         for state in aogDevs.values():
 
             entity = _GoogleEntity(state)
-            serialized = entity.sync_serialize()
+            serialized = entity.sync_serialize(agent_user_id)
 
             if serialized is None:
                 continue
@@ -833,10 +829,9 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if enableReport:
             t = threading.Thread(target=self.delay_report_state, args=(states, token)).start()
 
-        return {
-            'agentUserId': token.get('userAgentId', None),
-            'devices': devices,
-        }
+        response = {'agentUserId': agent_user_id, 'devices': devices}
+                
+        return response
 
     def smarthome_query(self, payload, token):
         """Handle action.devices.QUERY request.
@@ -920,7 +915,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/assistant/smarthome/develop/process-intents#DISCONNECT
         """
         return None
-
 
 if 'userinterface' in configuration and configuration['userinterface'] == True:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
