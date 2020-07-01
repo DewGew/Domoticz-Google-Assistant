@@ -39,24 +39,7 @@ Domoticz:
 
 # Report low battry
 Low_battery_limit: 9
-
-# Ligths, switches, media, etc. are using domoticz's "Light/Switch" type.
-# So to differentiate them additionaly image names are used.
-Image_Override:
-  Switch:
-    - 'Generic'
-  Light:
-    - 'Light'
-  Media:
-    - 'Media'
-    - 'TV'
-  Outlet:
-    - 'WallSocket'
-  Speaker:
-    - 'Speaker'
-  Fan:
-    - 'Fan'
-    
+   
 #Additional nicknames and room configuration
 #Comment out or delete section below if not needed
 Device_Config:
