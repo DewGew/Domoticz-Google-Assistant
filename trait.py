@@ -362,10 +362,10 @@ class OpenCloseTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
 
-            if p == 100 and state in ['Closed', 'Stopped']:
+            if p == 100 and state in ['Closed', 'Stopped', 'On']:
                 # open
                 url += 'Off'
-            elif p == 0 and state in ['Open', 'Stopped']:
+            elif p == 0 and state in ['Open', 'Stopped', 'Off']:
                 # close
                 url += 'On'
             else:
