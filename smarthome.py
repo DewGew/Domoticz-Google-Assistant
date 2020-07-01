@@ -203,7 +203,6 @@ def getAog(device):
     aog.selectorLevelName = device.get("LevelNames")
     aog.language = settings.get("Language")
     aog.lastupdate = device.get("LastUpdate")
-    aog.dzvents = settings.get("dzVents")
 
     # Try to get device specific voice control configuration from Domoticz
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
@@ -366,7 +365,6 @@ def deep_update(target, source):
 
 settings = {}
 settings['dzversion'] = "Unavailable"
-settings['dzVents'] = "1.0.0"
 
 def getSettings():
     """Get domoticz settings."""
@@ -396,7 +394,6 @@ def getVersion():
     if r.status_code == 200:
         vers = r.json()
         settings['dzversion'] = vers['version']
-        settings['dzVents'] = vers['dzvents_version']
 
 def getPlans(idx):
     """Get domoticz plan name."""
