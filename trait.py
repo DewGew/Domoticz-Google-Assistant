@@ -352,6 +352,8 @@ class OpenCloseTrait(_Trait):
         """Execute a OpenClose command."""
         features = self.state.attributes
         protected = self.state.protected
+        state = self.state.state
+        
         if features & ATTRS_PERCENTAGE:
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
                 100 - params['openPercent'])
@@ -360,12 +362,16 @@ class OpenCloseTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
 
-            if p == 100:
+            if p == 100 and state in ['Closed', 'Stopped', 'On']:
                 # open
                 url += 'Off'
-            elif p == 0:
+            elif p == 0 and state in ['Open', 'Stopped', 'Off']:
                 # close
                 url += 'On'
+            else:
+                raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                     'Unable to execute {} for {}. Already in state '.format(command,
+                                                                                             self.state.entity_id))
 
         if protected:
             url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
@@ -1151,29 +1157,19 @@ class Timer(_Trait):
 
     def execute(self, command, params):
         """Execute a Timer command."""
-        version = self.state.dzvents
-        # date_str = datetime.strptime(self.state.lastupdate, "%Y-%m-%d %H:%M:%S")
-        # timestamp = datetime.timestamp(date_str)
-        # print("date =", date_str)
-        # print("timestamp =", timestamp)
-        if version is not None and version >= '3.0.0':
-            if command == COMMAND_TIMER_START:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"time":' + str(params['timerTimeSec']) + ',"on":true}'
-
-                r = requests.get(url, auth=CREDITS)
-
         
-            if command == COMMAND_TIMER_CANCEL:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"cancel":true}'
+        if command == COMMAND_TIMER_START:
+            logger.info('Make sure you have dzVents Dzga_Timer script installed and active')
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"time":' + str(params['timerTimeSec']) + ',"on":true}'
 
-                r = requests.get(url, auth=CREDITS)
-        else:
-            logger.error('To use Timer function you need to run Domoticz version above 2020.1.11804')
-            logger.error('and have dzVents Dzga_Timer script installed and active')
-            raise SmartHomeError('functionNotSupported',
-                                     'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              self.state.entity_id))
+            r = requests.get(url, auth=CREDITS)
 
+    
+        if command == COMMAND_TIMER_CANCEL:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=customevent&event=TIMER&data={"idx":' + self.state.id + ',"cancel":true}'
+
+            r = requests.get(url, auth=CREDITS)
+            
 @register_trait
 class EnergyStorageTrait(_Trait):
     """Trait to offer EnergyStorge functionality.
