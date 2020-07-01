@@ -203,7 +203,6 @@ def getAog(device):
     aog.selectorLevelName = device.get("LevelNames")
     aog.language = settings.get("Language")
     aog.lastupdate = device.get("LastUpdate")
-    aog.dzvents = settings.get("dzVents")
 
     # Try to get device specific voice control configuration from Domoticz
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
@@ -217,8 +216,11 @@ def getAog(device):
     if desc is not None:
         dt = desc.get('devicetype', None)
         if dt is not None:
-            if aog.domain in [domains['light']]:
-                if dt.lower() in ['window', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
+            if aog.domain in [domains['blinds']]:
+                if dt.lower() in ['window', 'gate', 'garage', 'door']:
+                    aog.domain = domains[dt.lower()]
+            if aog.domain in [domains['light'], domains['switch']]:
+                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['door']]:
                 if dt.lower() in ['window', 'gate', 'garage']:
@@ -363,7 +365,6 @@ def deep_update(target, source):
 
 settings = {}
 settings['dzversion'] = "Unavailable"
-settings['dzVents'] = "1.0.0"
 
 def getSettings():
     """Get domoticz settings."""
@@ -393,7 +394,6 @@ def getVersion():
     if r.status_code == 200:
         vers = r.json()
         settings['dzversion'] = vers['version']
-        settings['dzVents'] = vers['dzvents_version']
 
 def getPlans(idx):
     """Get domoticz plan name."""
