@@ -220,7 +220,7 @@ def getAog(device):
             if aog.domain in [domains['blinds']]:
                 if dt.lower() in ['window', 'gate', 'garage', 'door']:
                     aog.domain = domains[dt.lower()]
-            if aog.domain in [domains['light']]:
+            if aog.domain in [domains['light'], domains['switch']]:
                 if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['door']]:
