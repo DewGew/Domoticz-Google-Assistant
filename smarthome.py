@@ -217,8 +217,11 @@ def getAog(device):
     if desc is not None:
         dt = desc.get('devicetype', None)
         if dt is not None:
+            if aog.domain in [domains['blinds']]:
+                if dt.lower() in ['window', 'gate', 'garage', 'door']:
+                    aog.domain = domains[dt.lower()]
             if aog.domain in [domains['light']]:
-                if dt.lower() in ['window', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
+                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['door']]:
                 if dt.lower() in ['window', 'gate', 'garage']:
