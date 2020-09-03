@@ -753,7 +753,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 else:
                     message = 'Homegraph api key not valid!'
             else:
-                message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices here!'
+                message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices in the UI! You can still sync by voice eg. "Hey Google, Sync my devices".'
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
