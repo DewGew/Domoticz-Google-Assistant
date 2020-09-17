@@ -272,7 +272,10 @@ def getAog(device):
                     logger.debug('Merge Error, Cant find thermostat device with idx %s', tc_idx)
         hide = desc.get('hide', False)
         if hide:
-            aog.domain = domains['hidden']
+            if aog.domain not in [domains['scene'], domains['group']]:
+                aog.domain = domains['hidden']
+            else:
+                logger.error('Scenes and Groups does not support function "hide" yet')
             
     if aog.domain in [domains['camera']]:
         aog.report_state = False
