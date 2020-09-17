@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.8.5'
+VERSION = '1.8.6'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -95,7 +95,7 @@ domains = {
     'kettle': 'Kettle',
     'light': 'Light',
     'lock': 'DoorLock',
-    'lockinv': 'DoorLock',
+    'lockinv': 'DoorLockInv',
     'media': 'Media',
     'merged': 'Merged(Idx:',
     'microwave': 'Microwave',

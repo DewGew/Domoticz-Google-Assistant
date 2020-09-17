@@ -272,7 +272,10 @@ def getAog(device):
                     logger.debug('Merge Error, Cant find thermostat device with idx %s', tc_idx)
         hide = desc.get('hide', False)
         if hide:
-            aog.domain = domains['hidden']
+            if aog.domain not in [domains['scene'], domains['group']]:
+                aog.domain = domains['hidden']
+            else:
+                logger.error('Scenes and Groups does not support function "hide" yet')
             
     if aog.domain in [domains['camera']]:
         aog.report_state = False
@@ -753,7 +756,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 else:
                     message = 'Homegraph api key not valid!'
             else:
-                message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices here!'
+                message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices in the UI! You can still sync by voice eg. "Hey Google, Sync my devices".'
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, logs=logs, update=update,
