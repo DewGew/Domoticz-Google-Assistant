@@ -124,7 +124,7 @@ class OnOffTrait(_Trait):
         return domain in (
             domains['ac_unit'],
             domains['bathtub'],
-            domains['coffemaker'],
+            domains['coffeemaker'],
             domains['color'],
             domains['cooktop'],
             domains['dishwasher'],
