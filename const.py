@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.8.6'
+VERSION = '1.8.7'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -79,6 +79,7 @@ domains = {
     'ac_unit': 'AcUnit',
     'bathtub': 'Bathtub',
     'blinds': 'Blind',
+    'blindsinv': 'BlindInverted',
     'camera': 'Camera',
     'coffemaker': 'Coffemaker',
     'color': 'ColorSwitch',
@@ -133,6 +134,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['ac_unit']: TYPE_AC_UNIT,
     domains['bathtub']: TYPE_BATHTUB,
     domains['blinds']: TYPE_BLINDS,
+    domains['blindsinv']: TYPE_BLINDS,
     domains['camera']: TYPE_CAMERA,
     domains['coffemaker']: TYPE_COFFEE,
     domains['color']: TYPE_LIGHT,
