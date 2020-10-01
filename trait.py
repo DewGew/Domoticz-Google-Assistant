@@ -334,10 +334,17 @@ class OpenCloseTrait(_Trait):
     def query_attributes(self):
         """Return OpenClose query attributes."""
         features = self.state.attributes
+        domain = self.state.domain
         response = {}
 
         if features & ATTRS_PERCENTAGE:
             response['openPercent'] = self.state.level
+            
+        elif domain == domains['blindsinv']:
+            if self.state.state in ['Open', 'Off']:
+                response['openPercent'] = 0
+            else:
+                response['openPercent'] = 100
         else:
             if self.state.state in ['Open', 'Off']:
                 response['openPercent'] = 100
@@ -357,7 +364,7 @@ class OpenCloseTrait(_Trait):
         domain = self.state.domain
         
         if features & ATTRS_PERCENTAGE:
-            if domain == 'blindsinv':
+            if domain == domains['blindsinv']:
               url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
                 params['openPercent'])
             else:
@@ -368,7 +375,7 @@ class OpenCloseTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
             
-            if domain == 'blindsinv':
+            if domain == domains['blindsinv']:
               if p == 0 and state in ['Closed', 'Stopped', 'On']:
                   # open
                   url += 'Off'
