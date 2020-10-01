@@ -93,7 +93,7 @@ def AogGetDomain(device):
             else:
                 return domains['selector']
         elif 'Smoke Detector' == device["SwitchType"]:
-            return domains['smokedetektor']
+            return domains['smokedetector']
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
                 configuration['Camera_Stream']['Enabled']:
             return domains['camera']
@@ -220,7 +220,7 @@ def getAog(device):
                 if dt.lower() in ['window', 'gate', 'garage', 'door']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['light'], domains['switch']]:
-                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
+                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffeemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['door']]:
                 if dt.lower() in ['window', 'gate', 'garage']:
