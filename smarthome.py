@@ -74,9 +74,11 @@ update = checkupdate()
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
-        if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US',
-                                    'Blinds Percentage', 'Blinds Percentage Inverted']:
+        if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US',
+                                    'Blinds Percentage']:
             return domains['blinds']
+        elif device["SwitchType"] in ['Blinds Inverted', 'Blinds Percentage Inverted']:
+            return domains['blindsinv']
         elif 'Door Lock' == device["SwitchType"]:
             return domains['lock']
         elif 'Door Lock Inverted' == device["SwitchType"]:
