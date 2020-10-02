@@ -1210,7 +1210,7 @@ class EnergyStorageTrait(_Trait):
         return domain in (
                 domains['vacuum'],
                 domains['blinds'],
-                domains['smokedetektor'],
+                domains['smokedetector'],
                 domains['sensor'],
                 domains['mower'],
                 domains['thermostat'],
