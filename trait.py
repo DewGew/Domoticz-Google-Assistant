@@ -124,7 +124,7 @@ class OnOffTrait(_Trait):
         return domain in (
             domains['ac_unit'],
             domains['bathtub'],
-            domains['coffemaker'],
+            domains['coffeemaker'],
             domains['color'],
             domains['cooktop'],
             domains['dishwasher'],
@@ -141,7 +141,7 @@ class OnOffTrait(_Trait):
             domains['oven'],
             domains['push'],
             domains['sensor'],
-            domains['smokedetektor'],
+            domains['smokedetector'],
             domains['speaker'],
             domains['switch'],
             #domains['vacuum'],
@@ -172,7 +172,7 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
         protected = self.state.protected
 
-        if domain not in [domains['sensor'], domains['smokedetektor']]:
+        if domain not in [domains['sensor'], domains['smokedetector']]:
             if domain == domains['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
