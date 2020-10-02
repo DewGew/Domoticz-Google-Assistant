@@ -136,7 +136,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['blinds']: TYPE_BLINDS,
     domains['blindsinv']: TYPE_BLINDS,
     domains['camera']: TYPE_CAMERA,
-    domains['coffemaker']: TYPE_COFFEE,
+    domains['coffeemaker']: TYPE_COFFEE,
     domains['color']: TYPE_LIGHT,
     domains['cooktop']: TYPE_COOKTOP,
     domains['dishwasher']: TYPE_DISHWASHER,
