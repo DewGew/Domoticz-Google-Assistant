@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.8.9'
+VERSION = '1.8.10'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -301,7 +301,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             </div>
             <div class="row">
               <div class="col">
-                <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> Sytem Uptime:<br>{uptime}</small>
+                <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> DZGA Uptime:<br>{uptime}</small>
               </div>
               <div class="col">
                 <small class="text-muted"><b>DZGA Version:</b><br> """ + VERSION + """ {branch} <i class="text-muted; text-info" id="updates"></i><br>
