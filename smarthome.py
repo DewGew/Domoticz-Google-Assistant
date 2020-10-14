@@ -665,6 +665,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         return r
 
     def syncDevices(self, s):
+        logger.info("connecting from %s", s.headers['X-Real-IP'])
         user = self.getSessionUser()
         if user is None or user.get('uid', '') == '':
             s.redirect('login?redirect_uri={0}'.format('sync'))
@@ -674,6 +675,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
 
     def restartServer(self, s):
+        logger.info("connecting from %s", s.headers['X-Real-IP'])
         user = self.getSessionUser()
         if user is None or user.get('uid', '') == '':
             s.redirect('login?redirect_uri={0}'.format('restart'))
@@ -683,11 +685,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         restartServer()
 
     def settings(self, s):
+        logger.info("connecting from %s", s.headers['X-Real-IP'])
         user = self.getSessionUser()
         if user is None or user.get('uid', '') == '':
             s.redirect('login?redirect_uri={0}'.format('settings'))
             return
-
         update = checkupdate()
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
