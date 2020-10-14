@@ -687,7 +687,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if user is None or user.get('uid', '') == '':
             s.redirect('login?redirect_uri={0}'.format('settings'))
             return
-
         update = checkupdate()
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
