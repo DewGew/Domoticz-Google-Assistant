@@ -635,7 +635,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         self._request_id = message.get('requestId')
 
-        logger.info("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
+        logger.debug("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
         response = self.smarthome_process(message, token)
 
         try:
@@ -657,8 +657,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
         data = {"agentUserId": userAgent}
         if enableReport:
             r = ReportState.call_homegraph_api(REQUEST_SYNC_BASE_URL, data)
+            logger.info('Device syncronization sent')
         elif 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
             r = ReportState.call_homegraph_api_key(REQUEST_SYNC_BASE_URL, data)
+            logger.info('Device syncronization sent')
         else:
             logger.error("No configuration for request_sync available")
 
@@ -859,7 +861,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             devices[devid] = e.query_serialize()
                         
         response = {'devices': devices}
-        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
+        logger.debug("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
         
         if state.report_state == True and enableReport == True:
             self.report_state(devices, token)
