@@ -210,8 +210,8 @@ def getAog(device):
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
     desc = getDeviceConfig(device.get("Description"))
     if desc is not None:
-        logger.debug('<voicecontrol> tags found for idx %s in domoticz description.', aog.id)
-        logger.debug('Device_Config for idx %s will be ignored in config.yaml!', aog.id)
+        logger.info('<voicecontrol> tags found for idx %s in domoticz description.', aog.id)
+        logger.info('Device_Config for idx %s will be ignored in config.yaml!', aog.id)
     if desc is None:
         desc = getDesc(aog)
 
@@ -261,7 +261,7 @@ def getAog(device):
                     aog.selectorLevelName = aogDevs[domains['selector'] + modes_idx].selectorLevelName
                     aogDevs[domains['selector'] + modes_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.debug('Merge Error, Cant find selector device with idx %s', modes_idx)
+                    logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
         if aog.domain in [domains['heater'], domains['kettle'], domains['waterheater'], domains['oven']]:
             tc_idx = desc.get('merge_thermo_idx', None)
             if tc_idx is not None:
@@ -271,7 +271,7 @@ def getAog(device):
                     aog.setpoint = aogDevs[domains['thermostat'] + tc_idx].setpoint
                     aogDevs[domains['thermostat'] + tc_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.debug('Merge Error, Cant find thermostat device with idx %s', tc_idx)
+                    logger.error('Merge Error, Cant find thermostat device with idx %s', tc_idx)
         hide = desc.get('hide', False)
         if hide:
             if aog.domain not in [domains['scene'], domains['group']]:
