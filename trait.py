@@ -7,7 +7,7 @@ from datetime import datetime
 import requests
 
 from const import (ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
-                   ATTRS_VACCUM_MODES, domains, ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED,
+                   ATTRS_VACUUM_MODES, domains, ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED,
                    ATTRS_FANSPEED)
 
 from helpers import SmartHomeError, configuration, logger, tempConvert
@@ -1083,7 +1083,7 @@ class TooglesTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         if domain == domains['vacuum']:
-            return features & ATTRS_VACCUM_MODES
+            return features & ATTRS_VACUUM_MODES
         else:
             return domain in domains['selector']
 
