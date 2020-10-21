@@ -19,6 +19,7 @@ from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKE
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
 
+startTime = time.time()
 
 def readFile(filename):
     """Read file."""
@@ -208,15 +209,10 @@ class AogState:
 
 
 def uptime():
-    """Get systems uptime"""
-    try:
-        f = open("/proc/uptime")
-        contents = f.read().split()
-        f.close()
-    except (ValueError, Exception):
-        return "Cannot open uptime file: /proc/uptime"
+    """Get dzga uptime"""
 
-    total_seconds = float(contents[0])
+    ts = time.time() - startTime
+    total_seconds = round(ts, 2)
 
     # Helper vars:
     MINUTE = 60

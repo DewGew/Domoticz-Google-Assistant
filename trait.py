@@ -7,7 +7,7 @@ from datetime import datetime
 import requests
 
 from const import (ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
-                   ATTRS_VACCUM_MODES, domains, ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED,
+                   ATTRS_VACUUM_MODES, domains, ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED,
                    ATTRS_FANSPEED)
 
 from helpers import SmartHomeError, configuration, logger, tempConvert
@@ -124,7 +124,7 @@ class OnOffTrait(_Trait):
         return domain in (
             domains['ac_unit'],
             domains['bathtub'],
-            domains['coffemaker'],
+            domains['coffeemaker'],
             domains['color'],
             domains['cooktop'],
             domains['dishwasher'],
@@ -141,7 +141,7 @@ class OnOffTrait(_Trait):
             domains['oven'],
             domains['push'],
             domains['sensor'],
-            domains['smokedetektor'],
+            domains['smokedetector'],
             domains['speaker'],
             domains['switch'],
             #domains['vacuum'],
@@ -172,7 +172,7 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
         protected = self.state.protected
 
-        if domain not in [domains['sensor'], domains['smokedetektor']]:
+        if domain not in [domains['sensor'], domains['smokedetector']]:
             if domain == domains['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
@@ -318,6 +318,7 @@ class OpenCloseTrait(_Trait):
         """Test if state is supported."""
         return domain in (
                 domains['blinds'],
+                domains['blindsinv'],
                 domains['door'],
                 domains['window'],
                 domains['gate'],
@@ -333,10 +334,17 @@ class OpenCloseTrait(_Trait):
     def query_attributes(self):
         """Return OpenClose query attributes."""
         features = self.state.attributes
+        domain = self.state.domain
         response = {}
 
         if features & ATTRS_PERCENTAGE:
             response['openPercent'] = self.state.level
+            
+        elif domain == domains['blindsinv']:
+            if self.state.state in ['Open', 'Off']:
+                response['openPercent'] = 0
+            else:
+                response['openPercent'] = 100
         else:
             if self.state.state in ['Open', 'Off']:
                 response['openPercent'] = 100
@@ -353,25 +361,42 @@ class OpenCloseTrait(_Trait):
         features = self.state.attributes
         protected = self.state.protected
         state = self.state.state
+        domain = self.state.domain
         
         if features & ATTRS_PERCENTAGE:
-            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
+            if domain == domains['blindsinv']:
+              url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
+                params['openPercent'])
+            else:
+              url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
                 100 - params['openPercent'])
         else:
             p = params.get('openPercent', 50)
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
-
-            if p == 100 and state in ['Closed', 'Stopped', 'On']:
-                # open
-                url += 'Off'
-            elif p == 0 and state in ['Open', 'Stopped', 'Off']:
-                # close
-                url += 'On'
+            
+            if domain == domains['blindsinv']:
+              if p == 0 and state in ['Closed', 'Stopped', 'On']:
+                  # open
+                  url += 'Off'
+              elif p == 100 and state in ['Open', 'Stopped', 'Off']:
+                  # close
+                  url += 'On'
+              else:
+                  raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                       'Unable to execute {} for {}. Already in state '.format(command,
+                                                                                               self.state.entity_id))
             else:
-                raise SmartHomeError(ERR_ALREADY_IN_STATE,
-                                     'Unable to execute {} for {}. Already in state '.format(command,
-                                                                                             self.state.entity_id))
+              if p == 100 and state in ['Closed', 'Stopped', 'On']:
+                  # open
+                  url += 'Off'
+              elif p == 0 and state in ['Open', 'Stopped', 'Off']:
+                  # close
+                  url += 'On'
+              else:
+                  raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                       'Unable to execute {} for {}. Already in state '.format(command,
+                                                                                               self.state.entity_id))
 
         if protected:
             url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
@@ -1058,7 +1083,7 @@ class TooglesTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         if domain == domains['vacuum']:
-            return features & ATTRS_VACCUM_MODES
+            return features & ATTRS_VACUUM_MODES
         else:
             return domain in domains['selector']
 
@@ -1185,7 +1210,7 @@ class EnergyStorageTrait(_Trait):
         return domain in (
                 domains['vacuum'],
                 domains['blinds'],
-                domains['smokedetektor'],
+                domains['smokedetector'],
                 domains['sensor'],
                 domains['mower'],
                 domains['thermostat'],
