@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from req_handler import *
-from helpers import Auth
+from helpers import Auth, logger
 import pkg_resources
 import urllib.parse
 import json
@@ -54,6 +54,10 @@ class OAuthReqHandler(ReqHandler):
         user = self.getUser(s.form.get("username", None), s.form.get("password", None))
 
         if user is None:
+            if s.headers['X-Forwarded-For'] == None:
+                logger.error("Failed login from %s", s.address_string())
+            else:
+                logger.error("Failed login from %s", s.headers['X-Forwarded-For'])
             s.redirect('login?client_id=%s&redirect_uri=%s&redirect=%s&state=%s' %
                        (s.form.get("client_id", None), s.form.get("redirect_uri", None), s.form.get("redirect", None),
                         s.form.get("state", None)), 301)

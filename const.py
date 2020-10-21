@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.8.6'
+VERSION = '1.8.13'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -79,8 +79,9 @@ domains = {
     'ac_unit': 'AcUnit',
     'bathtub': 'Bathtub',
     'blinds': 'Blind',
+    'blindsinv': 'BlindInverted',
     'camera': 'Camera',
-    'coffemaker': 'Coffemaker',
+    'coffeemaker': 'Coffeemaker',
     'color': 'ColorSwitch',
     'cooktop': 'Cooktop',
     'door': 'DoorSensor',
@@ -109,7 +110,7 @@ domains = {
     'security': 'Security',
     'selector': 'Selector',
     'sensor': 'Sensor',
-    'smokedetektor': 'SmokeDetektor',
+    'smokedetector': 'SmokeDetector',
     'speaker': 'Speaker',
     'switch': 'Switch',
     'temperature': 'Temperature',
@@ -127,14 +128,15 @@ ATTRS_COLOR = 2
 ATTRS_COLOR_TEMP = 3
 ATTRS_PERCENTAGE = 1
 ATTRS_FANSPEED = 1
-ATTRS_VACCUM_MODES = 1
+ATTRS_VACUUM_MODES = 1
 
 DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['ac_unit']: TYPE_AC_UNIT,
     domains['bathtub']: TYPE_BATHTUB,
     domains['blinds']: TYPE_BLINDS,
+    domains['blindsinv']: TYPE_BLINDS,
     domains['camera']: TYPE_CAMERA,
-    domains['coffemaker']: TYPE_COFFEE,
+    domains['coffeemaker']: TYPE_COFFEE,
     domains['color']: TYPE_LIGHT,
     domains['cooktop']: TYPE_COOKTOP,
     domains['dishwasher']: TYPE_DISHWASHER,
@@ -160,7 +162,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['security']: TYPE_SECURITY,
     domains['selector']: TYPE_SWITCH,
     domains['sensor']: TYPE_SENSOR,
-    domains['smokedetektor']: TYPE_SMOKE_DETECTOR,
+    domains['smokedetector']: TYPE_SMOKE_DETECTOR,
     domains['speaker']: TYPE_SPEAKER,
     domains['switch']: TYPE_SWITCH,
     domains['temperature']: TYPE_THERMOSTAT,
@@ -299,7 +301,7 @@ style=" fill:#000000;"><g fill="none" fill-rule="none" stroke="none" stroke-widt
             </div>
             <div class="row">
               <div class="col">
-                <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> Sytem Uptime:<br>{uptime}</small>
+                <i class="material-icons" style="vertical-align: middle;">timelapse</i><small class="text-muted"> DZGA Uptime:<br>{uptime}</small>
               </div>
               <div class="col">
                 <small class="text-muted"><b>DZGA Version:</b><br> """ + VERSION + """ {branch} <i class="text-muted; text-info" id="updates"></i><br>

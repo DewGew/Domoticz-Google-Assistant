@@ -17,7 +17,7 @@ from auth import *
 from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
                    TEMPLATE, ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, DOMOTICZ_GET_ALL_DEVICES_URL, domains,
                    DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, CONFIGFILE, LOGFILE,
-                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, ATTRS_BRIGHTNESS, ATTRS_FANSPEED,
+                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, ATTRS_BRIGHTNESS, ATTRS_FANSPEED, ATTRS_VACUUM_MODES,
                    ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
@@ -74,9 +74,11 @@ update = checkupdate()
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
-        if device["SwitchType"] in ['Blinds', 'Blinds Inverted', 'Venetian Blinds EU', 'Venetian Blinds US',
-                                    'Blinds Percentage', 'Blinds Percentage Inverted']:
+        if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US',
+                                    'Blinds Percentage']:
             return domains['blinds']
+        elif device["SwitchType"] in ['Blinds Inverted', 'Blinds Percentage Inverted']:
+            return domains['blindsinv']
         elif 'Door Lock' == device["SwitchType"]:
             return domains['lock']
         elif 'Door Lock Inverted' == device["SwitchType"]:
@@ -93,7 +95,7 @@ def AogGetDomain(device):
             else:
                 return domains['selector']
         elif 'Smoke Detector' == device["SwitchType"]:
-            return domains['smokedetektor']
+            return domains['smokedetector']
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
                 configuration['Camera_Stream']['Enabled']:
             return domains['camera']
@@ -208,8 +210,8 @@ def getAog(device):
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
     desc = getDeviceConfig(device.get("Description"))
     if desc is not None:
-        logger.debug('<voicecontrol> tags found for idx %s in domoticz description.', aog.id)
-        logger.debug('Device_Config for idx %s will be ignored in config.yaml!', aog.id)
+        logger.info('<voicecontrol> tags found for idx %s in domoticz description.', aog.id)
+        logger.info('Device_Config for idx %s will be ignored in config.yaml!', aog.id)
     if desc is None:
         desc = getDesc(aog)
 
@@ -220,7 +222,7 @@ def getAog(device):
                 if dt.lower() in ['window', 'gate', 'garage', 'door']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['light'], domains['switch']]:
-                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
+                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffeemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['door']]:
                 if dt.lower() in ['window', 'gate', 'garage']:
@@ -259,7 +261,7 @@ def getAog(device):
                     aog.selectorLevelName = aogDevs[domains['selector'] + modes_idx].selectorLevelName
                     aogDevs[domains['selector'] + modes_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.debug('Merge Error, Cant find selector device with idx %s', modes_idx)
+                    logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
         if aog.domain in [domains['heater'], domains['kettle'], domains['waterheater'], domains['oven']]:
             tc_idx = desc.get('merge_thermo_idx', None)
             if tc_idx is not None:
@@ -269,7 +271,7 @@ def getAog(device):
                     aog.setpoint = aogDevs[domains['thermostat'] + tc_idx].setpoint
                     aogDevs[domains['thermostat'] + tc_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.debug('Merge Error, Cant find thermostat device with idx %s', tc_idx)
+                    logger.error('Merge Error, Cant find thermostat device with idx %s', tc_idx)
         hide = desc.get('hide', False)
         if hide:
             if aog.domain not in [domains['scene'], domains['group']]:
@@ -294,10 +296,10 @@ def getAog(device):
         aog.attributes = ATTRS_THERMSTATSETPOINT
     if domains['blinds'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
-    if domains['blinds'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
+    if domains['blindsinv'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
         aog.attributes = ATTRS_PERCENTAGE
     if domains['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
-        aog.attributes = ATTRS_VACCUM_MODES
+        aog.attributes = ATTRS_VACUUM_MODES
         
     if aog.room == None:
         if aog.domain not in [domains['scene'], domains['group']]:
@@ -633,7 +635,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         self._request_id = message.get('requestId')
 
-        logger.info("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
+        logger.debug("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
         response = self.smarthome_process(message, token)
 
         try:
@@ -655,8 +657,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
         data = {"agentUserId": userAgent}
         if enableReport:
             r = ReportState.call_homegraph_api(REQUEST_SYNC_BASE_URL, data)
+            logger.info('Device syncronization sent')
         elif 'Homegraph_API_Key' in configuration and configuration['Homegraph_API_Key'] != 'ADD_YOUR HOMEGRAPH_API_KEY_HERE':
             r = ReportState.call_homegraph_api_key(REQUEST_SYNC_BASE_URL, data)
+            logger.info('Device syncronization sent')
         else:
             logger.error("No configuration for request_sync available")
 
@@ -685,7 +689,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if user is None or user.get('uid', '') == '':
             s.redirect('login?redirect_uri={0}'.format('settings'))
             return
-
         update = checkupdate()
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
@@ -858,7 +861,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             devices[devid] = e.query_serialize()
                         
         response = {'devices': devices}
-        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
+        logger.debug("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
         
         if state.report_state == True and enableReport == True:
             self.report_state(devices, token)
