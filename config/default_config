@@ -27,6 +27,10 @@ ssl_cert: # /path/to/fullchain.pem
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
 auth_pass: 'admin'
+
+# Google Assistant Settings:
+ClientID: 'clientid_from aog'
+ClientSecret: 'clientsecret_from_aog'
   
 # Domoticz Settings:
 Domoticz:
