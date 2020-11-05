@@ -431,6 +431,8 @@ def restartServer():
     logger.info("Restart server")
     logger.info(' ')
     
+    time.sleep(5)
+    
     pidfile.close()
 
     os.execv(sys.executable, ['python'] + sys.argv)
@@ -758,9 +760,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("restart"):
-            message = 'Restart Server, please wait a minute!'
-            meta = '<meta http-equiv="refresh" content="20">'
-            code = ''
+            meta = '<meta http-equiv="refresh" content="10">'
+            message = 'Restarts DZGA server'
 
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
