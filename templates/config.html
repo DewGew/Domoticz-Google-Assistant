@@ -1,0 +1,23 @@
+<div id="menu2" class="tab-pane fade" role="tabpanel">
+<div class="col-md-12">
+  <div class="card">
+    <div class="card-header card-header-warning">
+      <h4 class="card-title ">Configuration</h4>
+      <p class="card-category">Restart server to activate your changes</p>
+    </div>
+    <div class="card-body">
+    <textarea id="code" style="width: 100%;">{{ code }}</textarea>
+    <br>
+    <div class="row">
+      <div class="col">
+      <form action="settings" method="post">
+        <button class="btn btn-raised btn-success" name="save" id="save"><i class="material-icons" style="vertical-align: middle;">save</i> Save</button>
+        <button class="btn btn-raised btn-primary" name="backup" value="backup"><i class="material-icons" style="vertical-align: middle;">save_alt</i> Backup Config</button>
+        <button class="btn btn-raised btn-warning" name="restart" value="restart"><i class="material-icons" style="vertical-align: middle;">replay</i> Restart Server</button>
+        </form>
+      </div>
+    </div>
+    </div>
+    </div>
+</div>
+</div>
