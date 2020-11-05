@@ -9,6 +9,7 @@ import threading
 from collections.abc import Mapping
 from itertools import product
 from pid import PidFile
+from jinja2 import Environment, FileSystemLoader
 
 import requests
 
@@ -24,6 +25,12 @@ from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHom
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
+
+file_loader = FileSystemLoader(FILE_DIR + '/templates')
+env = Environment(
+    loader=file_loader
+
+    )
 
 if 'PidFile' in configuration:
     pidfile = PidFile(pidname=configuration['PidFile'])
@@ -58,8 +65,6 @@ def checkupdate():
             response = r.text
             if VERSION not in response:
                 update = 1
-                logger.info("========")
-                logger.info("   New version is availible on Github!")
             else:
                 update = 0
             return update
@@ -70,6 +75,8 @@ def checkupdate():
         return 0
         
 update = checkupdate()
+if update:
+    logger.info("New version is availible on Github!")
 
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
@@ -194,24 +201,28 @@ def getAog(device):
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
     aog.setpoint = device.get("SetPoint")
-    aog.color = device.get("Color")
+    if aog.domain is "Color":
+        aog.color = device.get("Color")
     aog.protected = device.get("Protected")
-    aog.maxdimlevel = device.get("MaxDimLevel")
-    aog.seccode = settings.get("SecPassword")
-    aog.secondelay = settings.get("SecOnDelay")
-    aog.tempunit = settings.get("TempUnit")
+    aog.maxdimlevel = device.get("MaxDimLevel")   
     aog.battery = device.get("BatteryLevel")
     aog.hardware = device.get("HardwareName")
     aog.selectorLevelName = device.get("LevelNames")
-    aog.language = settings.get("Language")
     aog.lastupdate = device.get("LastUpdate")
+    
+    aog.language = settings.get("Language")
+    aog.tempunit = settings.get("TempUnit")
+    if aog.domain is "Security":
+        aog.seccode = settings.get("SecPassword")
+        aog.secondelay = settings.get("SecOnDelay")
+
 
     # Try to get device specific voice control configuration from Domoticz
     # Read it from the configuration file if not in Domoticz (for backward compatibility)
     desc = getDeviceConfig(device.get("Description"))
     if desc is not None:
-        logger.info('<voicecontrol> tags found for idx %s in domoticz description.', aog.id)
-        logger.info('Device_Config for idx %s will be ignored in config.yaml!', aog.id)
+        logger.debug('<voicecontrol> tags found for idx %s in domoticz description.', aog.id)
+        logger.debug('Device_Config for idx %s will be ignored in config.yaml!', aog.id)
     if desc is None:
         desc = getDesc(aog)
 
@@ -252,7 +263,7 @@ def getAog(device):
                     aog.state = str(aogDevs[domains['temperature'] + at_idx].temp)
                     aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
                 except:
-                    logger.debug('Merge Error, Cant find temperature device with idx %s', at_idx)
+                    logger.error('Merge Error, Cant find temperature device with idx %s', at_idx)
             modes_idx = desc.get('selector_modes_idx', None)
             if modes_idx is not None:
                 aog.modes_idx = modes_idx
@@ -333,7 +344,9 @@ def getDevices(devices="all", idx="0"):
                 continue
 
             aogDevs[aog.entity_id] = aog
+            
             if 'loglevel' in configuration and (configuration['loglevel']).lower() == 'debug':
+                save_json(aogDevs)
                 req = {aog.name: {}}
                 req[aog.name]['idx'] = int(aog.id)
                 req[aog.name]['type'] = aog.domain
@@ -635,7 +648,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         self._request_id = message.get('requestId')
 
-        logger.debug("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
+        logger.info("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
         response = self.smarthome_process(message, token)
 
         try:
@@ -683,31 +696,42 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         s.send_message(200, 'Restart request sent, status_code: True')
         restartServer()
+        
+    def log(self, s):
+        user = self.getSessionUser()
+        if user is None or user.get('uid', '') == '':
+            s.redirect('login?redirect_uri={0}'.format('log'))
+            return
+            
+        s.send_message(200, readFile(os.path.join(logfilepath, LOGFILE)))
+        
+    def test(self, s):
 
+        s.send_message(200, templatepage.render())
+        
     def settings(self, s):
         user = self.getSessionUser()
         if user is None or user.get('uid', '') == '':
             s.redirect('login?redirect_uri={0}'.format('settings'))
             return
+
         update = checkupdate()
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
         message = ''
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
         code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
-        logs = readFile(os.path.join(logfilepath, LOGFILE))
-        template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
 
-        s.send_message(200, template)
-    
+        templatepage = env.get_template('home.html')
+        s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
+                                       
     def settings_post(self, s):
         enableReport = ReportState.enable_report_state()
         update = checkupdate()
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
-        logs = readFile(os.path.join(logfilepath, LOGFILE))
         code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
 
@@ -718,36 +742,30 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Config saved'
             logger.info(message)
             logs = readFile(os.path.join(logfilepath, LOGFILE))
-            code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
-
-            s.send_message(200, template)
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("backup"):
             codeToSave = readFile(os.path.join(FILE_DIR, CONFIGFILE))
             saveFile('config/config.yaml.bak', codeToSave)
             message = 'Backup saved'
             logger.info(message)
-            logs = readFile(os.path.join(logfilepath, LOGFILE))
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
-
-            s.send_message(200, template)
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("restart"):
             message = 'Restart Server, please wait a minute!'
             meta = '<meta http-equiv="refresh" content="20">'
             code = ''
-            logs = ''
 
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
-
-            s.send_message(200, template)
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
             restartServer()
 
         if s.form.get("sync"):
@@ -760,19 +778,18 @@ class SmartHomeReqHandler(OAuthReqHandler):
                     message = 'Homegraph api key not valid!'
             else:
                 message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices in the UI! You can still sync by voice eg. "Hey Google, Sync my devices".'
-            logs = readFile(os.path.join(logfilepath, LOGFILE))
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
-            s.send_message(200, template)
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("reload"):
             message = ''
 
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
-            s.send_message(200, template)
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("deletelogs"):
             logfile = os.path.join(logfilepath, LOGFILE)
@@ -781,11 +798,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 f.close()
             logger.info('Logs removed by user')
             message = 'Logs removed'
-            logs = readFile(os.path.join(logfilepath, LOGFILE))
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
-            s.send_message(200, template)
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("update"):
             repo.git.reset('--hard')
@@ -793,24 +809,20 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Updating to latest ' + branch + ', please wait a minute!'
             meta = '<meta http-equiv="refresh" content="20">'
 
-            template = TEMPLATE.format(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, logs=logs, update=update,
-                                       branch=branch, dzversion=settings['dzversion'])
-            s.send_message(200, template)
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+                                       conf=confJSON, public_url=public_url, update=update,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
             
             subprocess.call(['pip', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
             restartServer()
 
-    def delay_report_state(self, states, token):
-        time.sleep(3)
-        self.report_state(states, token)
 
     def smarthome_sync(self, payload, token):
         """Handle action.devices.SYNC request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
         devices = []
-        states = {}
         aogDevs.clear()
         getDevices()  # sync all devices
         getSettings()
@@ -826,14 +838,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
 
             devices.append(serialized)
-            if state.report_state:
-                try:
-                    states[entity.entity_id] = entity.query_serialize()
-                except:
-                    continue
-
-        if enableReport:
-            t = threading.Thread(target=self.delay_report_state, args=(states, token)).start()
 
         response = {'agentUserId': agent_user_id, 'devices': devices}
                 
@@ -861,7 +865,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             devices[devid] = e.query_serialize()
                         
         response = {'devices': devices}
-        logger.debug("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
+        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
         
         if state.report_state == True and enableReport == True:
             self.report_state(devices, token)
@@ -913,7 +917,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
             entity.async_update()
             final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-            
+    
         return {'commands': final_results}
 
     def smarthome_disconnect(self, payload, token):
@@ -926,6 +930,7 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
                             "/sync": SmartHomeReqHandler.syncDevices,
                             "/settings": SmartHomeReqHandler.settings,
+                            "/log": SmartHomeReqHandler.log,
                             "/restart": SmartHomeReqHandler.restartServer}
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
