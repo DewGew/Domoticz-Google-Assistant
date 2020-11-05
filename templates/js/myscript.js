@@ -1,7 +1,7 @@
 /* Main */
 var config = {{ conf }}
 var updates = {{ update }}
-/* document.getElementById("logsheader").innerHTML = 'Logs <br><small class="text-muted">Loglevel: ' + config.loglevel + '</small>'; */
+document.getElementById("logsheader").innerHTML = 'Logs <br><small>Loglevel: ' + config.loglevel + '</small>';
 if (updates) {
   document.getElementById("updates").innerHTML = "(Updates are Availible)";
   $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-block btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">system_update_alt</i> Update dzga</button></form>');
@@ -168,8 +168,3 @@ function readTextFile(){
 }
 readTextFile()
 setInterval(readTextFile, 5000);
-
-
-
-
-
