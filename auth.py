@@ -45,7 +45,7 @@ class OAuthReqHandler(ReqHandler):
         s.send_message(400, "Something went wrong")
 
     def login(self, s):
-        template = pkg_resources.resource_string(__name__, 'login.html')
+        template = pkg_resources.resource_string(__name__, 'templates/login.html')
 
         headers = {"Cache-Control": "no-cache"}
         s.send_message(200, template, headers, True)

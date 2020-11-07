@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<!doctype html>
+<html lang="en">
+<head>
+<title>{% block title %}Domoticz Google Assistant{% endblock %}</title>
+<!-- Required meta tags -->
+<meta charset="utf-8">
+{{ meta }}
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<!-- Material Design for Bootstrap fonts and icons -->
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700|Roboto+Slab:400,700|Material+Icons" />
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/latest/css/font-awesome.min.css">
+<!-- Codemirror CSS -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.css" />
+<link rel="stylesheet" href="static/css/material-dashboard.css" />
+</head>
+<body class="">
+<!-- Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="modalLabel">Security Risk</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" id="message">
+        Please change the default username and password and restart server!
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="wrapper ">
+<!-- Navbar -->
+    <div class="sidebar" id="sidebar" data-color="purple" data-background-color="white" data-image="static/img/sidebar-1.jpg">
+        <!--
+        Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+        Tip 2: you can also add an image using data-image tag
+        -->
+      <div class="logo"><a href="settings" class="simple-text logo-normal">
+            Domoticz-<br>Google-Assistant
+        </a></div>      
+      <div class="sidebar-wrapper">
+        <ul class="nav">
+          <li class="nav-item active">
+            <a class="nav-link" data-toggle="tab" href="#home">
+              <i class="material-icons">dashboard</i>
+              <p>Dashboard</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#menu1">
+              <i class="material-icons">devices_other</i>
+              <p>Devices</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#menu2">
+              <i class="material-icons">content_paste</i>
+              <p>Configuration</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#menu4">
+              <i class="material-icons">library_books</i>
+              <p>Log</p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#menu3">
+              <i class="material-icons">help_outline</i>
+              <p>Help</p>
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
+    <div class="main-panel">
+    {% include 'navbar.html' %}
+<div class="content">
+    <div class="container-fluid">
+        <div class="tab-content">
+        {% block content%}
+    
+        {% endblock %}    
+        </div>
+    </div>
+</div>
+    {% include 'footer.html' %}
+</div>
+</div>
+<!--     {% include 'sidebar.html' %} -->
+
+<!-- Optional JavaScript -->
+<!-- jQuery first, then Popper.js, then Bootstrap JS -->
+{% block javascript %}
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/codemirror.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/yaml/yaml.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/mode/javascript/javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/codemirror/5.48.4/addon/display/autorefresh.js"></script>
+<script src= "static/js/plugins/perfect-scrollbar.jquery.min.js"></script>
+<script src= "static/js/material-dashboard.js"></script>
+<script type="text/javascript">
+    {% include "js/functions.js" %}
+</script>
+<script type="text/javascript">
+    {% include "js/sidebar.js" %}
+</script>
+{% endblock %}
+</body>
+</html>
