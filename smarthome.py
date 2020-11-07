@@ -344,9 +344,9 @@ def getDevices(devices="all", idx="0"):
                 continue
 
             aogDevs[aog.entity_id] = aog
-            
+                            
             if 'loglevel' in configuration and (configuration['loglevel']).lower() == 'debug':
-                save_json(aogDevs)
+
                 req = {aog.name: {}}
                 req[aog.name]['idx'] = int(aog.id)
                 req[aog.name]['type'] = aog.domain
@@ -705,7 +705,19 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.redirect('login?redirect_uri={0}'.format('log'))
             return
             
-        s.send_message(200, readFile(os.path.join(logfilepath, LOGFILE)))
+        latestlogs = readFile(os.path.join(logfilepath, LOGFILE))
+            
+        s.send_message(200, latestlogs)
+        
+    def states(self, s):
+        user = self.getSessionUser()
+        if user is None or user.get('uid', '') == '':
+            s.redirect('login?redirect_uri={0}'.format('log'))
+            return
+            
+        deviceList
+            
+        s.send_message(200, deviceList)
         
     def test(self, s):
 
@@ -725,7 +737,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
 
         templatepage = env.get_template('home.html')
-        s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+        s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
                                        
@@ -745,7 +757,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.info(message)
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             templatepage = env.get_template('home.html')
-            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
@@ -755,7 +767,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Backup saved'
             logger.info(message)
             templatepage = env.get_template('home.html')
-            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
@@ -764,7 +776,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Restarts DZGA server'
 
             templatepage = env.get_template('home.html')
-            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
             restartServer()
@@ -780,7 +792,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             else:
                 message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices in the UI! You can still sync by voice eg. "Hey Google, Sync my devices".'
             templatepage = env.get_template('home.html')
-            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
@@ -788,7 +800,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = ''
 
             templatepage = env.get_template('home.html')
-            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
@@ -800,7 +812,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.info('Logs removed by user')
             message = 'Logs removed'
             templatepage = env.get_template('home.html')
-            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
@@ -811,7 +823,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             meta = '<meta http-equiv="refresh" content="20">'
 
             templatepage = env.get_template('home.html')
-            s.send_message(200, templatepage.render(message=message, uptime=uptime(), list=deviceList, meta=meta, code=code,
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
             
@@ -932,6 +944,7 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
                             "/sync": SmartHomeReqHandler.syncDevices,
                             "/settings": SmartHomeReqHandler.settings,
                             "/log": SmartHomeReqHandler.log,
+                            "/states": SmartHomeReqHandler.states,
                             "/restart": SmartHomeReqHandler.restartServer}
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
