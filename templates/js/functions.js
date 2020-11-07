@@ -116,7 +116,6 @@ function readDevices(){
             nicknames = " ";
         }else{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}
         xl += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] +  nicknames + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td><td>" + devicelist[i][4] + "</td></tr>";
-        console.log(devicelist[i][1] + " - " + devicelist[i][3])
     };
     if (typeof xl !== "undefined"){
         $('#deviceList_idx').html(xl.replace('undefined',''));
@@ -124,9 +123,7 @@ function readDevices(){
         document.getElementById("modalLabel").innerHTML = "Check configuration.";
         document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
         $('#messageModal').modal('show')
-    };
-    console.log($('#deviceList_idx').length)
-    
+    };    
 }
 readDevices()
 
