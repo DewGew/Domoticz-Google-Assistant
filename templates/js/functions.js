@@ -104,28 +104,49 @@ function sortIdxTable(n) {
     }
 }
 
-function readDevices(){
-    var devicelist = {{ list }}
-
-    var xl, i, nicknames = "";
-    for (i in devicelist){
-        if (devicelist[i][4] == undefined) {
-            devicelist[i][4] = " "
-        }
-        if (devicelist[i][5] == undefined) {
-            nicknames = " ";
-        }else{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}
-        xl += "<tr><th scope='row'>" + devicelist[i][1] + "</th><td>" + devicelist[i][0] +  nicknames + "</td><td>" + devicelist[i][2] + "</td><td>" + devicelist[i][3] + "</td><td>" + devicelist[i][4] + "</td></tr>";
-    };
-    if (typeof xl !== "undefined"){
-        $('#deviceList_idx').html(xl.replace('undefined',''));
-    }else{
-        document.getElementById("modalLabel").innerHTML = "Check configuration.";
-        document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
-        $('#messageModal').modal('show')
-    };    
+function readDevices(devicelist){
+    $.ajax({
+      type: 'GET',
+      url: '/states',
+      success: function(response) {
+        devicelist = JSON.parse(response)
+        var xl, i, nicknames = "";
+        for (i in devicelist){
+            if (devicelist[i][4] == undefined) {
+                devicelist[i][4] = " "
+            }
+            if (devicelist[i][5] == undefined) {
+                nicknames = " ";
+            }else{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}
+            xl += "<tr><th scope='row'>" + devicelist[i][1] + "</th>"
+            xl += "<td>" + devicelist[i][0] +  nicknames + "</td>";
+            xl += "<td>" + devicelist[i][2] + "</td>";
+            if (devicelist[i][3] == "Off" | devicelist[i][3] == "Closed"){
+                xl += "<td><button type='button' class='btn btn-danger btn-sm'>" + devicelist[i][3] + "</button></td>";
+            }else if (devicelist[i][3] == "On" | devicelist[i][3] == "Open" | devicelist[i][3] == "Normal"){
+                xl += "<td><button type='button'class='btn btn-success btn-sm'>" + devicelist[i][3] + "</button></td>";
+            }else if (devicelist[i][3] == "Mixed"){
+                xl += "<td><button type='button'class='btn btn-warning btn-sm'>" + devicelist[i][3] + "</button></td>";
+            }else {
+                 xl += "<td><button type='button'class='btn btn-info btn-sm' disabled>" + devicelist[i][3] + "</button></td>";
+            }
+            xl += "<td>" + devicelist[i][4] + "</td></tr>";
+        };
+        if (typeof xl !== "undefined"){
+            $('#deviceList_idx').html(xl.replace('undefined',''));
+        }else{
+            document.getElementById("modalLabel").innerHTML = "Check configuration.";
+            document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
+            $('#messageModal').modal('show')
+        };             
+      },
+      error: function() {
+        console.log('Error, states not availible');
+      }
+    });    
 }
 readDevices()
+setInterval(readDevices, 2000);
 
 /* config page */
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
