@@ -798,7 +798,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                        branch=branch, dzversion=settings['dzversion'])
             s.send_message(200, template)
             
-            subprocess.call(['pip', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
+            subprocess.call(['pip3', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
             restartServer()
 
     def delay_report_state(self, states, token):
