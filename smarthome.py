@@ -827,7 +827,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                        conf=confJSON, public_url=public_url, update=update,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
             
-            subprocess.call(['pip', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
+            subprocess.call(['pip3', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
             restartServer()
 
 
