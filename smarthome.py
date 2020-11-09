@@ -22,7 +22,7 @@ from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHom
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
 try:
-    from jinja2 import Enviroment, FileSystemLoader
+    from jinja2 import Environment, FileSystemLoader
 except ImportError:
     logger.info('Installing package jinja2')
     subprocess.call(['pip', 'install', 'jinja2'])
