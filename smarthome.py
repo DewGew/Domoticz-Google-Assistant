@@ -9,8 +9,6 @@ import threading
 from collections.abc import Mapping
 from itertools import product
 from pid import PidFile
-from jinja2 import Environment, FileSystemLoader
-
 import requests
 
 import trait
@@ -22,6 +20,13 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
+
+try:
+    from jinja2 import Enviroment, FileSystemLoader
+except ImportError:
+    logger.info('Installing package jinja2')
+    subprocess.call(['pip', 'install', 'jinja2'])
+    from jinja2 import Environment, FileSystemLoader
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
