@@ -246,6 +246,9 @@ def getAog(device):
             if aog.domain in [domains['selector']]:
                 if dt.lower() in ['vacuum']:
                     aog.domain = domains[dt.lower()]
+        pn = desc.get('name', None)
+        if pn is not None:
+            aog.name = pn
         n = desc.get('nicknames', None)
         if n is not None:
             aog.nicknames = n
