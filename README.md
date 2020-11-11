@@ -1,7 +1,7 @@
 [![Travis (.com)](https://img.shields.io/travis/com/dewgew/Domoticz-Google-Assistant?logo=travis)](https://travis-ci.com/DewGew/Domoticz-Google-Assistant) [![Docker Cloud Build Status](https://img.shields.io/docker/cloud/build/dewgew/domoticz-google-assistant?logo=docker)](https://hub.docker.com/r/dewgew/domoticz-google-assistant) ![GitHub release (latest by date)](https://img.shields.io/github/v/release/dewgew/Domoticz-Google-Assistant?logo=github) [![Discord](https://img.shields.io/discord/664815298284748830?logo=discord)](https://discordapp.com/invite/AmJV6AC)
 # Domoticz-Google-Assistant 
 
-<img src="dzga_UI.png" alt="drawing" width="900"/>
+<img src="dzga_UI.png" alt="drawing" width="1000"/>
 
 Standalone implementation for [Domoticz Home Automation](https://www.domoticz.com/). It means that you can put this server wherever you want, even on another machine. You need to setup a project in Actions on Google Console. You find instructions below.
 
