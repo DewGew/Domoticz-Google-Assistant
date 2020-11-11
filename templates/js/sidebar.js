@@ -29,16 +29,45 @@ $(document).ready(function() {
         }
       }
     });
+    
+    if ($sidebar.length != 0) {
+        $sidebar.attr('data-color', localStorage.getItem("data-color"));
+        $('.fixed-plugin .active-color span.badge.filter.badge-' + localStorage.getItem('data-color')).addClass('active');
+    }
+    if ($full_page.length != 0) {
+        $full_page.attr('filter-color', localStorage.getItem('data-color'));
+    }
+
+    if ($sidebar_responsive.length != 0) {
+        $sidebar_responsive.attr('data-color', localStorage.getItem('data-color'));
+    }
+    
+    $sidebar_img_container.css('background-image', 'url("' + localStorage.getItem('background-image') + '")');
+    
+    if (localStorage.getItem('background-image') == 'static/img/sidebar-1.jpg'){
+        $('.fixed-plugin li .img1').parent('li').addClass('active');
+    }
+    if (localStorage.getItem('background-image') == 'static/img/sidebar-2.jpg'){
+        $('.fixed-plugin li .img2').parent('li').addClass('active');
+    }
+    if (localStorage.getItem('background-image') == 'static/img/sidebar-3.jpg'){
+        $('.fixed-plugin li .img3').parent('li').addClass('active');
+    }
+    if (localStorage.getItem('background-image') == 'static/img/sidebar-4.jpg'){
+        $('.fixed-plugin li .img4').parent('li').addClass('active');
+    }
+   
 
     $('.fixed-plugin .active-color span').click(function() {
       $full_page_background = $('.full-page-background');
-
       $(this).siblings().removeClass('active');
       $(this).addClass('active');
 
       var new_color = $(this).data('color');
+      localStorage.setItem('data-color', new_color);
+     
+     if ($sidebar.length != 0) {
 
-      if ($sidebar.length != 0) {
         $sidebar.attr('data-color', new_color);
       }
 
@@ -50,8 +79,10 @@ $(document).ready(function() {
         $sidebar_responsive.attr('data-color', new_color);
       }
     });
+    
 
     $('.fixed-plugin .background-color .badge').click(function() {
+
       $(this).siblings().removeClass('active');
       $(this).addClass('active');
 
@@ -64,14 +95,17 @@ $(document).ready(function() {
 
     $('.fixed-plugin .img-holder').click(function() {
       $full_page_background = $('.full-page-background');
-
+      
       $(this).parent('li').siblings().removeClass('active');
       $(this).parent('li').addClass('active');
 
 
       var new_image = $(this).find("img").attr('src');
-
+      
+      localStorage.setItem('background-image', new_image);
+      
       if ($sidebar_img_container.length != 0 && $('.switch-sidebar-image input:checked').length != 0) {
+
         $sidebar_img_container.fadeOut('fast', function() {
           $sidebar_img_container.css('background-image', 'url("' + new_image + '")');
           $sidebar_img_container.fadeIn('fast');
@@ -79,8 +113,9 @@ $(document).ready(function() {
       }
 
       if ($full_page_background.length != 0 && $('.switch-sidebar-image input:checked').length != 0) {
-        var new_image_full_page = $('.fixed-plugin li.active .img-holder').find('img').data('src');
 
+        var new_image_full_page = $('.fixed-plugin li.active .img-holder').find('img').data('src');
+        
         $full_page_background.fadeOut('fast', function() {
           $full_page_background.css('background-image', 'url("' + new_image_full_page + '")');
           $full_page_background.fadeIn('fast');
@@ -88,9 +123,10 @@ $(document).ready(function() {
       }
 
       if ($('.switch-sidebar-image input:checked').length == 0) {
+
         var new_image = $('.fixed-plugin li.active .img-holder').find("img").attr('src');
         var new_image_full_page = $('.fixed-plugin li.active .img-holder').find('img').data('src');
-
+                
         $sidebar_img_container.css('background-image', 'url("' + new_image + '")');
         $full_page_background.css('background-image', 'url("' + new_image_full_page + '")');
       }
@@ -134,7 +170,6 @@ $(document).ready(function() {
 
     $('.switch-sidebar-mini input').change(function() {
       $body = $('body');
-
       $input = $(this);
 
       if (md.misc.sidebar_mini_active == true) {
