@@ -1,9 +1,13 @@
 /* Main */
 var config = {{ conf }}
 var updates = {{ update }}
-document.getElementById("logsheader").innerHTML = 'Logs <br><small>Loglevel: ' + config.loglevel + '</small>';
+
+$('#notes').hide()
+$('#logsheader').html('Logs <br><small>Loglevel: ' + config.loglevel + '</small>');
+
 if (updates) {
-  document.getElementById("updates").innerHTML = "(Updates are Availible)";
+  $('#updates').html("Updates are Availible");
+  $('#notes').show()
   $('#buttonUpdate').append('<br><form action="/settings" method="post"><button class="btn btn-block btn-primary" name="update" value="update"><i class="material-icons" style="vertical-align: middle;">system_update_alt</i> Update dzga</button></form>');
 };
 
@@ -23,10 +27,14 @@ for (var i = 0; i < btns.length; i++) {
 if (config.auth_user == 'admin' || config.auth_pass == 'admin'){
     $('#messageModal').modal('show')
 };
+
+
+$('#user').append(config.auth_user)
+
 message = '{{ message }}'
 if (message != '') {
-    document.getElementById("modalLabel").innerHTML = "Information!";
-    document.getElementById("message").innerHTML = message;
+    $('#modalLabel').html("Information!");
+    $('#message').html(message);
     $('#messageModal').modal('show')
 };
 
@@ -135,8 +143,8 @@ function readDevices(devicelist){
         if (typeof xl !== "undefined"){
             $('#deviceList_idx').html(xl.replace('undefined',''));
         }else{
-            document.getElementById("modalLabel").innerHTML = "Check configuration.";
-            document.getElementById("message").innerHTML = "Connection to Domoticz refused! Check configuration.";
+            $('#modalLabel').html("Check configuration.");
+            $('#message').html("Connection to Domoticz refused! Check configuration.");
             $('#messageModal').modal('show')
         };             
       },
