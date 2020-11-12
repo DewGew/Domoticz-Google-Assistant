@@ -18,6 +18,7 @@ from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKE
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
+ERR_READFILE = "Problem opening this file"
 
 startTime = time.time()
 
@@ -32,7 +33,7 @@ def readFile(filename):
         if filename.endswith(".log"):
             readcontent = " ** If you want to show the logs here, set 'logtofile: true' in configuration **"
         else:
-            readcontent = "Problem opening this file"
+            readcontent = ERR_READFILE
         return readcontent
 
 
@@ -111,6 +112,23 @@ if 'use_ssl' in configuration and configuration['use_ssl'] == True:
         import ssl
     except ImportError as e:
         logger.error(e)
+        
+def create_token():
+    import random 
+    import string 
+      
+    random = ''.join([random.choice(string.ascii_letters 
+                + string.digits) for n in range(32)]) 
+      
+    logger.info('Create token..')
+    saveFile('config/.token', random)
+    
+        
+uuid = readFile(os.path.join(FILE_DIR, 'config/.token'))
+
+if uuid == ERR_READFILE:
+    create_token()
+    uuid = readFile(os.path.join(FILE_DIR, 'config/.token'))
 
 if 'ClientID' not in configuration:
     configuration['ClientID'] = 'sampleClientId'
@@ -125,17 +143,11 @@ Auth = {
         },
     },
     'tokens': {
-        'ZsokmCwKjdhk7qHLeYd2': {
+        uuid: {
             'uid': '1234',
-            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
+            'accessToken': uuid,
+            'refreshToken': uuid,
             'userAgentId': '1234',
-        },
-        'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub': {
-            'uid': '2345',
-            'accessToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
-            'refreshToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
-            'userId': '2345'
         },
     },
     'users': {
@@ -143,18 +155,11 @@ Auth = {
             'uid': '1234',
             'name': configuration['auth_user'],
             'password': configuration['auth_pass'],
-            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
+            'tokens': [uuid],
         },
-        # '2345': {
-        # 'uid': '2345',
-        # 'name': configuration['auth_user_2'],
-        # 'password': configuration['auth_pass_2'],
-        # 'tokens': ['bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub'],
-        # },
     },
     'usernames': {
         configuration['auth_user']: '1234',
-        # configuration['auth_user_2']: '2345',
     }
 }
 
