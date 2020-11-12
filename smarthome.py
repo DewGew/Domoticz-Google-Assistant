@@ -74,6 +74,7 @@ def checkupdate(n=1800):
                 response = r.text
                 if VERSION not in response:
                     update = 1
+                    logger.info("New version is availible on Github!")
                 else:
                     update = 0
                 
@@ -88,10 +89,7 @@ def checkupdate(n=1800):
             time.sleep(n)
             
 thread = threading.Thread(target=checkupdate, daemon=True)
-thread.start()       
-    
-if Update:
-    logger.info("New version is availible on Github!")
+thread.start()         
 
 def AogGetDomain(device):
     """ Convert a domain type: Domoticz to google """
