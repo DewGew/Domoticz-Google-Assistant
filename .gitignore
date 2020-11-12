@@ -1,4 +1,3 @@
-/config.py
 /config.yaml
 /travis.yml
 /smart-home-key.json
@@ -9,4 +8,4 @@ env/
 config/
 config/config.yaml
 config/smart-home-key.json
-
+config/.token
