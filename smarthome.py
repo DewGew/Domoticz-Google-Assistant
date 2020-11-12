@@ -62,29 +62,39 @@ ReportState = ReportState()
 if not ReportState.enable_report_state():
     logger.error("Service account key is not found. Report state will be unavailable")
 
-def checkupdate():
-    if repo is not None and 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
-        try:
-            r = requests.get(
-                'https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch + '/const.py')
-            response = r.text
-            if VERSION not in response:
-                update = 1
-            else:
-                update = 0
-            return update
-        except Exception as e:
-            logger.error('Connection to Github refused! Check configuration.')
-            return 0
-    else:
-        return 0
-        
-update = checkupdate()
-if update:
+Update = 0
+def checkupdate(n=1800):
+    """ Check for updates every 30 min (1800sec) """
+    global Update
+    while True:
+        if repo is not None and 'CheckForUpdates' in configuration and configuration['CheckForUpdates'] == True:
+            try:
+                r = requests.get(
+                    'https://raw.githubusercontent.com/DewGew/Domoticz-Google-Assistant/' + branch + '/const.py')
+                response = r.text
+                if VERSION not in response:
+                    update = 1
+                else:
+                    update = 0
+                
+                Update = update    
+                time.sleep(n)
+            except Exception as e:
+                logger.error('Connection to Github refused! Check configuration.')
+                Update = 0
+                time.sleep(n)
+        else:
+            Update = 0
+            time.sleep(n)
+            
+thread = threading.Thread(target=checkupdate, daemon=True)
+thread.start()       
+    
+if Update:
     logger.info("New version is availible on Github!")
 
-# some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
+    """ Convert a domain type: Domoticz to google """
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
         if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US',
                                     'Blinds Percentage']:
@@ -596,6 +606,7 @@ class _GoogleEntity:
 class SmartHomeReqHandler(OAuthReqHandler):
     global smarthomeControlMappings
     global aogDevs
+    global Update
 
     def __init__(self, *args, **kwargs):
         super(SmartHomeReqHandler, self).__init__(*args, **kwargs)
@@ -737,7 +748,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.redirect('login?redirect_uri={0}'.format('settings'))
             return
 
-        update = checkupdate()
+        update = Update
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
         message = ''
@@ -751,7 +762,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                        
     def settings_post(self, s):
         enableReport = ReportState.enable_report_state()
-        update = checkupdate()
+        update = Update
         confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
         code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
