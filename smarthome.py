@@ -945,6 +945,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """Handle action.devices.DISCONNECT request.
         https://developers.google.com/assistant/smarthome/develop/process-intents#DISCONNECT
         """
+        os.remove(os.path.join(FILE_DIR, 'config/.token'))
+        logger.info('Disconnect account from Google Assistant')
         return None
 
 if 'userinterface' in configuration and configuration['userinterface'] == True:
