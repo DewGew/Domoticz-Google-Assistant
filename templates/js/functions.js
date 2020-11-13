@@ -176,21 +176,19 @@ editor.on("change", function() {
 document.getElementById("save").value = document.getElementById("code").value
  
 /* Logs page */
-function readTextFile(){
+function getlogs(){
     var x = document.getElementById("autoScroll").checked; //if autoscrool is checked
     if(x==true){
      document.getElementById("logs").scrollTop = document.getElementById("logs").scrollHeight; //autoscroll
     }
-
-    var filePath = "/log"
-
+    
     $.ajax({
-    dataType: "text",
-    success : function (data) {
-            $("#logs").load(filePath);
-            }
+      type: 'GET',
+      url: '/log',
+      success: function(response) {
+          $("#logs").html(response);
+      }
     });
-
 }
-readTextFile()
-setInterval(readTextFile, 5000);
+getlogs()
+setInterval(getlogs, 2000);
