@@ -4,7 +4,55 @@
 
 {% block content %}
 <div id="home" class="tab-pane fade show active" role="tabpanel">
-      <div class="row">
+  <div class="row">
+    <div class="col-lg-4 col-md-6 col-sm-6">
+      <div class="card card-stats">
+        <div class="card-header card-header-success card-header-icon">
+          <div class="card-icon">
+            <i class="material-icons">devices_other</i>
+          </div>
+          <p class="card-category">Connected Devices</p>
+          <h3 class="card-title" id="devices_count">0</h3>
+        </div>
+        <div class="card-body">
+        <form action="settings" method="post">
+            <button class="btn btn-success btn-block" name="sync" value="sync" {% if not keyfile %} disabled {% endif %}><i class="material-icons" style="vertical-align: middle;">sync</i> Sync Devices</button>
+            <button class="btn btn-warning btn-block" name="restart" value="restart"><i class="material-icons" style="vertical-align: middle;">replay</i> Restart Server</button>
+        </form>
+        <div id="buttonUpdate"></div>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class="material-icons">update</i> Just Updated
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="col-lg-4 col-md-6 col-sm-6">
+      <div class="card card-stats">
+        <div class="card-header card-header-warning card-header-icon">
+          <div class="card-icon">
+            <i class="material-icons">info_outline</i>
+          </div>
+          <p class="card-category">Info</p>
+          <h4 class="card-title">{{ uptime }}</h4>
+        </div>
+        <div class="card-body">
+            <small class="text-muted">
+                <b>DZGA Version:</b><i> {{ dzgaversion }} {{ branch }}</i><br>
+                <b>Domoticz Version:</b><i> {{ dzversion }}</i><br>
+                <b>Github Issues: </b><i id="github_issues"></i>
+            </small>
+        </div>
+        <div class="card-footer">
+          <div class="stats">
+            <i class="material-icons">update</i> Just Updated
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="row">
   <div class="col-md-8">
   <div class="card">
     <div class="card-header card-header-success">
@@ -54,36 +102,6 @@
     </div>
     </div>
     </div>
-        <div class="row">
-      <div class="col-lg-4 col-md-6 col-sm-6">
-      <div class="card">
-        <div class="card-header card-header-warning">
-          <h4 class="card-title">Information</h4>
-          <p class="card-category"></p>
-        </div>
-        <div class="card-body">
-        <small class="text-muted"><b>DZGA Uptime:</b> {{ uptime }}</small><br>
-        <small class="text-muted"><b>DZGA Version:</b> {{ dzgaversion }} {{ branch }}<br>
-        <b>Domoticz Version:</b> {{ dzversion }}</small><br><br>
-      </div>
-    </div>
-    </div>
-      <div class="col-lg-4 col-md-6 col-sm-6">
-      <div class="card">
-        <div class="card-header card-header-danger">
-          <h4 class="card-title">Functions</h4>
-          <p class="card-category"></p>
-        </div>
-        <div class="card-body">
-        <form action="settings" method="post">
-            <button class="btn btn-warning btn-block" name="restart" value="restart"><i class="material-icons" style="vertical-align: middle;">replay</i> Restart Server</button>
-            <button class="btn btn-success btn-block" name="sync" value="sync"><i class="material-icons" style="vertical-align: middle;">sync</i> Sync Devices</button>
-        </form>
-        <div id="buttonUpdate"></div>
-      </div>
-    </div>
-    </div>
-    </div>
 </div>
 <!-- Menu 1 -->
 {% include 'devices.html' %}
@@ -93,5 +111,7 @@
 {% include 'help.html' %}
 <!-- Menu 4 -->
 {% include 'logs.html' %}
+<!-- Menu 5 -->
+{% include 'settings.html' %}
 
 {% endblock %}

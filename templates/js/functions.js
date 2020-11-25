@@ -1,9 +1,7 @@
 /* Main */
-var config = {{ conf }}
 var updates = {{ update }}
 
 $('#notes').hide()
-$('#logsheader').html('Logs <br><small>Loglevel: ' + config.loglevel + '</small>');
 
 if (updates) {
   $('#updates').html("Updates are Availible");
@@ -24,12 +22,12 @@ for (var i = 0; i < btns.length; i++) {
   });
 }
 
-if (config.auth_user == 'admin' || config.auth_pass == 'admin'){
+if ('{{ conf.auth_user }}' == 'admin' || '{{ conf.auth_pass }}' == 'admin'){
     $('#messageModal').modal('show')
 };
 
 
-$('#user').append(config.auth_user)
+$('#user').append('{{ conf.auth_user }}')
 
 message = '{{ message }}'
 if (message != '') {
@@ -140,13 +138,14 @@ function readDevices(devicelist){
             }
             xl += "<td>" + devicelist[i][4] + "</td></tr>";
         };
+        $("#devices_count").html(devicelist.length)
         if (typeof xl !== "undefined"){
             $('#deviceList_idx').html(xl.replace('undefined',''));
         }else{
             $('#modalLabel').html("Check configuration.");
             $('#message').html("Connection to Domoticz refused! Check configuration.");
             $('#messageModal').modal('show')
-        };             
+        };    
       },
       error: function() {
         console.log('Error, states not availible');
@@ -154,7 +153,7 @@ function readDevices(devicelist){
     });    
 }
 readDevices()
-setInterval(readDevices, 2000);
+/* setInterval(readDevices, 2000); */
 
 /* config page */
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
@@ -174,8 +173,59 @@ editor.on("change", function() {
  });
  
 document.getElementById("save").value = document.getElementById("code").value
+
+$("#saveSettings").click(function(){
+    if ($('#loglevel_debug:checked').val() === 'on'){
+        level = 'Debug'
+    }else if ($('#loglevel_error:checked').val() === 'on'){
+        level = 'Error'
+    }else{
+        level = 'Info'
+    }
+
+    if ($('#logtofile').val() == 'True'){
+        logfile = true
+    }else if ($('#logtofile').val() == 'False'){
+        logfile = false
+    }else{
+        logfile = $('#logtofile').val()
+    }
+
+    stext = {
+        'auth_user': $('#auth_user').val(),
+        'auth_pass': $('#auth_pass').val(),
+        'port_number': parseInt($('#port_number').val()),
+        'Low_battery_limit': parseInt($('#Low_battery_limit').val()),
+        'CheckForUpdates': ($('#CheckForUpdates:checked').val()  === 'on'),
+        'userinterface': ($('#userinterface:checked').val()  === 'on'),
+        'use_ssl': ($('#use_ssl:checked').val() == 'on'),
+        'ssl_key': $('#ssl_key').val(),
+        'ssl_cert': $('#ssl_cert').val(),
+        'ngrok_tunnel': ($('#ngrok_tunnel:checked').val() === 'on'),
+        'ngrok_auth_token': $('#ngrok_auth_token').val(),
+        'loglevel': level,
+        'logtofile': logfile,
+        'pathToLogFile': $('#pathToLogFile').val(),
+        'ClientID': $('#ClientID').val(),
+        'ClientSecret': $('#ClientSecret').val(),
+        'PidFile': $('#PidFile').val(),
+        'Domoticz':{
+            'ip': $('#Domoticzip').val(),
+            'port': $('#Domoticzport').val(),
+            'roomplan': $('#Domoticzroomplan').val(),
+            'username': $('#Domoticzusername').val(),
+            'password': $('#Domoticzpassword').val(),
+            'switchProtectionPass': $('#DomoticzswitchProtectionPass').val(),
+            },
+    }
+    document.getElementById("saveSettings").value = JSON.stringify(stext)
+});
+
+
+
  
 /* Logs page */
+
 function getlogs(){
     var x = document.getElementById("autoScroll").checked; //if autoscrool is checked
     if(x==true){
@@ -191,4 +241,43 @@ function getlogs(){
     });
 }
 getlogs()
-setInterval(getlogs, 2000);
+/* setInterval(getlogs, 2000); */
+
+/* Settings */
+$("#loglevel_info").click(function(){
+    $('input#loglevel_debug[type="radio"]').prop('checked', false);
+    $('input#loglevel_error[type="radio"]').prop('checked', false);
+});
+$("#loglevel_debug").click(function(){
+    $('input#loglevel_info[type="radio"]').prop('checked', false);
+    $('input#loglevel_error[type="radio"]').prop('checked', false);
+});
+$("#loglevel_error").click(function(){
+    $('input#loglevel_info[type="radio"]').prop('checked', false);
+    $('input#loglevel_debug[type="radio"]').prop('checked', false);
+});
+
+$("#use_ssl").click(function(){
+    if ($('input#use_ssl[type="checkbox"]').prop('checked') == true){
+        $('input#ngrok_tunnel[type="checkbox"]').prop('checked', false)
+    }
+});
+
+$("#ngrok_tunnel").click(function(){
+    if ($('input#ngrok_tunnel[type="checkbox"]').prop('checked') == true){
+        $('input#use_ssl[type="checkbox"]').prop('checked', false)
+    }
+});
+
+function getIssues(){
+    
+    $.ajax({
+      type: 'GET',
+      url: 'https://api.github.com/repos/DewGew/Domoticz-Google-Assistant',
+      success: function(response) {
+        $("#github_issues").html(response['open_issues'] + ' open');
+      }
+    });
+}
+getIssues()
+
