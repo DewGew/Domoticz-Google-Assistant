@@ -1,12 +1,19 @@
+
+<style>
+.blacknwhite{
+    color:#fff;
+    background-color:black;   
+    }
+</style>
 <div id="menu4" class="tab-pane fade" role="tabpanel">
 <div class="col-md-12">
     <div class="card">
     <div class="card-header card-header-danger">
-      <h4 class="card-title " id="logsheader">Logs</h4>
+      <h4 class="card-title " id="logsheader">Logs<br><small>Loglevel: {{ conf.loglevel }}</small></h4>
       <p class="card-category">Restart server to activate your changes</p>
     </div>
     <div class="card-body">
-    <textarea  id="logs" rows="20" style="font-size: 10pt; width: 100%;" readonly autocomplete="off"></textarea>
+    <textarea  class="blacknwhite" id="logs" rows="20" readonly autocomplete="off" style="font-size: 10pt; width: 100%;"></textarea>
     <br>
     <br>
         <form>

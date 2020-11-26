@@ -5,7 +5,7 @@ import os
 import re
 import subprocess
 import sys
-import threading
+import yaml
 from collections.abc import Mapping
 from itertools import product
 from pid import PidFile
@@ -737,8 +737,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
             s.redirect('login?redirect_uri={0}'.format('settings'))
             return
 
+        enableReport = ReportState.enable_report_state()
         update = checkupdate()
-        confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
         message = ''
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
@@ -746,13 +746,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
         templatepage = env.get_template('home.html')
         s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
                                        
     def settings_post(self, s):
         enableReport = ReportState.enable_report_state()
         update = checkupdate()
-        confJSON = json.dumps(configuration)
         public_url = getTunnelUrl()
         code = readFile(os.path.join(FILE_DIR, CONFIGFILE))
         meta = '<!-- <meta http-equiv="refresh" content="5"> -->'
@@ -761,12 +760,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
             textToSave = s.form.get("save", None)
             codeToSave = textToSave.replace("+", " ")
             saveFile(CONFIGFILE, codeToSave)
-            message = 'Config saved'
+            message = 'Configuration saved. Restart DZGA for the settings to take effect'
             logger.info(message)
             logs = readFile(os.path.join(logfilepath, LOGFILE))
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("backup"):
@@ -776,7 +775,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             logger.info(message)
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("restart"):
@@ -785,7 +784,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
             restartServer()
 
@@ -801,7 +800,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 message = 'Add Homegraph api key or a Homegraph Service Account json file to sync devices in the UI! You can still sync by voice eg. "Hey Google, Sync my devices".'
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("reload"):
@@ -809,7 +808,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("deletelogs"):
@@ -821,7 +820,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             message = 'Logs removed'
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
         if s.form.get("update"):
@@ -832,11 +831,27 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
             templatepage = env.get_template('home.html')
             s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
-                                       conf=confJSON, public_url=public_url, update=update,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
                                        branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
             
             subprocess.call(['pip3', 'install','-r', os.path.join(FILE_DIR, 'requirements/pip-requirements.txt')])
             restartServer()
+            
+        if s.form.get("saveSettings"):
+            savedSettings = json.loads(s.form.get("saveSettings", None))
+            with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf_file:
+                newsettings = yaml.safe_load(conf_file)
+                newsettings.update(savedSettings)
+                
+            saveFile(CONFIGFILE, yaml.safe_dump(newsettings, allow_unicode=True))
+            logger.info(yaml.dump(savedSettings))
+            message = 'Settings saved. Restart DZGA for the settings to take effect'
+            logger.info(message)
+            logs = readFile(os.path.join(logfilepath, LOGFILE))
+            templatepage = env.get_template('home.html')
+            s.send_message(200, templatepage.render(message=message, uptime=uptime(), meta=meta, code=code,
+                                       conf=configuration, public_url=public_url, update=update, keyfile=enableReport,
+                                       branch=branch, dzversion=settings['dzversion'], dzgaversion=VERSION))
 
 
     def smarthome_sync(self, payload, token):

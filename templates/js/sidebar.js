@@ -1,5 +1,16 @@
 $(document).ready(function() {
-  $().ready(function() {
+  $().ready(function() {  
+
+    $('.fixed-plugin #dropdown-menu').hide()
+    $(".fixed-plugin #sidebar").click(function(){
+        
+        if ($('.fixed-plugin .dropdown').hasClass('show')){
+            $('.fixed-plugin #dropdown-menu').hide()
+        }else{
+            $('.fixed-plugin #dropdown-menu').show()
+        }
+    });
+   
     $sidebar = $('.sidebar');
 
     $sidebar_img_container = $sidebar.find('.sidebar-background');
