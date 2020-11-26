@@ -153,7 +153,7 @@ function readDevices(devicelist){
     });    
 }
 readDevices()
-/* setInterval(readDevices, 2000); */
+setInterval(readDevices, 2000);
 
 /* config page */
 var editor = CodeMirror.fromTextArea(document.getElementById("code"), {
@@ -241,7 +241,7 @@ function getlogs(){
     });
 }
 getlogs()
-/* setInterval(getlogs, 2000); */
+setInterval(getlogs, 2000);
 
 /* Settings */
 $("#loglevel_info").click(function(){
