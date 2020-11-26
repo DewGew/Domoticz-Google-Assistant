@@ -28,14 +28,13 @@
             <div class="card-body">
             <p>
             Nicknames, rooms, ack and report_state can also be set in the Domoticz user interface. New function hide ,hide devices from Google Assistant still but can still see this in UI as type 'Hidden'. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
-            </p>
-            <p>
+            <br>
             <code>&lt;voicecontrol&gt;<br>
-            &nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br>
-            &nbsp;room = Kitchen<br>
-            &nbsp;ack = True<br>
-            &nbsp;report_state = False<br>
-            &nbsp;hide = True<br>
+            &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br>
+            &nbsp;&nbsp;room = Kitchen<br>
+            &nbsp;&nbsp;ack = True<br>
+            &nbsp;&nbsp;report_state = False<br>
+            &nbsp;&nbsp;hide = True<br>
             &lt;/voicecontrol&gt;<br>
             </code>
             </p>
@@ -77,7 +76,7 @@
             Function to change device type, icon and some behavior depending on the device (e.g open/close instead of on/off).<br>
             <code>
             &lt;voicecontrol&gt;<br>
-            &nbsp;devicetype = oven<br>
+            &nbsp;&nbsp;devicetype = oven<br>
             &lt;/voicecontrol&gt;<br>
             </code>
             or in config.yaml:<br>
