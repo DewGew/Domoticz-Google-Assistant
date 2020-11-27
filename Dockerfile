@@ -6,7 +6,8 @@ FROM jfloff/alpine-python:3.7-slim
 RUN mkdir -p config
 
 COPY *.py /
-COPY *.html /
+COPY templates/ /templates/
+COPY static/ /static/
 COPY requirements/pip-requirements.txt /requirements.txt
 
 # Create volume
