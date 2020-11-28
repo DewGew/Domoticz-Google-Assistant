@@ -3,6 +3,7 @@
 import http.server
 import urllib.parse
 from urllib.parse import urlparse
+from helpers import FILE_DIR
 
 from smarthome import *
 # import cgi
@@ -54,6 +55,38 @@ class AogServer(http.server.BaseHTTPRequestHandler):
             self.send_message(404, "Page not found!: %s" % error)
 
     def send_message(self, code, msg, headers=None, b=False):
+        if self.path.endswith(".jpg"):
+            f = open(FILE_DIR + self.path, 'rb')
+            self.send_response(200)
+            self.send_header('Content-type', 'image/jpg')
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+            return
+        elif self.path.endswith(".png"):
+            f = open(FILE_DIR + self.path, 'rb')
+            self.send_response(200)
+            self.send_header('Content-type', 'image/png')
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+            return
+        elif self.path.endswith(".js"):
+            f = open(FILE_DIR + self.path, 'rb')
+            self.send_response(200)
+            self.send_header('Content-type', 'text/javascript')
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+            return
+        elif self.path.endswith(".css"):
+            f = open(FILE_DIR + self.path, 'rb')
+            self.send_response(200)
+            self.send_header('Content-type', 'text/css')
+            self.end_headers()
+            self.wfile.write(f.read())
+            f.close()
+            return
         self.send_response(code)
         self.send_header('Content-type', 'text/html; charset=utf-8')
         if headers is not None:

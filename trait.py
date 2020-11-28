@@ -151,7 +151,12 @@ class OnOffTrait(_Trait):
 
     def sync_attributes(self):
         """Return OnOff attributes for a sync request."""
-        return {}
+        domain = self.state.domain
+        response = {}
+        if domain in [domains['sensor'], domains['smokedetector']]:
+            response['queryOnlyOnOff'] = True
+        
+        return response
 
     def query_attributes(self):
         """Return OnOff query attributes."""
@@ -328,7 +333,6 @@ class OpenCloseTrait(_Trait):
 
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
-        # Neither supported domain can support sceneReversible
         return {}
 
     def query_attributes(self):

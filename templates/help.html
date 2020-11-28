@@ -1,0 +1,175 @@
+<div id="menu3" class="tab-pane fade" role="tabpanel">
+    <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title">Help</h4>
+              <p class="card-category"></p>
+            </div>
+            <div class="card-body">
+            <p>For help or more information about configuration and to setup Action on Google:</br>
+            <a href="https://github.com/DewGew/Domoticz-Google-Assistant/wiki" target="_blank" rel="noopener">Domoticz Google Assistant wiki</a> or at 
+            <a href="https://discordapp.com/invite/AmJV6AC" target="_blank" rel="noopener" aria-label="Discord">Discord</a></p>
+
+            <h6>Manual update</h6>
+            <p><kbd>bash &#60;(curl -s https://raw.githubusercontent.com/DewGew/dzga-installer/master/install.sh)</kbd></p>
+            
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-success">
+              <h4 class="card-title">Device Configuraton</h4>
+              <p class="card-category"></p>
+            </div>
+            <div class="card-body">
+            <p>
+            Nicknames, rooms, ack and report_state can also be set in the Domoticz user interface. New function hide ,hide devices from Google Assistant still but can still see this in UI as type 'Hidden'. Simply put the device configuration in the device description, in a section between 'voicecontrol' tags like:
+            <br>
+            <code>&lt;voicecontrol&gt;<br>
+            &nbsp;&nbsp;nicknames = Kitchen Blind One, Left Blind, Blue Blind<br>
+            &nbsp;&nbsp;room = Kitchen<br>
+            &nbsp;&nbsp;ack = True<br>
+            &nbsp;&nbsp;report_state = False<br>
+            &nbsp;&nbsp;hide = True<br>
+            &lt;/voicecontrol&gt;<br>
+            </code>
+            </p>
+            <p>
+            Other parts of the description are ignored, so you can still leave other useful descriptions. Every variable should be on a separate line. If there is no such configuration in the Domoticz device it will still try the config:
+            <br><code>
+            Device_Config:<br>
+            &nbsp;&nbsp;123:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;ack: true<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Livingroom'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Celing light'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Smart light'<br>
+            &nbsp;&nbsp;234:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Bedroom'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;report_state: false<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;hide: true<br>
+            <br>
+            Scene_Config:<br>
+            &nbsp;&nbsp;3:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;room: 'Kitchen'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;nicknames:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;- 'Cool scene'<br>
+            </code>
+            </p>
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-primary">
+              <h4 class="card-title">Device Type</h4>
+              <p class="card-category"></p>
+            </div>
+            <div class="card-body">
+            <p>
+            Function to change device type, icon and some behavior depending on the device (e.g open/close instead of on/off).<br>
+            <code>
+            &lt;voicecontrol&gt;<br>
+            &nbsp;&nbsp;devicetype = oven<br>
+            &lt;/voicecontrol&gt;<br>
+            </code>
+            or in config.yaml:<br>
+            <code>
+            Device_Config:<br>
+            &nbsp;&nbsp;456:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;devicetype: 'oven'<br>
+            </code>
+            </p>
+            <p>
+            Light or Switch devices can choose types from:<br>
+
+            <code>light, ac_unit, bathtub, coffeemaker, dishwasher, dryer, fan, heater, kettle, media,<br>microwave, outlet, oven, speaker, switch, vacuum, washer, waterheater, window, door, gate, garage </code>.
+            </p>
+            <p>For heater, kettle, waterheater, oven you can still use <code>merge_thermo_idx</code> to merge thermostat to control temperature.</p>
+            <p>Door Contact devices can choose window, gate or garage.</p>
+            <p>Blind devices can choose window, door, gate or garage.</p>
+            <p>Selector devices can choose only vacuum</p>
+            </div>
+            </div>
+        </div>
+    </div>
+        <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-warning">
+              <h4 class="card-title">Thermostat Devices</h4>
+              <p class="card-category"></p>
+            </div>
+            <div class="card-body">
+           <p><b>For thermostat devices only.</b><br>
+            Function to merge actual temperature from another temp device or modes from selector device to thermostat. Merged device will automaticly hidden. Levels from selector device supported is: Off - Heat - Cool - Auto - Eco.
+            Bug Thermostat idx must be a number above Temp/selector idx.<br>
+            <code>
+            &lt;voicecontrol&gt;<br>
+            &nbsp;&nbsp;actual_temp_idx = 123<br>
+            &nbsp;&nbsp;selector_modes_idx = 234<br>
+            &lt;/voicecontrol&gt;<br>
+            </code>
+            or in config.yaml:<br>
+            <code>
+            Device_Config:<br>
+            &nbsp;&nbsp;456:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;actual_temp_idx: '123'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;selector_modes_idx: '234'<br>
+            </code>
+            
+            <p><b>For heater/waterheater/kettle/oven devices only.</b><br>
+            Function to merge thermostat device to control temperature. Merged device will automaticly hidden.
+            Bug Thermostat idx must be a number above Temp/selector idx.
+            <code>
+            &lt;voicecontrol&gt;<br>
+            &nbsp;&nbsp;merge_thermo_idx = 123<br>
+            &lt;/voicecontrol&gt;<br>
+            </code>
+            or in config.yaml:<br>
+            <code>    
+            Device_Config:<br>
+            &nbsp;&nbsp;456:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;merge_thermo_idx: '123'<br>
+            </code>
+            </p>           
+            </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+          <div class="card">
+            <div class="card-header card-header-warning">
+              <h4 class="card-title">Security Device</h4>
+              <p class="card-category"></p>
+            </div>
+            <div class="card-body">
+            <p>User-friendly name for the level in your language.. See: https://developers.google.com/actions/smarthome/traits/#supported-languages<br>
+            <code>
+            Armhome:<br>
+            &nbsp;&nbsp;level_synonym:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'zuhause und bewachen'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 1'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL1'<br>
+            &nbsp;&nbsp;lang: 'de'<br>
+            Armaway:<br>
+            &nbsp;&nbsp;level_synonym:<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'weg und bewachen'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'Level 2'<br>
+            &nbsp;&nbsp;&nbsp;&nbsp;- 'SL2'<br>
+            &nbsp;&nbsp;lang: 'de'<br>
+            </code>
+            </p>
+            
+            </div>
+            </div>
+        </div>
+    </div>
+</div>

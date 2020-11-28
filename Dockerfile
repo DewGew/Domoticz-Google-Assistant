@@ -6,7 +6,8 @@ WORKDIR /usr/src/app
 RUN mkdir -p config
 
 COPY *.py /
-COPY *.html /
+COPY templates/ /templates/
+COPY static/ /static/
 COPY requirements/pip-requirements.txt /requirements.txt
 RUN pip install --no-cache-dir -r /requirements.txt
 # Create volume

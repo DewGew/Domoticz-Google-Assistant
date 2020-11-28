@@ -52,7 +52,10 @@ fi
 echo ""
 echo " Create virtual enviroment..."
 echo ""
-python3 -m venv ${INSTALL_DIR}/env
+wget https://bootstrap.pypa.io/get-pip.py
+python3 get-pip.py
+python3 -m pip install virtualenv
+python3 -m virtualenv ${INSTALL_DIR}/env
 ${INSTALL_DIR}/env/bin/python -m pip install --upgrade pip setuptools wheel
 source ${INSTALL_DIR}/env/bin/activate
 

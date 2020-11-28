@@ -1,0 +1,32 @@
+
+<style>
+.blacknwhite{
+    color:#fff;
+    background-color:black;   
+    }
+</style>
+<div id="menu4" class="tab-pane fade" role="tabpanel">
+<div class="col-md-12">
+    <div class="card">
+    <div class="card-header card-header-danger">
+      <h4 class="card-title " id="logsheader">Logs<br><small>Loglevel: {{ conf.loglevel }}</small></h4>
+      <p class="card-category">Restart server to activate your changes</p>
+    </div>
+    <div class="card-body">
+    <textarea  class="blacknwhite" id="logs" rows="20" readonly autocomplete="off" style="font-size: 10pt; width: 100%;"></textarea>
+    <br>
+    <br>
+        <form>
+        <label><input type="checkbox" value="AutoScroll" id="autoScroll" label="Auto Scroll" checked>Auto-Scroll</label>
+        </form>
+    <div class="row">
+      <div class="col">
+      <form action="settings" method="post">
+        <button class="btn btn-raised btn-warning" name="deletelogs" value="deletelogs"><i class="material-icons" style="vertical-align: middle;">delete</i> Remove logs</button>
+       </form>
+      </div>
+    </div>
+    </div>
+    </div>
+</div>
+</div>

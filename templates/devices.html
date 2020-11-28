@@ -1,0 +1,29 @@
+<div id="menu1" class="tab-pane fade" role="tabpanel">
+    <div class="row">
+    <div class="col-md-12">
+    <div class="card">
+    <div class="card-header card-header-primary">
+      <h4 class="card-title ">Device list</h4>
+      <p class="card-category">
+      List of devices the server recived from domoticz. Room and Nicknames is added from configuration.<br>
+      <b>NOTE:</b> If you don't see any device check your connection to domoticz.
+      </p>
+    </div>
+    <div class="card-body">
+    <div class="table-responsive">
+    <table class="table" id="deviceTable">
+      <thead class=" text-primary">
+          <th onclick="sortIdxTable(0)">Idx</th>
+          <th onclick="sortTable(0)">Name <small><i>(Nicknames)</i></small></th>
+          <th onclick="sortTable(1)">Type</th>
+          <th onclick="sortTable(2)">State</th>
+          <th onclick="sortTable(3)">Room</th>
+      </thead>
+      <tbody id="deviceList_idx"></tbody>
+    </table>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+</div>

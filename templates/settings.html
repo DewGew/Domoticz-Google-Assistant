@@ -1,0 +1,326 @@
+<div id="menu5" class="tab-pane fade" role="tabpanel">
+<div class="row">
+<div class="col-md-6">
+  <div class="card">
+    <div class="card-header card-header-warning">
+      <h4 class="card-title">Dzga Settings</h4>
+<!--       <p class="card-category"></p> -->
+    </div>
+    <div class="card-body">
+    <form>
+    <div class="row">
+       <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Username</label>
+          <input id="auth_user" name="auth_user" type="text" class="form-control" value="{{ conf.auth_user }}">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Password</label>
+          <input id="auth_pass" name="auth_pass" type="password" class="form-control" value="{{ conf.auth_pass }}">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-3">
+        <div class="form-group">
+          <label class="bmd-label-floating">Dzga Port</label>
+          <input id="port_number" name="port_number" type="number" class="form-control" value="{{ conf.port_number }}">
+        </div>
+      </div>
+      
+      <div class="col-md-3">
+        <div class="form-group">
+          <label class="bmd-label-floating">Low Battery Limit</label>
+          <input id="Low_battery_limit" name="Low_battery_limit" type="number" class="form-control" value="{{ conf.Low_battery_limit }}">
+        </div>
+      </div>
+      <div class="col-md-3">
+      <div class="form-check">
+        <label class="form-check-label">Check for Updates
+          <input id="CheckForUpdates" name="CheckForUpdates" class="form-check-input" type="checkbox"
+          {% if conf.CheckForUpdates %} checked="checked" {% endif %} >
+          <span class="form-check-sign">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+      <div class="col-md-3">
+      <div class="form-check">
+        <label class="form-check-label">User Interface
+          <input id="userinterface" name="userinterface" class="form-check-input" type="checkbox"
+          {% if conf.userinterface %} checked="checked" {% endif %} disabled>
+          <span class="form-check-sign">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-4">
+      <div class="form-check">
+        <label class="form-check-label">Enable Ngrok Tunnel
+          <input id="ngrok_tunnel" name="ngrok_tunnel" class="form-check-input" type="checkbox"
+          {% if conf.ngrok_tunnel %} checked="checked" {% endif %}>
+          <small class="form-text text-muted">Instantly create a public HTTPS URL.</small>
+          <span class="form-check-sign">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+      <div class="col-md-8">
+        <div class="form-group">
+          <label class="bmd-label-floating">Ngrok Token</label>
+          <input id="ngrok_auth_token" name="ngrok_auth_token" type="text" class="form-control" value="{{ conf.ngrok_auth_token }}">
+          <small class="form-text text-muted">Create account at ngrok.com and paste the token here.</small>
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    </form>
+    </div>
+    </div>
+    </div>
+    <div class="col-md-6">
+  <div class="card">
+    <div class="card-header card-header-success">
+      <h4 class="card-title">Domoticz Settings</h4>
+<!--       <p class="card-category">Complete your profile</p> -->
+    </div>
+    <div class="card-body">
+    <form>
+    <div class="row">
+      <div class="col-md-5">
+        <div class="form-group">
+          <label class="bmd-label-floating">Domoticz IP</label>
+          <input id="Domoticzip" name="Domoticzip" type="url" class="form-control" value="{{ conf.Domoticz.ip }}">
+        </div>
+      </div>
+      <div class="col-md-3">
+        <div class="form-group">
+          <label class="bmd-label-floating">Port</label>
+          <input id="Domoticzport" name="Domoticzport" type="number" class="form-control" value="{{ conf.Domoticz.port }}">
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="form-group">
+          <label class="bmd-label-floating">Room IDX</label>
+          <input id="Domoticzroomplan" name="Domoticzroomplan" type="number" class="form-control" value="{{ conf.Domoticz.roomplan }}">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Domoticz Username</label>
+          <input id="Domoticzusername" name="Domoticzusername" type="text" class="form-control" value="{{ conf.Domoticz.username }}">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Domoticz Password</label>
+          <input id="Domoticzpassword" name="Domoticzpassword" type="password" class="form-control" value="{{ conf.Domoticz.password }}">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label class="bmd-label-floating">Switch Protection Pass</label>
+          <input id="DomoticzswitchProtectionPass" name="DomoticzswitchProtectionPass" type="text" class="form-control" value="{{ conf.Domoticz.switchProtectionPass }}">
+        </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    </form>
+    </div>
+    </div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+  <div class="card">
+    <div class="card-header card-header-primary">
+      <h4 class="card-title">Log Settings</h4>
+<!--       <p class="card-category">Complete your profile</p> -->
+    </div>
+    <div class="card-body">
+    <form>
+      <div class="row">
+      <div class="col-md-3">
+      <div class="form-check form-check-radio">
+        <label class="form-check-label">
+          <input id="loglevel_info" name="loglevel_info" class="form-check-input" type="radio"
+          {% if conf.loglevel == 'Info' %} checked {% endif %}>Info
+          <span class="circle">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+      <div class="col-md-3">
+      <div class="form-check form-check-radio">
+        <label class="form-check-label">
+          <input id="loglevel_debug" name="loglevel_debug" class="form-check-input" type="radio"
+          {% if conf.loglevel == 'Debug' %} checked{% endif %}>Debug
+          <span class="circle">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+      <div class="col-md-3">
+      <div class="form-check form-check-radio">
+        <label class="form-check-label">
+          <input id="loglevel_error" name="loglevel_error" class="form-check-input" type="radio"
+          {% if conf.loglevel == 'Error' %} checked="checked" {% endif %}>Error
+          <span class="circle">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+      <div class="col-md-3">
+
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+      <div class="form-group">
+        <label for="logtofile"><small>Write To Logfile</small></label>
+        <select class="form-control" data-style="btn btn-link" id="logtofile">
+          <option value="True">True</option>
+          <option value="False">False</option>
+          <option value="Append">Append</option>
+          <option value="Overwrite">Overwrite</option>
+        </select>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label class="bmd-label-floating">Path To Logfile</label>
+          <input id="pathToLogFile" name="pathToLogFile" type="text" class="form-control" value="{{ conf.pathToLogFile }}">
+        </div>
+      </div>
+     </div>
+    <div class="clearfix"></div>
+    </form>
+    </div>
+    </div>
+</div>
+<div class="col-md-6">
+  <div class="card">
+    <div class="card-header card-header-danger">
+      <h4 class="card-title">Actions on Google Settings</h4>
+<!--       <p class="card-category">Complete your profile</p> -->
+    </div>
+    <div class="card-body">
+    <form>
+    <div class="row">
+       <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Client ID</label>
+          <input id="ClientID" name="ClientID" type="text" class="form-control" value="{{ conf.ClientID }}">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Client Secret</label>
+          <input id="ClientSecret" name="ClientSecret" type="password" class="form-control" value="{{ conf.ClientSecret }}">
+        </div>
+      </div>
+      </div>
+      <div class="row">
+      <div class="col-md-6">
+      <div class="form-check">
+        {% if keyfile %}
+        <label class="form-check-label text-success">smart-home-key.json is added
+         {% else %}
+        <label class="form-check-label text-danger">smart-home-key.json is not added
+        {% endif %}
+          <input id="keyfile" name="keyfile" class="form-check-input" type="checkbox"
+          {% if keyfile %} checked="checked" {% endif %} disabled>
+          <span class="form-check-sign">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+    </div>
+    <div class="clearfix"></div>
+    </form>
+    </div>
+    </div>
+</div>
+</div>
+<div class="row">
+<div class="col-md-6">
+  <div class="card">
+    <div class="card-header card-header-warning">
+      <h4 class="card-title">Advanced Settings</h4>
+      <p class="card-category"></p>
+    </div>
+    <div class="card-body">
+        <div class="row">
+      <div class="col-md-6">
+      <div class="form-check">
+        <label class="form-check-label">Enable SSL
+          <input id="use_ssl" name="use_ssl" class="form-check-input" type="checkbox" value="{{ conf.use_ssl }}"
+          {% if conf.use_ssl %} checked="checked" {% endif %} >
+          <span class="form-check-sign">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Path to SSL Key</label>
+          <input id="ssl_key" name="ssl_key" type="text" class="form-control" value="{{ conf.ssl_key }}">
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="form-group">
+          <label class="bmd-label-floating">Path to SSL Cert</label>
+          <input id="ssl_cert" name="ssl_cert" type="text" class="form-control" value="{{ conf.ssl_cert }}">
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="form-group">
+          <label class="bmd-label-floating">Pid File</label>
+          <input id="PidFile" name="PidFile" type="text" class="form-control" value="{{ conf.PidFile }}">
+          <small class="form-text text-muted">Change pidfile path and name.</small>
+        </div>
+      </div>
+    </div>
+    </div>
+    </div>
+</div>
+<div class="col-md-6">
+  <div class="card">
+    <div class="card-header card-header-success">
+      <h4 class="card-title">Update Settings</h4>
+      <p class="card-category"></p>
+    </div>
+    <div class="card-body">
+    <p><b>Restart DZGA for the settings to take effect.</b><br>For help or more information about configuration and to setup Action on Google:</br>
+    <form action="settings" method="post">
+    <button type="submit" name="saveSettings" id="saveSettings" class="btn btn-primary pull-left" >Update Settings</button>
+    <div class="clearfix"></div>
+    </form>
+    </div>
+    </div>
+</div>
+</div>
+ 
+</div>
