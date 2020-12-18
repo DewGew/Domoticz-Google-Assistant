@@ -21,7 +21,14 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
-
+    
+try:
+    from jinja2 import Environment, FileSystemLoader
+except ImportError:
+    logger.info('Installing package jinja2')
+    subprocess.call(['pip', 'install', 'jinja2'])
+    from jinja2 import Environment, FileSystemLoader
+    
 if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
     try:
         import pychromecast
@@ -35,13 +42,13 @@ if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'a
         import pychromecast
         from gtts import gTTS
         from slugify import slugify
-    
-try:
-    from jinja2 import Environment, FileSystemLoader
-except ImportError:
-    logger.info('Installing package jinja2')
-    subprocess.call(['pip', 'install', 'jinja2'])
-    from jinja2 import Environment, FileSystemLoader
+
+    logger.info("Starting up chromecasts")
+    try:
+        chromecasts, _ = pychromecast.get_chromecasts()
+        cast = next(cc for cc in chromecasts if cc.device.friendly_name == configuration['Chromecast_Name'])
+    except Exception as e:
+        logger.error('chromecasts init not succeeded, error : %s' % e)
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
@@ -72,14 +79,6 @@ try:
 except:
     repo = None
     branch = ''
-    
-if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
-    logger.info("Starting up chromecasts")
-    try:
-        chromecasts, _ = pychromecast.get_chromecasts()
-        cast = next(cc for cc in chromecasts if cc.device.friendly_name == configuration['Chromecast_Name'])
-    except Exception as ex:
-        logger.error('chromecasts init not succeeded, error : %s' % ex)
     
 ReportState = ReportState()
 if not ReportState.enable_report_state():
@@ -749,10 +748,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         deviceList
             
         s.send_message(200, deviceList)
-        
-    def test(self, s):
-
-        s.send_message(200, templatepage.render())
         
     def settings(self, s):
         user = self.getSessionUser()
