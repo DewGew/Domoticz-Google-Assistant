@@ -9,6 +9,7 @@ import yaml
 from collections.abc import Mapping
 from itertools import product
 from pid import PidFile
+from pathlib import Path
 import requests
 
 import trait
@@ -21,6 +22,20 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
 
+if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
+    try:
+        import pychromecast
+        from gtts import gTTS
+        from slugify import slugify   
+    except ImportError as e:
+        logger.error('Installing package pychromecast, gtts and slugify')
+        subprocess.call(['pip', 'install', 'pychromecast'])
+        subprocess.call(['pip', 'install', 'gtts'])
+        subprocess.call(['pip', 'install', 'slugify'])
+        import pychromecast
+        from gtts import gTTS
+        from slugify import slugify
+    
 try:
     from jinja2 import Environment, FileSystemLoader
 except ImportError:
@@ -57,6 +72,14 @@ try:
 except:
     repo = None
     branch = ''
+    
+if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
+    logger.info("Starting up chromecasts")
+    try:
+        chromecasts, _ = pychromecast.get_chromecasts()
+        cast = next(cc for cc in chromecasts if cc.device.friendly_name == configuration['Chromecast_Name'])
+    except Exception as ex:
+        logger.error('chromecasts init not succeeded, error : %s' % ex)
     
 ReportState = ReportState()
 if not ReportState.enable_report_state():
@@ -206,7 +229,7 @@ def getAog(device):
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
     aog.setpoint = device.get("SetPoint")
-    if aog.domain is "Color":
+    if aog.domain == "Color":
         aog.color = device.get("Color")
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")   
@@ -217,7 +240,7 @@ def getAog(device):
     
     aog.language = settings.get("Language")
     aog.tempunit = settings.get("TempUnit")
-    if aog.domain is "Security":
+    if aog.domain == "Security":
         aog.seccode = settings.get("SecPassword")
         aog.secondelay = settings.get("SecOnDelay")
 
@@ -322,7 +345,7 @@ def getAog(device):
         
     if aog.room == None:
         if aog.domain not in [domains['scene'], domains['group']]:
-            if aog.plan is not "0":
+            if aog.plan != "0":
                 aog.room = getPlans(aog.plan)
         
     return aog
@@ -961,6 +984,62 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/assistant/smarthome/develop/process-intents#DISCONNECT
         """
         return None
+        
+    def say(self, s):
+        itext = s.url.query.replace(" ","-")
+        itext=itext.split("/")
+        text = itext[0]
+        if not text:
+            return False
+        if len(itext) > 1:
+            lang = itext[1].lower()
+        else:
+            lang = "en"
+        slow = False
+        current_time = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        message="say command on " + current_time + ", text : " + str(text) + ", lang : " + lang
+        tts = gTTS(text=text, lang=lang, slow=slow)
+        filename = slugify(text+"-"+lang+"-"+str(slow)) + ".mp3"
+        cache_filename = FILE_DIR + "/sound/cache/" + filename
+        tts_file = Path(cache_filename)
+        if not tts_file.is_file():
+            logger.info(tts)
+            tts.save(cache_filename)
+        mp3_url = "http://" + str(s.client_address[0]) + ":" + str(s.server.server_port) + "/sound?cache/" + filename #make a query request for Get /sound
+        logger.info(message)
+        SmartHomeReqHandler.play_mp3(mp3_url)
+        s.send_message(200, "OK " + message + "\n")
+
+    def play(self, s):
+        filename = s.url.query   
+        mp3_filename = FILE_DIR + "/sound/" + filename
+        mp3 = Path(mp3_filename)
+        current_time = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        message = "play command on " + current_time + ", file : " + str(mp3_filename)
+        logger.info(message)
+        if mp3.is_file():
+            mp3_url = "http://" + str(s.client_address[0]) + ":" + str(s.server.server_port) + "/sound?" + filename  #make a query request for Get /sound
+            SmartHomeReqHandler.play_mp3(mp3_url)
+            s.send_message(200, "OK " + message + "\n")
+        else:
+            s.send_message(200, "File not found\n")
+
+    def play_mp3(mp3_url):
+        cast.wait()
+        mc = cast.media_controller
+        mc.play_media(mp3_url, 'audio/mp3')
+        logger.info("Play mp3 started")
+
+    def send_sound(self, s):
+        filename = s.url.query
+        cache_filename = FILE_DIR + "/sound/" + filename
+        logger.info("sound : " + cache_filename)
+        f = open(cache_filename, 'rb')
+        s.send_response(200)        # send_message (later in server.py)
+        s.send_header('Content-type', 'audio/mpeg3')
+        s.end_headers()
+        s.wfile.write(f.read())
+        f.close()
 
 if 'userinterface' in configuration and configuration['userinterface'] == True:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
@@ -968,7 +1047,10 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
                             "/settings": SmartHomeReqHandler.settings,
                             "/log": SmartHomeReqHandler.log,
                             "/states": SmartHomeReqHandler.states,
-                            "/restart": SmartHomeReqHandler.restartServer}
+                            "/restart": SmartHomeReqHandler.restartServer,
+                            "/say": SmartHomeReqHandler.say,
+                            "/play": SmartHomeReqHandler.play, 
+                            "/sound": SmartHomeReqHandler.send_sound}
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
                              "/settings": SmartHomeReqHandler.settings_post}
