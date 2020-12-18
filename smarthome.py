@@ -1057,7 +1057,10 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
 else:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
                             "/sync": SmartHomeReqHandler.syncDevices,
-                            "/restart": SmartHomeReqHandler.restartServer}
+                            "/restart": SmartHomeReqHandler.restartServer,
+                            "/say": SmartHomeReqHandler.say,
+                            "/play": SmartHomeReqHandler.play, 
+                            "/sound": SmartHomeReqHandler.send_sound}
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post}
 
