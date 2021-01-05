@@ -36,9 +36,9 @@ if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'a
         from slugify import slugify   
     except ImportError as e:
         logger.error('Installing package pychromecast, gtts and slugify')
-        subprocess.call(['pip', 'install', 'pychromecast'])
-        subprocess.call(['pip', 'install', 'gtts'])
-        subprocess.call(['pip', 'install', 'slugify'])
+        subprocess.call(['pip3', 'install', 'pychromecast'])
+        subprocess.call(['pip3', 'install', 'gtts'])
+        subprocess.call(['pip3', 'install', 'slugify'])
         import pychromecast
         from gtts import gTTS
         from slugify import slugify
