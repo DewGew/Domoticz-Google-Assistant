@@ -26,7 +26,7 @@ try:
     from jinja2 import Environment, FileSystemLoader
 except ImportError:
     logger.info('Installing package jinja2')
-    subprocess.call(['pip', 'install', 'jinja2'])
+    subprocess.call(['pip3', 'install', 'jinja2'])
     from jinja2 import Environment, FileSystemLoader
     
 if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
