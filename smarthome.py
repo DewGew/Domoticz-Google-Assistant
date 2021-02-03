@@ -916,8 +916,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 continue
 
             e = _GoogleEntity(state)
-            devices[devid] = e.query_serialize()
-                        
+            try:
+              devices[devid] = e.query_serialize()
+            except Exception:
+              logger.error("Unexpected error serializing query for %s", state)
+              devices[devid] = {"online": False}
+              
         response = {'devices': devices}
         logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
         
