@@ -32,14 +32,17 @@ except ImportError:
 if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
     try:
         import pychromecast
+        import socket  ##
         from gtts import gTTS
         from slugify import slugify   
     except ImportError as e:
-        logger.error('Installing package pychromecast, gtts and slugify')
+        logger.error('Installing package pychromecast, socket, gtts and slugify') 
         subprocess.call(['pip3', 'install', 'pychromecast'])
+        subprocess.call(['pip3', 'install', 'socket']) ##
         subprocess.call(['pip3', 'install', 'gtts'])
         subprocess.call(['pip3', 'install', 'slugify'])
         import pychromecast
+        import socket  ##
         from gtts import gTTS
         from slugify import slugify
 
@@ -49,6 +52,11 @@ if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'a
         cast = next(cc for cc in chromecasts if cc.device.friendly_name == configuration['Chromecast_Name'])
     except Exception as e:
         logger.error('chromecasts init not succeeded, error : %s' % e)
+    t = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
+    t.connect(("8.8.8.8", 80))                           
+    IP_Address = t.getsockname()[0]                      
+    t.close                                              
+    logger.info("IP_Address is : " + IP_Address)         
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
@@ -1004,7 +1012,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if not tts_file.is_file():
             logger.info(tts)
             tts.save(cache_filename)
-        mp3_url = "http://" + str(s.client_address[0]) + ":" + str(s.server.server_port) + "/sound?cache/" + filename #make a query request for Get /sound
+        mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?cache/" + filename
+        #make a query request for Get /sound
         logger.info(message)
         SmartHomeReqHandler.play_mp3(mp3_url)
         s.send_message(200, "OK " + message + "\n")
@@ -1017,7 +1026,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         message = "play command on " + current_time + ", file : " + str(mp3_filename)
         logger.info(message)
         if mp3.is_file():
-            mp3_url = "http://" + str(s.client_address[0]) + ":" + str(s.server.server_port) + "/sound?" + filename  #make a query request for Get /sound
+            mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?" + filename
+            #make a query request for Get /sound
             SmartHomeReqHandler.play_mp3(mp3_url)
             s.send_message(200, "OK " + message + "\n")
         else:
