@@ -9,7 +9,7 @@ urllib3>=1.25.7
 GitPython>=3.0.5
 google-auth>=1.8.1
 wheel>=0.34.2
-Jinja2==2.11.2
+Jinja2==2.11.3
 PyChromecast==0.3.2
 gTTS==2.2.1
 slugify==0.0.1
