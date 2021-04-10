@@ -206,7 +206,7 @@ def getAog(device):
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
     aog.setpoint = device.get("SetPoint")
-    if aog.domain is "Color":
+    if aog.domain is domains['color']:
         aog.color = device.get("Color")
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")   
