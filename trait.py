@@ -855,7 +855,7 @@ class ColorSettingTrait(_Trait):
                     colorTemp = (color_rgb["t"] * (255 / 100)) * 10
                     response['color'] = {'temperatureK': round(colorTemp)}
         except ValueError:
-            response['color'] = {}
+            response = {}
 
         return response
 

@@ -236,7 +236,7 @@ def getAog(device):
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
     aog.setpoint = device.get("SetPoint")
-    if aog.domain == "Color":
+    if aog.domain is domains['color']:
         aog.color = device.get("Color")
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")   
@@ -339,7 +339,7 @@ def getAog(device):
         aog.attributes = ATTRS_BRIGHTNESS
     if domains['color'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if domains['color'] == aog.domain and device["SubType"] in ["RGBWW", "White"]:
+    if domains['color'] == aog.domain and device["SubType"] in ["RGBWW", "RGBWZ", "White"]:
         aog.attributes = ATTRS_COLOR_TEMP
     if domains['thermostat'] == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
