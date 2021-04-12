@@ -32,20 +32,25 @@ except ImportError:
 if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
     try:
         import pychromecast
-        import socket  ##
+    except ImportError as e:
+        logger.error('Installing package pychromecast') 
+        subprocess.call(['pip3', 'install', '--upgrade', '--force-reinstall', 'pychromecast'])
+    try:
         from gtts import gTTS
+    except ImportError as e:
+        logger.error('Installing package gtts') 
+        subprocess.call(['pip3', 'install', 'gtts'])
+    try:
         from slugify import slugify   
     except ImportError as e:
-        logger.error('Installing package pychromecast, socket, gtts and slugify') 
-        subprocess.call(['pip3', 'install', 'pychromecast'])
-        subprocess.call(['pip3', 'install', 'socket']) ##
-        subprocess.call(['pip3', 'install', 'gtts'])
+        logger.error('Installing package slugify') 
         subprocess.call(['pip3', 'install', 'slugify'])
-        import pychromecast
-        import socket  ##
-        from gtts import gTTS
-        from slugify import slugify
 
+    import pychromecast
+    import socket  ##
+    from gtts import gTTS
+    from slugify import slugify
+		
     logger.info("Starting up chromecasts")
     try:
         chromecasts, _ = pychromecast.get_chromecasts()
