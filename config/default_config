@@ -33,6 +33,11 @@ auth_pass: 'admin'
 # Google Assistant Settings:
 ClientID: 'clientid_from aog'
 ClientSecret: 'clientsecret_from_aog'
+
+# To play notification/message text or sound from domoticz to chromecast
+# usage http://dzga_server:port/say?text-to-speak-sperated-by-minus/nl  (specify language after "/", "en" is default if none)
+# usage http://dzga_server:port/play?doorbell1.mp3   (mp3 file in directory /sound)
+Chromecast_Name: 'add_chromecast_name'
   
 # Domoticz Settings:
 Domoticz:
