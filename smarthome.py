@@ -21,36 +21,13 @@ from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PRO
                    ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
 from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
                      getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
-    
-try:
-    from jinja2 import Environment, FileSystemLoader
-except ImportError:
-    logger.info('Installing package jinja2')
-    subprocess.call(['pip3', 'install', 'jinja2'])
-    from jinja2 import Environment, FileSystemLoader
+from jinja2 import Environment, FileSystemLoader
     
 if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
-    try:
-        import pychromecast
-    except ImportError as e:
-        logger.error('Installing package pychromecast') 
-        subprocess.call(['pip3', 'install', '--upgrade', '--force-reinstall', 'pychromecast'])
-    try:
-        from gtts import gTTS
-    except ImportError as e:
-        logger.error('Installing package gtts') 
-        subprocess.call(['pip3', 'install', 'gtts'])
-    try:
-        from slugify import slugify   
-    except ImportError as e:
-        logger.error('Installing package slugify') 
-        subprocess.call(['pip3', 'install', 'slugify'])
-
     import pychromecast
-    import socket  ##
+    import socket 
     from gtts import gTTS
     from slugify import slugify
-		
     logger.info("Starting up chromecasts")
     try:
         chromecasts, _ = pychromecast.get_chromecasts()
