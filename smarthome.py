@@ -32,6 +32,7 @@ if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'a
     try:
         chromecasts, _ = pychromecast.get_chromecasts()
         cast = next(cc for cc in chromecasts if cc.device.friendly_name == configuration['Chromecast_Name'])
+        mc = cast.media_controller
     except Exception as e:
         logger.error('chromecasts init not succeeded, error : %s' % e)
     t = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
@@ -974,8 +975,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         return None
         
-    def say(self, s):
-        itext = s.url.query.replace(" ","-")
+    def say(self, s):               #command "/say?text-to-say/lang@volume@device"
+        answ, scomm, rdevice, rvol, rcontent, rtype, stime = SmartHomeReqHandler.read_input(s.url.query)
+        if answ=="Error":
+            if rcontent!="?":
+                answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            SmartHomeReqHandler.send_resp("Error", s.url.query, scomm, stime, s)
+            return
+        itext = scomm.replace(" ","-")
         itext=itext.split("/")
         text = itext[0]
         if not text:
@@ -985,8 +992,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         else:
             lang = "en"
         slow = False
-        current_time = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
-        message="say command on " + current_time + ", text : " + str(text) + ", lang : " + lang
         tts = gTTS(text=text, lang=lang, slow=slow)
         filename = slugify(text+"-"+lang+"-"+str(slow)) + ".mp3"
         cache_filename = FILE_DIR + "/sound/cache/" + filename
@@ -994,44 +999,203 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if not tts_file.is_file():
             logger.info(tts)
             tts.save(cache_filename)
-        mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?cache/" + filename
-        #make a query request for Get /sound
-        logger.info(message)
-        SmartHomeReqHandler.play_mp3(mp3_url)
-        s.send_message(200, "OK " + message + "\n")
+        mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?cache/" + filename   #make a query request for Get /sound
+        rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
+        if rvol!="?":
+            answ, message = SmartHomeReqHandler.setvolume(str(round(rvol*100)))
+            rmessage = rmessage + " restore volume " + str(round(rvol*100))
+        if rcontent!="?":
+            answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            rmessage = rmessage + " restore stream : " + rcontent
+        if rdevice!="?":
+            answ, message = SmartHomeReqHandler.switchdevice(rdevice)
+            rmessage = rmessage + " restore device '" + rdevice+ "'"
+        SmartHomeReqHandler.send_resp(rstatus, "say " + s.url.query, rmessage, stime, s)
 
-    def play(self, s):
-        filename = s.url.query   
+    def play(self, s):                          #command "/play?soundfile.mp3@volume@device"      
+        answ, scomm, rdevice, rvol, rcontent, rtype, stime = SmartHomeReqHandler.read_input(s.url.query)
+        if answ=="Error":
+            if rcontent!="?":
+                answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            SmartHomeReqHandler.send_resp("Error", s.url.query, scomm, stime, s)
+            return
+        filename = scomm   
         mp3_filename = FILE_DIR + "/sound/" + filename
         mp3 = Path(mp3_filename)
-        current_time = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
-        message = "play command on " + current_time + ", file : " + str(mp3_filename)
-        logger.info(message)
         if mp3.is_file():
             mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?" + filename
             #make a query request for Get /sound
-            SmartHomeReqHandler.play_mp3(mp3_url)
-            s.send_message(200, "OK " + message + "\n")
+            rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
         else:
-            s.send_message(200, "File not found\n")
-
-    def play_mp3(mp3_url):
-        cast.wait()
-        mc = cast.media_controller
-        mc.play_media(mp3_url, 'audio/mp3')
-        logger.info("Play mp3 started")
+            rstatus="Error"
+            rmessage = str(mp3_filename) + ", file not found!"
+        if rvol!="?":
+            answ, message = SmartHomeReqHandler.setvolume(str(round(rvol*100)))
+            rmessage = rmessage + " restore volume " + str(round(rvol*100))
+        if rcontent!="?":
+            answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            rmessage = rmessage + " restore stream : " + rcontent
+        if rdevice!="?":
+            answ, message = SmartHomeReqHandler.switchdevice(rdevice)
+            rmessage = rmessage + " restore device '" + rdevice+ "'"
+        SmartHomeReqHandler.send_resp(rstatus, "play " + s.url.query, rmessage, stime, s)
 
     def send_sound(self, s):
         filename = s.url.query
         cache_filename = FILE_DIR + "/sound/" + filename
-        logger.info("sound : " + cache_filename)
         f = open(cache_filename, 'rb')
-        s.send_response(200)        # send_message (later in server.py)
+        s.send_response(200)    
         s.send_header('Content-type', 'audio/mpeg3')
         s.end_headers()
         s.wfile.write(f.read())
         f.close()
+        
+    def send_resp(rstatus, rcommand, rmessage, stime, s):
+        # time.sleep(1)
+        etime = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        rvolume = "{:.0%}".format(cast.status.volume_level)
+        rcontent = mc.status.content_id
+        rtype = mc.status.content_type
+        rpstate = mc.status.player_state
+        if rpstate == "UNKNOWN":
+            rcontent="?" 
+            rtype="?"
+        message='{"device":"'+ cast.device.friendly_name + '","status":"' + rstatus + '","command":"' + rcommand  + '","volume":"' +rvolume +'","starttime":"' + stime + '","endtime":"' + etime + '","playstate":"' + rpstate + '","content":"' + rcontent + '","type":"' + rtype + '","message":"' + rmessage+ '"}'
+        s.send_json(200, message, False)
+        logger.info(message)
 
+    def read_input(ctext):                  
+        global cast, mc, chromecasts
+        stime = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        answ="OK"
+        message=""
+        rdevice = "?"
+        rvol = "?"
+        rcontent = "?"
+        rtype = "?"
+        ctext = ctext.split("@")
+        try:
+            svol=ctext[1]
+        except:
+            svol=""
+        try:
+            sdevice=ctext[2]
+        except:
+            sdevice=""
+        if sdevice!="":
+            rdevice = cast.device.friendly_name
+            answ, message = SmartHomeReqHandler.switchdevice(sdevice)
+            if answ == "Error":
+                return answ, message, rdevice, rvol, rcontent, rtype, stime
+        rpstate = mc.status.player_state
+        if rpstate != "UNKNOWN" and rpstate != "IDLE":
+            mc.stop()
+            rcontent = mc.status.content_id
+            rtype = mc.status.content_type
+        else:
+            rcontent = "?"
+            rtype = "?"
+        if svol!="":
+            cast.wait()
+            rvol = cast.status.volume_level
+            answ, message = SmartHomeReqHandler.setvolume(svol)
+            if answ == "Error":
+                return answ, message, rdevice, rvol, rcontent, rtype, stime
+        return answ, ctext[0], rdevice, rvol, rcontent, rtype, stime
+
+    def switchdevice(sdevice):
+        global cast, mc, chromecasts
+        sdevice = sdevice.replace("%20"," ")
+        try:    
+            cast = next(cc for cc in chromecasts if cc.device.friendly_name == sdevice)
+            cast.wait()
+            mc = cast.media_controller
+            return "OK","Switched to device " + str(cast.device.friendly_name) 
+        except Exception as e:
+            logger.error('chromecasts init not succeeded, error : %s' % e)
+            return "Error","Not switched to device " + str(sdevice)
+
+    def setvolume(svol):
+        global cast, mc, chromecasts
+        svol=svol.replace("%","")
+        try:
+            cast.wait()
+            cast.set_volume(int(svol)/100)
+            time.sleep(1)
+            cast.wait()
+            return "OK","Volume level set to : " + svol +"%" 
+        except Exception as e:
+            logger.error('Chromecast setvolume unsuccesfull, error : %s' % e)
+            return "Error","Volume level not set to : " + svol +"%" 
+
+    def playmedia(pmedia,ptype, wstate, tmax):
+        try:
+            mc.play_media(pmedia, ptype)
+            mc.block_until_active()
+            cast.wait()
+            pstate = "?"
+            i=1 #max x seconds
+            while (mc.status.player_state != wstate or pstate != wstate) and i<tmax:
+                pstate = mc.status.player_state 
+                time.sleep(1)
+                i+=1
+            message="play mp3 : " + pmedia + ", volume : " + str((round(cast.status.volume_level * 100))) + "%" + " on device '" + str(cast.device.friendly_name) + "' playerstate : " + mc.status.player_state
+            logger.info(message)
+            return "OK","Playing "+ str(pmedia) + ", type " + str(ptype)
+        except Exception as e:
+            logger.error('Chromecast playmedia unsuccefull, error : %s' % e)
+            return "Error","Error playing "+ str(pmedia) + ", type " +str(ptype)
+
+    def pycast(self, s):
+        global cast, mc, chromecasts
+        stime = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        cast.wait()
+        itext = s.url.query
+        itext = itext.split("@")
+        command = itext[0]
+        answ = "OK"
+        if command == "devices":
+            chromecasts, _ = pychromecast.get_chromecasts()
+            message= "Devices found : "
+            for cc in chromecasts:
+                if message == "Devices found : ":
+                    message = message + "'" + str(cc.device.friendly_name) + "'"
+                else:
+                    message = message + ", '" + str(cc.device.friendly_name) + "'"               
+        if command == "switchdevice":
+            answ, message = SmartHomeReqHandler.switchdevice(itext[1])
+        if command == "status":
+            message = str(cast.status) 
+#        if command == "mediastatus":
+#            message = str(mc.status).replace("None","'None'")
+        if command == "pause":
+            mc.pause()
+            message = "Paused"
+        if command == "stop":
+            mc.stop()
+            message = "Stopped"
+        if command == "play":
+            if mc.status.player_state == "PAUSED":
+                mc.play()
+                message = "Playing after pause"
+            else:
+                message = "Nothing to play not in PAUSED state"
+        if command == "playmedia":
+            answ, message = SmartHomeReqHandler.playmedia(itext[1],itext[2],'PLAYING', 30)
+        if command == "volume":
+            message = "Volume is " + str((round(cast.status.volume_level * 100))) + "%"
+        if command == "setvolume":
+            answ, message = SmartHomeReqHandler.setvolume(itext[1])
+        if command == "wait":
+            try:
+                wt=int(itext[1].replace("s",""))
+                time.sleep(wt)
+            except Exception as e:
+                logger.error('Chromecast wait time unsuccefull, error : %s' % e)
+                answ="Error"
+            message = "Wait time " + str(wt) + " seconds is finished"
+        SmartHomeReqHandler.send_resp(answ, command, message, stime, s)
+        
 if 'userinterface' in configuration and configuration['userinterface'] == True:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
                             "/sync": SmartHomeReqHandler.syncDevices,
@@ -1041,7 +1205,8 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
                             "/restart": SmartHomeReqHandler.restartServer,
                             "/say": SmartHomeReqHandler.say,
                             "/play": SmartHomeReqHandler.play, 
-                            "/sound": SmartHomeReqHandler.send_sound}
+                            "/sound": SmartHomeReqHandler.send_sound,
+                            "/pycast": SmartHomeReqHandler.pycast}  
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
                              "/settings": SmartHomeReqHandler.settings_post}
@@ -1051,7 +1216,8 @@ else:
                             "/restart": SmartHomeReqHandler.restartServer,
                             "/say": SmartHomeReqHandler.say,
                             "/play": SmartHomeReqHandler.play, 
-                            "/sound": SmartHomeReqHandler.send_sound}
+                            "/sound": SmartHomeReqHandler.send_sound,
+                            "/pycast": SmartHomeReqHandler.pycast}  
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post}
 
