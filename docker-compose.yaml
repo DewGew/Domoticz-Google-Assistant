@@ -3,6 +3,7 @@ services:
   dz-googleassistant:
     image: dewgew/domoticz-google-assistant:latest
     container_name: domoticz-google-assistant
+    # network_mode: host      # needed for chromecast discovery to work
     environment:
       - PUID=1010
       - PGID=1010
@@ -10,6 +11,7 @@ services:
       - 3030:3030
     volumes:
       - /home/${USER}/Domoticz-Google-Assistant/config:/config
+      # - /home/${USER}/Domoticz-Google-Assistant/sound:/sound   # needed for chromecast sounds, replacement ${USER} with username might be necessary 
       - /etc/timezone:/etc/timezone:ro
       - /etc/localtime:/etc/localtime:ro
     restart: unless-stopped
