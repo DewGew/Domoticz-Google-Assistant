@@ -993,7 +993,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             lang = "en"
         slow = False
         tts = gTTS(text=text, lang=lang, slow=slow)
-        filename = slugify(text+"-"+lang+"-"+str(slow)) + ".mp3"
+        filename = slugify(text+"-"+lang+"-"+str(slow), only_ascii=True) + ".mp3"
         cache_filename = FILE_DIR + "/sound/cache/" + filename
         tts_file = Path(cache_filename)
         if not tts_file.is_file():
