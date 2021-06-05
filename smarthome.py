@@ -1044,12 +1044,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def send_sound(self, s):
         filename = s.url.query
         cache_filename = FILE_DIR + "/sound/" + filename
+        logger.debug("Request for soundfile received, file = " + str(cache_filename))
         f = open(cache_filename, 'rb')
         s.send_response(200)    
         s.send_header('Content-type', 'audio/mpeg3')
         s.end_headers()
         s.wfile.write(f.read())
         f.close()
+        logger.debug("File returned succesfully")
         
     def send_resp(rstatus, rcommand, rmessage, stime, s):
         # time.sleep(1)
