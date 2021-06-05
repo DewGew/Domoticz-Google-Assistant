@@ -38,7 +38,8 @@ if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'a
     t = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
     t.connect(("8.8.8.8", 80))                           
     IP_Address = t.getsockname()[0]                      
-    t.close                                              
+    t.close 
+    IP_Port = str(configuration['port_number'])    
     logger.info("IP_Address is : " + IP_Address)         
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
@@ -999,7 +1000,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if not tts_file.is_file():
             logger.info(tts)
             tts.save(cache_filename)
-        mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?cache/" + filename   #make a query request for Get /sound
+        mp3_url = "http://" + IP_Address + ":" + IP_Port + "/sound?cache/" + filename   #make a query request for Get /sound
         rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
         if rvol!="?":
             answ, message = SmartHomeReqHandler.setvolume(str(round(rvol*100)))
@@ -1023,7 +1024,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         mp3_filename = FILE_DIR + "/sound/" + filename
         mp3 = Path(mp3_filename)
         if mp3.is_file():
-            mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?" + filename
+            mp3_url = "http://" + IP_Address + ":" + IP_Port + "/sound?" + filename
             #make a query request for Get /sound
             rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
         else:
@@ -1043,12 +1044,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def send_sound(self, s):
         filename = s.url.query
         cache_filename = FILE_DIR + "/sound/" + filename
+        logger.debug("Request for soundfile received, file = " + str(cache_filename))
         f = open(cache_filename, 'rb')
         s.send_response(200)    
         s.send_header('Content-type', 'audio/mpeg3')
         s.end_headers()
         s.wfile.write(f.read())
         f.close()
+        logger.debug("File returned succesfully")
         
     def send_resp(rstatus, rcommand, rmessage, stime, s):
         # time.sleep(1)
