@@ -101,9 +101,9 @@ if update:
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
         if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US',
-                                    'Blinds Percentage']:
+                                    'Blinds Percentage', 'Blinds + Stop']:
             return domains['blinds']
-        elif device["SwitchType"] in ['Blinds Inverted', 'Blinds Percentage Inverted']:
+        elif device["SwitchType"] in ['Blinds Inverted', 'Blinds Percentage Inverted', 'Blinds Inverted + Stop']:
             return domains['blindsinv']
         elif 'Door Lock' == device["SwitchType"]:
             return domains['lock']
@@ -327,9 +327,9 @@ def getAog(device):
         aog.attributes = ATTRS_COLOR_TEMP
     if domains['thermostat'] == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
-    if domains['blinds'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
+    if domains['blinds'] == aog.domain and ("Blinds Percentage" == device["SwitchType"] or "Blinds + Stop" == device["SwitchType"]):
         aog.attributes = ATTRS_PERCENTAGE
-    if domains['blindsinv'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
+    if domains['blindsinv'] == aog.domain and ("Blinds Percentage Inverted" == device["SwitchType"] or "Blinds Inverted + Stop" == device["SwitchType"]):
         aog.attributes = ATTRS_PERCENTAGE
     if domains['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
         aog.attributes = ATTRS_VACUUM_MODES
