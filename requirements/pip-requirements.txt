@@ -13,3 +13,4 @@ Jinja2==2.11.3
 PyChromecast==0.3.2
 gTTS==2.2.1
 slugify==0.0.1
+markupsafe==2.0.1
