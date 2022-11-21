@@ -382,10 +382,10 @@ class OpenCloseTrait(_Trait):
             if domain == domains['blindsinv']:
               if p == 0 and state in ['Closed', 'Stopped', 'On']:
                   # open
-                  url += 'Off'
+                  url += 'Open'
               elif p == 100 and state in ['Open', 'Stopped', 'Off']:
                   # close
-                  url += 'On'
+                  url += 'Close'
               else:
                   raise SmartHomeError(ERR_ALREADY_IN_STATE,
                                        'Unable to execute {} for {}. Already in state '.format(command,
@@ -393,10 +393,10 @@ class OpenCloseTrait(_Trait):
             else:
               if p == 100 and state in ['Closed', 'Stopped', 'On']:
                   # open
-                  url += 'Off'
+                  url += 'Open'
               elif p == 0 and state in ['Open', 'Stopped', 'Off']:
                   # close
-                  url += 'On'
+                  url += 'Close'
               else:
                   raise SmartHomeError(ERR_ALREADY_IN_STATE,
                                        'Unable to execute {} for {}. Already in state '.format(command,
