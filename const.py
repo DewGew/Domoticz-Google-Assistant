@@ -165,7 +165,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['smokedetector']: TYPE_SMOKE_DETECTOR,
     domains['speaker']: TYPE_SPEAKER,
     domains['switch']: TYPE_SWITCH,
-    domains['temperature']: TYPE_THERMOSTAT,
+    domains['temperature']: TYPE_SENSOR,
     domains['thermostat']: TYPE_THERMOSTAT,
     domains['vacuum']: TYPE_VACUUM,
     domains['valve']: TYPE_VALVE,
