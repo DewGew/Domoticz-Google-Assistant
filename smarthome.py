@@ -38,7 +38,7 @@ if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'a
     t = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
     t.connect(("8.8.8.8", 80))                           
     IP_Address = t.getsockname()[0]                      
-    t.close 
+    t.close
     IP_Port = str(configuration['port_number'])    
     logger.info("IP_Address is : " + IP_Address)         
 
@@ -100,10 +100,10 @@ if update:
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
-        if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US',
-                                    'Blinds Percentage', 'Blinds + Stop']:
+        if device["SwitchType"] in ['Blinds', 'Blinds + Stop', 'Venetian Blinds EU', 'Venetian Blinds US',
+                                    'Blinds Percentage']:
             return domains['blinds']
-        elif device["SwitchType"] in ['Blinds Inverted', 'Blinds Percentage Inverted', 'Blinds Inverted + Stop']:
+        elif device["SwitchType"] in ['Blinds Inverted', 'Blinds Percentage Inverted', 'Blinds Inverted + Stop']:	
             return domains['blindsinv']
         elif 'Door Lock' == device["SwitchType"]:
             return domains['lock']
@@ -145,8 +145,10 @@ def AogGetDomain(device):
         return domains['group']
     elif 'Scene' == device["Type"]:
         return domains['scene']
-    elif device["Type"] in ['Temp', 'Temp + Humidity', 'Temp + Humidity + Baro']:
+    elif device["Type"] in ['Temp']:
         return domains['temperature']
+    elif device["Type"] in ['Temp + Humidity', 'Temp + Humidity + Baro']:
+        return domains['tempHumidity']
     elif 'Thermostat' == device['Type']:
         return domains['thermostat']
     elif 'Color Switch' == device["Type"]: 
@@ -539,7 +541,7 @@ class _GoogleEntity:
         attrs = {'online': True}
         for trt in self.traits():
             deep_update(attrs, trt.query_attributes())
-
+                
         return attrs
 
     def execute(self, command, params, challenge):
@@ -580,7 +582,6 @@ class _GoogleEntity:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-
                 if acknowledge:
                     if challenge is None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'ackNeeded',
@@ -606,6 +607,7 @@ class _GoogleEntity:
             getDevices('scene')
         else:
             getDevices('id', self.state.id)
+            
 
 class SmartHomeReqHandler(OAuthReqHandler):
     global smarthomeControlMappings
@@ -640,6 +642,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 }
 
         handler = smarthomeControlMappings.get(inputs[0].get('intent'))
+        
+        logger.info("Google Assistant requests an " + inputs[0].get('intent'))
 
         if handler is None:
             return {'requestId': request_id, 'payload': {'errorCode': ERR_PROTOCOL_ERROR}}
@@ -671,8 +675,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         message = json.loads(s.body)
 
         self._request_id = message.get('requestId')
-
-        logger.info("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
+        
+        logger.info(json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
         response = self.smarthome_process(message, token)
 
         try:
@@ -680,6 +684,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 logger.error('Error handling message %s: %s' % (message, response['payload']))
         except:
             pass
+           
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
 
     def smarthome(self, s):
@@ -872,7 +877,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         aogDevs.clear()
         getDevices()  # sync all devices
         getSettings()
-        enableReport = ReportState.enable_report_state()
         agent_user_id = token.get('userAgentId', None)
 
         for state in aogDevs.values():
@@ -892,15 +896,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def smarthome_query(self, payload, token):
         """Handle action.devices.QUERY request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
-        """
-        enableReport = ReportState.enable_report_state()
+        """     
         response = {}
         devices = {}
-        getDevices()
+        #getDevices()
         
         for device in payload.get('devices', []):
             devid = device['id']
-            #_GoogleEntity(aogDevs.get(devid, None)).async_update()
+            _GoogleEntity(aogDevs.get(devid, None)).async_update()
             state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
@@ -915,24 +918,24 @@ class SmartHomeReqHandler(OAuthReqHandler):
               devices[devid] = {"online": False}
               
         response = {'devices': devices}
-        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
-        
-        if state.report_state == True and enableReport == True:
-            self.report_state(devices, token)
-               
+        logger.info(json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
+     
         return {'devices': devices}
 
     def smarthome_exec(self, payload, token):
         """Handle action.devices.EXECUTE request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicesexecute
         """
+        enableReport = ReportState.enable_report_state()
         entities = {}
         results = {}
+        devices = {}
 
         for command in payload['commands']:
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
+                
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
                     continue
@@ -943,10 +946,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
                         getSettings()
 
                     state = aogDevs.get(entity_id, None)
+
                     if state is None:
                         results[entity_id] = {'ids': [entity_id], 'status': 'ERROR', 'errorCode': ERR_DEVICE_OFFLINE}
                         continue
-
+          
                     entities[entity_id] = _GoogleEntity(state)
 
                 try:
@@ -961,13 +965,23 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                           'challengeNeeded': {'type': err.desc}}
                     logger.error(err)
 
+                if state.report_state == True and enableReport == True:
+                    devices[entity_id] = execution.get('params', {})
+                    devices[entity_id].update({'online': True})
+                    if 'followUpToken' in devices[entity_id]:
+                        devices[entity_id].pop('followUpToken')
+                    self.report_state(devices, token)
+
         final_results = list(results.values())
+               
         for entity in entities.values():
             if entity.entity_id in results:
                 continue
             entity.async_update()
-            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-    
+            newState = entity.query_serialize()
+            newState.update(execution.get('params', {}))
+            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': newState})
+            
         return {'commands': final_results}
 
     def smarthome_disconnect(self, payload, token):
