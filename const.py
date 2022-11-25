@@ -22,6 +22,7 @@ DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
 DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
 DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
 DOMOTICZ_GET_VERSION = '/json.htm?type=command&param=getversion'
+DOMOTICZ_SEND_COMMAND = 'json.htm?type=command&param='
 
 # https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
@@ -114,6 +115,7 @@ domains = {
     'speaker': 'Speaker',
     'switch': 'Switch',
     'temperature': 'Temperature',
+    'tempHumidity': 'TempHumidity',
     'thermostat': 'Thermostat',
     'valve': 'Valve',
     'vacuum': 'Vacuum',
@@ -172,4 +174,5 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['washer']: TYPE_WASHER,
     domains['waterheater']: TYPE_WATERHEATER,
     domains['window']: TYPE_WINDOW,
+    domains['tempHumidity']:TYPE_SENSOR,
 }
