@@ -33,6 +33,7 @@ TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
 TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
 TRAIT_TIMER = PREFIX_TRAITS + 'Timer'
 TRAIT_ENERGY = PREFIX_TRAITS + 'EnergyStorage'
+TRAIT_HUMIDITY = PREFIX_TRAITS + 'HumiditySetting'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -61,6 +62,8 @@ COMMAND_TOGGLES = PREFIX_COMMANDS + 'SetToggles'
 COMMAND_TIMER_START = PREFIX_COMMANDS + 'TimerStart'
 COMMAND_TIMER_CANCEL = PREFIX_COMMANDS + 'TimerCancel'
 COMMAND_CHARGE = PREFIX_COMMANDS + 'Charge'
+COMMAND_SET_HUMIDITY = PREFIX_COMMANDS + 'SetHumidity'
+COMMAND_SET_HUMIDITY_RELATIVE = PREFIX_COMMANDS + 'HumidityRelative'
 
 TRAITS = []
 
@@ -333,7 +336,13 @@ class OpenCloseTrait(_Trait):
 
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
-        return {}
+        features = self.state.attributes
+        response = {}
+        
+        if features & ATTRS_PERCENTAGE != True:
+            response['discreteOnlyOpenClose'] = True
+            
+        return response
 
     def query_attributes(self):
         """Return OpenClose query attributes."""
@@ -371,7 +380,7 @@ class OpenCloseTrait(_Trait):
         domain = self.state.domain
         
         if features & ATTRS_PERCENTAGE:
-            if domain == domains['blindsinv']:
+            if domain == domains['blinds']:
               url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
                 params['openPercent'])
             else:
@@ -404,6 +413,7 @@ class OpenCloseTrait(_Trait):
                   raise SmartHomeError(ERR_ALREADY_IN_STATE,
                                        'Unable to execute {} for {}. Already in state '.format(command,
                                                                                                self.state.entity_id))
+
 
         if protected:
             url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
@@ -585,20 +595,23 @@ class TemperatureSettingTrait(_Trait):
         if domain == domains['thermostat']:
             return features & ATTRS_THERMSTATSETPOINT
         else:
-            return domain in domains['temperature']
+            return domain in [domains['temperature'], domains['tempHumidity']]
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
-        # response["thermostatTemperatureRange"] = {
+        # response["thermostatTemperatureRange"] = { 
             # 'minThresholdCelsius': -20,
             # 'maxThresholdCelsius': 40}
         
-        if domain == domains['temperature']:
+        if domain in [domains['temperature'], domains['tempHumidity']]:
             response["queryOnlyTemperatureSetting"] = True
-            response["availableThermostatModes"] = 'heat'
+            response["availableThermostatModes"] = 'off'
+            response["thermostatTemperatureRange"] = {
+                'minThresholdCelsius': -2,
+                'maxThresholdCelsius': 2}
 
         if domain == domains['thermostat']:
             if self.state.modes_idx is not None:
@@ -616,16 +629,17 @@ class TemperatureSettingTrait(_Trait):
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
-        if domain == domains['temperature']:
+        if domain in [domains['temperature'], domains['tempHumidity']]:
+            response['activeThermostatMode'] =  'none'
             response['thermostatMode'] = 'heat'
+            
             current_temp = float(self.state.temp)
             if current_temp is not None:
-                test_temp = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
+                if round(tempConvert(current_temp, _google_temp_unit(units)), 1) <= 5:
+                    response['thermostatMode'] = 'cool'
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
             current_humidity = self.state.humidity
-            if current_humidity is not None:
-                response['thermostatHumidityAmbient'] = current_humidity
 
         if domain == domains['thermostat']:
             if self.state.modes_idx is not None:
@@ -704,13 +718,14 @@ class TemperatureControlTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {}
+        response = {"temperatureUnitForUX": _google_temp_unit(units)}
+            
         if self.state.merge_thermo_idx is not None:
-            response = {"temperatureUnitForUX": _google_temp_unit(units)}
             response = {"temperatureStepCelsius": 1}
             response["temperatureRange"] = {
                 'minThresholdCelsius': 30,
                 'maxThresholdCelsius': 300}
-        
+            
         return response
 
     def query_attributes(self):
@@ -718,6 +733,7 @@ class TemperatureControlTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {}
+                
         if self.state.merge_thermo_idx is not None:
             if self.state.battery <= configuration['Low_battery_limit']:
                 response['exceptionCode'] = 'lowBattery'
@@ -1228,7 +1244,7 @@ class EnergyStorageTrait(_Trait):
         """Return EnergyStorge attributes for a sync request."""
         battery = self.state.battery
         response = {}
-        if battery is not None or battery is not 255:
+        if battery is not None or battery != 255:
             response['queryOnlyEnergyStorage'] = True
         
         return response
@@ -1237,7 +1253,7 @@ class EnergyStorageTrait(_Trait):
         """Return EnergyStorge query attributes."""
         battery = self.state.battery
         response = {}
-        if battery is not None or battery is not 255:
+        if battery is not None or battery != 255:
             if battery <= 99:
                 response['capacityRemaining'] = [{
                     'unit': 'PERCENTAGE',
@@ -1268,3 +1284,61 @@ class EnergyStorageTrait(_Trait):
                     # raise SmartHomeError(ERR_WRONG_PIN,
                                          # 'Unable to execute {} for {} check your settings'.format(command,
                                                                                                   # self.state.entity_id))
+
+@register_trait
+class HumiditySettingTrait(_Trait):
+    """Trait to offer scene functionality.
+    https://developers.google.com/actions/smarthome/traits/scene
+    """
+
+    name = TRAIT_HUMIDITY
+    commands = [
+        COMMAND_SET_HUMIDITY,
+        COMMAND_SET_HUMIDITY_RELATIVE
+    ]
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in domains['tempHumidity']
+
+    def sync_attributes(self):
+        """Return humidity attributes for a sync request."""
+        # Neither supported domain can support sceneReversible
+        response = {}
+        response["humiditySetpointRange"] = {
+            "minPercent": 25,
+            "maxPercent": 75
+            }
+        response['queryOnlyHumiditySetting'] = True
+        
+        return response
+
+    def query_attributes(self):
+        """Return humidity query attributes."""
+        current_humidity = self.state.humidity
+        response = {}
+        response['humidityAmbientPercent'] = current_humidity
+        #response['humiditySetpointPercent'] = current_humidity
+        
+        return response
+
+    def execute(self, command, params):
+        """Execute a humidity command."""
+        # domain = self.state.domain
+        # protected = self.state.protected
+        
+        # if domain == domains['humidity']:
+            # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
+
+        # if protected:
+            # url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
+
+        # r = requests.get(url, auth=CREDITS)
+        # if protected:
+            # status = r.json()
+            # err = status.get('status')
+            # if err == 'ERROR':
+                # raise SmartHomeError(ERR_WRONG_PIN,
+                                     # 'Unable to execute {} for {} check your settings'.format(command,
+                                                                                              # self.state.entity_id))
