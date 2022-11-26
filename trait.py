@@ -602,16 +602,13 @@ class TemperatureSettingTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
-        # response["thermostatTemperatureRange"] = { 
-            # 'minThresholdCelsius': -20,
-            # 'maxThresholdCelsius': 40}
+        response["thermostatTemperatureRange"] = { 
+            'minThresholdCelsius': -20,
+            'maxThresholdCelsius': 40}
         
         if domain in [domains['temperature'], domains['tempHumidity']]:
             response["queryOnlyTemperatureSetting"] = True
-            response["availableThermostatModes"] = 'off'
-            response["thermostatTemperatureRange"] = {
-                'minThresholdCelsius': -2,
-                'maxThresholdCelsius': 2}
+            response["availableThermostatModes"] = 'heat, cool'
 
         if domain == domains['thermostat']:
             if self.state.modes_idx is not None:
@@ -629,17 +626,16 @@ class TemperatureSettingTrait(_Trait):
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
-        if domain in [domains['temperature'], domains['tempHumidity']]:
-            response['activeThermostatMode'] =  'none'
-            response['thermostatMode'] = 'heat'
-            
+        if domain in [domains['temperature'], domains['tempHumidity']]:           
             current_temp = float(self.state.temp)
             if current_temp is not None:
-                if round(tempConvert(current_temp, _google_temp_unit(units)), 1) <= 5:
+                if round(tempConvert(current_temp, _google_temp_unit(units)),1) <= 3:
                     response['thermostatMode'] = 'cool'
+                else:
+                    response['thermostatMode'] = 'heat'
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
-            current_humidity = self.state.humidity
+            #current_humidity = self.state.humidity
 
         if domain == domains['thermostat']:
             if self.state.modes_idx is not None:
