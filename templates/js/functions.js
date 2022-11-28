@@ -113,7 +113,7 @@ function sortIdxTable(n) {
 function readDevices(devicelist){
     $.ajax({
       type: 'GET',
-      url: '/states',
+      url: './states',
       success: function(response) {
         devicelist = JSON.parse(response)
         var xl, i, nicknames = "";
@@ -234,7 +234,7 @@ function getlogs(){
     
     $.ajax({
       type: 'GET',
-      url: '/log',
+      url: './log',
       success: function(response) {
           $("#logs").html(response);
       }

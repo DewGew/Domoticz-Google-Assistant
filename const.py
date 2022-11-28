@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.10.6'
+VERSION = '1.22.12'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -22,6 +22,7 @@ DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
 DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
 DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
 DOMOTICZ_GET_VERSION = '/json.htm?type=command&param=getversion'
+DOMOTICZ_SEND_COMMAND = 'json.htm?type=command&param='
 
 # https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
@@ -114,6 +115,7 @@ domains = {
     'speaker': 'Speaker',
     'switch': 'Switch',
     'temperature': 'Temperature',
+    'tempHumidity': 'TempHumidity',
     'thermostat': 'Thermostat',
     'valve': 'Valve',
     'vacuum': 'Vacuum',
@@ -165,11 +167,12 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['smokedetector']: TYPE_SMOKE_DETECTOR,
     domains['speaker']: TYPE_SPEAKER,
     domains['switch']: TYPE_SWITCH,
-    domains['temperature']: TYPE_THERMOSTAT,
+    domains['temperature']: TYPE_SENSOR,
     domains['thermostat']: TYPE_THERMOSTAT,
     domains['vacuum']: TYPE_VACUUM,
     domains['valve']: TYPE_VALVE,
     domains['washer']: TYPE_WASHER,
     domains['waterheater']: TYPE_WATERHEATER,
     domains['window']: TYPE_WINDOW,
+    domains['tempHumidity']:TYPE_SENSOR,
 }
