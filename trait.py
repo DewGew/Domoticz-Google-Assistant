@@ -346,14 +346,14 @@ class OpenCloseTrait(_Trait):
             
         elif domain == domains['blindsinv']:
             if self.state.state in ['Open', 'Off']:
-                response['openPercent'] = 0
-            else:
                 response['openPercent'] = 100
+            else:
+                response['openPercent'] = 0
         else:
             if self.state.state in ['Open', 'Off']:
-                response['openPercent'] = 100
-            else:
                 response['openPercent'] = 0
+            else:
+                response['openPercent'] = 100
 
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
@@ -382,10 +382,10 @@ class OpenCloseTrait(_Trait):
             if domain == domains['blindsinv']:
               if p == 0 and state in ['Closed', 'Stopped', 'On']:
                   # open
-                  url += 'Off'
+                  url += 'On'
               elif p == 100 and state in ['Open', 'Stopped', 'Off']:
                   # close
-                  url += 'On'
+                  url += 'Off'
               else:
                   raise SmartHomeError(ERR_ALREADY_IN_STATE,
                                        'Unable to execute {} for {}. Already in state '.format(command,
@@ -393,10 +393,10 @@ class OpenCloseTrait(_Trait):
             else:
               if p == 100 and state in ['Closed', 'Stopped', 'On']:
                   # open
-                  url += 'Off'
+                  url += 'On'
               elif p == 0 and state in ['Open', 'Stopped', 'Off']:
                   # close
-                  url += 'On'
+                  url += 'Off'
               else:
                   raise SmartHomeError(ERR_ALREADY_IN_STATE,
                                        'Unable to execute {} for {}. Already in state '.format(command,
