@@ -323,7 +323,7 @@ def getAog(device):
             else:
                 logger.error('Scenes and Groups does not support function "hide" yet')
             
-    if aog.domain in [domains['camera']]:
+    if aog.domain in [domains['camera'], domains['doorbell']]:
         aog.report_state = False
         
     if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
