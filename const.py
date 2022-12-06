@@ -35,6 +35,7 @@ TYPE_COOKTOP = PREFIX_TYPES + 'COOKTOP'
 TYPE_CURTAIN = PREFIX_TYPES + 'CURTAIN'
 TYPE_DISHWASHER = PREFIX_TYPES + 'DISHWASHER'
 TYPE_DOOR = PREFIX_TYPES + 'DOOR'
+TYPE_DOORBELL = PREFIX_TYPES + 'DOORBELL'
 TYPE_DRYER = PREFIX_TYPES + 'DRYER'
 TYPE_FAN = PREFIX_TYPES + 'FAN'
 TYPE_GARAGE = PREFIX_TYPES + 'GARAGE'
@@ -86,6 +87,7 @@ domains = {
     'color': 'ColorSwitch',
     'cooktop': 'Cooktop',
     'door': 'DoorSensor',
+    'doorbell': 'Doorbell',
     'dishwasher': 'Dishwasher',
     'dryer': 'Dryer',
     'fan': 'Fan',
@@ -143,6 +145,7 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['cooktop']: TYPE_COOKTOP,
     domains['dishwasher']: TYPE_DISHWASHER,
     domains['door']: TYPE_DOOR,
+    domains['doorbell']: TYPE_DOORBELL,
     domains['dryer']: TYPE_DRYER,
     domains['fan']: TYPE_FAN,
     domains['garage']: TYPE_GARAGE,
