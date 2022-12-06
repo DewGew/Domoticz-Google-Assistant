@@ -34,6 +34,7 @@ TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
 TRAIT_TIMER = PREFIX_TRAITS + 'Timer'
 TRAIT_ENERGY = PREFIX_TRAITS + 'EnergyStorage'
 TRAIT_HUMIDITY = PREFIX_TRAITS + 'HumiditySetting'
+TRAIT_OBJECTDETECTION = PREFIX_TRAITS + 'ObjectDetection'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
 COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
@@ -131,6 +132,7 @@ class OnOffTrait(_Trait):
             domains['color'],
             domains['cooktop'],
             domains['dishwasher'],
+            domains['doorbell'],
             domains['dryer'],
             domains['fan'],
             domains['group'],
@@ -156,7 +158,7 @@ class OnOffTrait(_Trait):
         """Return OnOff attributes for a sync request."""
         domain = self.state.domain
         response = {}
-        if domain in [domains['sensor'], domains['smokedetector']]:
+        if domain in [domains['sensor'], domains['smokedetector'], domains['doorbell']]:
             response['queryOnlyOnOff'] = True
         
         return response
@@ -601,10 +603,13 @@ class TemperatureSettingTrait(_Trait):
         """Return temperature point and modes attributes for a sync request."""
         domain = self.state.domain
         units = self.state.tempunit
+        minThree = self.state.minThreehold
+        maxThree = self.state.maxThreehold
+            
         response = {"thermostatTemperatureUnit": _google_temp_unit(units)}
         response["thermostatTemperatureRange"] = { 
-            'minThresholdCelsius': -20,
-            'maxThresholdCelsius': 40}
+            'minThresholdCelsius': minThree,
+            'maxThresholdCelsius': maxThree}
         
         if domain in [domains['temperature'], domains['tempHumidity']]:
             response["queryOnlyTemperatureSetting"] = True
@@ -635,7 +640,7 @@ class TemperatureSettingTrait(_Trait):
                     response['thermostatMode'] = 'heat'
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
-            #current_humidity = self.state.humidity
+                #current_humidity = self.state.humidity
 
         if domain == domains['thermostat']:
             if self.state.modes_idx is not None:
@@ -657,6 +662,7 @@ class TemperatureSettingTrait(_Trait):
     def execute(self, command, params):
         """Execute a temperature point or mode command."""
         # All sent in temperatures are always in Celsius
+
         if command == COMMAND_THERMOSTAT_SET_MODE:
             if self.state.modes_idx is not None:
                 levels = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
@@ -713,14 +719,16 @@ class TemperatureControlTrait(_Trait):
         """Return temperature point attributes for a sync request."""
         domain = self.state.domain
         units = self.state.tempunit
+        minThree = -100
+        maxThree = 100
         response = {}
         response = {"temperatureUnitForUX": _google_temp_unit(units)}
+        response["temperatureRange"] = {
+                'minThresholdCelsius': minThree,
+                'maxThresholdCelsius': maxThree}
             
         if self.state.merge_thermo_idx is not None:
             response = {"temperatureStepCelsius": 1}
-            response["temperatureRange"] = {
-                'minThresholdCelsius': 30,
-                'maxThresholdCelsius': 300}
             
         return response
 
@@ -1045,7 +1053,7 @@ class VolumeTrait(_Trait):
             self._execute_volume_relative(params)
         else:
             raise SmartHomeError(ERR_NOT_SUPPORTED,
-                                 'Unable to execute {} for {} '.format(command, self.state.entity_id))
+                                 'Unable to execute {} for {} '.format(command, self.state.entity_id))                         
 
 
 @register_trait
@@ -1064,7 +1072,10 @@ class CameraStreamTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in domains['camera']
+        if configuration['Camera_Stream']['Enabled']:
+            return domain in [domains['camera'], domains['doorbell']]
+            
+        return False
 
     def sync_attributes(self):
         """Return stream attributes for a sync request."""
