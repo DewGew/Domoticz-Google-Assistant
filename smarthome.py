@@ -254,13 +254,16 @@ def getAog(device):
                 if dt.lower() in ['window', 'gate', 'garage', 'door']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['light'], domains['switch']]:
-                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffeemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
+                if dt.lower() in ['window', 'door', 'doorbell', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffeemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
                     aog.domain = domains[dt.lower()]
             if aog.domain in [domains['door']]:
                 if dt.lower() in ['window', 'gate', 'garage']:
                     aog.domain = domains[dt.lower()]    
             if aog.domain in [domains['selector']]:
                 if dt.lower() in ['vacuum']:
+                    aog.domain = domains[dt.lower()]
+            if aog.domain in [domains['camera']]:
+                if dt.lower() in ['doorbell']:
                     aog.domain = domains[dt.lower()]
         pn = desc.get('name', None)
         if pn is not None:
@@ -280,11 +283,20 @@ def getAog(device):
         if not report_state:
             aog.report_state = report_state            
         if domains['thermostat'] == aog.domain:
+            minT = desc.get('minThreehold', None)
+            if minT is not None:
+                aog.minThreehold = minT
+            maxT = desc.get('maxThreehold', None)
+            if maxT is not None:
+                aog.maxThreehold = maxT
             at_idx = desc.get('actual_temp_idx', None)
             if at_idx is not None:
                 aog.actual_temp_idx = at_idx
                 try:
                     aog.state = str(aogDevs[domains['temperature'] + at_idx].temp)
+                    aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
+                except Exception:
+                    aog.state = str(aogDevs[domains['tempHumidity'] + at_idx].temp)
                     aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find temperature device with idx %s', at_idx)
@@ -526,6 +538,9 @@ class _GoogleEntity:
         room = state.room
         if room:
             device['roomHint'] = room
+            
+        if state.domain == 'Doorbell':
+            device['traits'].append('action.devices.traits.ObjectDetection')
                
         return device
 
