@@ -295,9 +295,6 @@ def getAog(device):
                 try:
                     aog.state = str(aogDevs[domains['temperature'] + at_idx].temp)
                     aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
-                except Exception:
-                    aog.state = str(aogDevs[domains['tempHumidity'] + at_idx].temp)
-                    aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find temperature device with idx %s', at_idx)
             modes_idx = desc.get('selector_modes_idx', None)
