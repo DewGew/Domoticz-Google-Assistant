@@ -135,7 +135,7 @@ Auth = {
             'uid': '2345',
             'accessToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
             'refreshToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
-            'userId': '2345'
+            'userAgentId': '2345'
         },
     },
     'users': {
@@ -206,6 +206,8 @@ class AogState:
         self.lastupdate = ''
         self.selectorLevelName = ''
         self.merge_thermo_idx = None
+        self.minThreehold = -20
+        self.maxThreehold = 40
 
 
 def uptime():
