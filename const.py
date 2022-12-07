@@ -117,7 +117,6 @@ domains = {
     'speaker': 'Speaker',
     'switch': 'Switch',
     'temperature': 'Temperature',
-    'tempHumidity': 'TempHumidity',
     'thermostat': 'Thermostat',
     'valve': 'Valve',
     'vacuum': 'Vacuum',
@@ -133,6 +132,7 @@ ATTRS_COLOR_TEMP = 3
 ATTRS_PERCENTAGE = 1
 ATTRS_FANSPEED = 1
 ATTRS_VACUUM_MODES = 1
+ATTRS_HUMIDITY = 1
 
 DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['ac_unit']: TYPE_AC_UNIT,
@@ -177,5 +177,4 @@ DOMOTICZ_TO_GOOGLE_TYPES = {
     domains['washer']: TYPE_WASHER,
     domains['waterheater']: TYPE_WATERHEATER,
     domains['window']: TYPE_WINDOW,
-    domains['tempHumidity']:TYPE_SENSOR,
 }
