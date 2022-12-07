@@ -14,13 +14,48 @@ import requests
 
 import trait
 from auth import *
-from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
-                   ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, DOMOTICZ_GET_ALL_DEVICES_URL, domains,
-                   DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, CONFIGFILE, LOGFILE,
-                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, ATTRS_BRIGHTNESS, ATTRS_FANSPEED, ATTRS_VACUUM_MODES,
-                   ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
-from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
-                     getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
+from const import (
+    DOMOTICZ_TO_GOOGLE_TYPES,
+    ERR_FUNCTION_NOT_SUPPORTED,
+    ERR_PROTOCOL_ERROR,
+    ERR_DEVICE_OFFLINE,
+    ERR_UNKNOWN_ERROR,
+    ERR_CHALLENGE_NEEDED,
+    DOMOTICZ_GET_ALL_DEVICES_URL,
+    domains,
+    DOMOTICZ_GET_SETTINGS_URL,
+    DOMOTICZ_GET_ONE_DEVICE_URL,
+    DOMOTICZ_GET_SCENES_URL,
+    CONFIGFILE,
+    LOGFILE,
+    REQUEST_SYNC_BASE_URL,
+    REPORT_STATE_BASE_URL,
+    ATTRS_BRIGHTNESS,
+    ATTRS_FANSPEED,
+    ATTRS_VACUUM_MODES,
+    ATTRS_THERMSTATSETPOINT,
+    ATTRS_COLOR_TEMP,
+    ATTRS_PERCENTAGE,
+    ATTRS_HUMIDITY,
+    VERSION,
+    DOMOTICZ_GET_VERSION
+)
+
+from helpers import (
+    configuration,
+    readFile,
+    saveFile,
+    SmartHomeError,
+    SmartHomeErrorNoChallenge,
+    AogState,
+    uptime,
+    getTunnelUrl,
+    FILE_DIR,
+    logger,
+    ReportState,
+    Auth,
+    logfilepath
+)
 from jinja2 import Environment, FileSystemLoader
     
 if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
@@ -145,10 +180,8 @@ def AogGetDomain(device):
         return domains['group']
     elif 'Scene' == device["Type"]:
         return domains['scene']
-    elif device["Type"] in ['Temp']:
+    elif device["Type"] in ['Temp', 'Temp + Humidity', 'Temp + Humidity + Baro']:
         return domains['temperature']
-    elif device["Type"] in ['Temp + Humidity', 'Temp + Humidity + Baro']:
-        return domains['tempHumidity']
     elif 'Thermostat' == device['Type']:
         return domains['thermostat']
     elif 'Color Switch' == device["Type"]: 
@@ -344,6 +377,8 @@ def getAog(device):
         aog.attributes = ATTRS_PERCENTAGE
     if domains['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
         aog.attributes = ATTRS_VACUUM_MODES
+    if domains['temperature'] == aog.domain and device["Type"] in ['Temp + Humidity', 'Temp + Humidity + Baro']:
+        aog.attributes = ATTRS_HUMIDITY
         
     if aog.room == None:
         if aog.domain not in [domains['scene'], domains['group']]:
