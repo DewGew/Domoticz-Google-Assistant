@@ -2,69 +2,80 @@
 
 import base64
 import json
-from datetime import datetime
-
 import requests
 
-from const import (ATTRS_BRIGHTNESS, ATTRS_THERMSTATSETPOINT, ATTRS_COLOR, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE,
-                   ATTRS_VACUUM_MODES, domains, ERR_ALREADY_IN_STATE, ERR_WRONG_PIN, ERR_NOT_SUPPORTED,
-                   ATTRS_FANSPEED)
-
+from datetime import datetime
 from helpers import SmartHomeError, configuration, logger, tempConvert
+from const import (
+    ATTRS_BRIGHTNESS,
+    ATTRS_THERMSTATSETPOINT,
+    ATTRS_COLOR,
+    ATTRS_COLOR_TEMP,
+    ATTRS_PERCENTAGE,
+    ATTRS_VACUUM_MODES,
+    domains,
+    ERR_ALREADY_IN_STATE,
+    ERR_WRONG_PIN,
+    ERR_NOT_SUPPORTED,
+    ATTRS_FANSPEED
+)
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
 
 PREFIX_TRAITS = 'action.devices.traits.'
-TRAIT_ONOFF = PREFIX_TRAITS + 'OnOff'
-TRAIT_DOCK = PREFIX_TRAITS + 'Dock'
-TRAIT_STARTSTOP = PREFIX_TRAITS + 'StartStop'
-TRAIT_BRIGHTNESS = PREFIX_TRAITS + 'Brightness'
-TRAIT_COLOR_SETTING = PREFIX_TRAITS + 'ColorSetting'
-TRAIT_SCENE = PREFIX_TRAITS + 'Scene'
-TRAIT_TEMPERATURE_CONTROL = PREFIX_TRAITS + 'TemperatureControl'
-TRAIT_TEMPERATURE_SETTING = PREFIX_TRAITS + 'TemperatureSetting'
-TRAIT_LOCKUNLOCK = PREFIX_TRAITS + 'LockUnlock'
-TRAIT_FANSPEED = PREFIX_TRAITS + 'FanSpeed'
-TRAIT_MODES = PREFIX_TRAITS + 'Modes'
-TRAIT_OPEN_CLOSE = PREFIX_TRAITS + 'OpenClose'
-TRAIT_ARM_DISARM = PREFIX_TRAITS + 'ArmDisarm'
-TRAIT_VOLUME = PREFIX_TRAITS + 'Volume'
-TRAIT_CAMERA_STREAM = PREFIX_TRAITS + 'CameraStream'
-TRAIT_TOGGLES = PREFIX_TRAITS + 'Toggles'
-TRAIT_TIMER = PREFIX_TRAITS + 'Timer'
-TRAIT_ENERGY = PREFIX_TRAITS + 'EnergyStorage'
-TRAIT_HUMIDITY = PREFIX_TRAITS + 'HumiditySetting'
-TRAIT_OBJECTDETECTION = PREFIX_TRAITS + 'ObjectDetection'
+TRAIT_ONOFF = f'{PREFIX_TRAITS}OnOff'
+TRAIT_DOCK = f'{PREFIX_TRAITS}Dock'
+TRAIT_STARTSTOP = f'{PREFIX_TRAITS}StartStop'
+TRAIT_BRIGHTNESS = f'{PREFIX_TRAITS}Brightness'
+TRAIT_COLOR_SETTING = f'{PREFIX_TRAITS}ColorSetting'
+TRAIT_SCENE = f'{PREFIX_TRAITS}Scene'
+TRAIT_TEMPERATURE_CONTROL = f'{PREFIX_TRAITS}TemperatureControl'
+TRAIT_TEMPERATURE_SETTING = f'{PREFIX_TRAITS}TemperatureSetting'
+TRAIT_LOCKUNLOCK = f'{PREFIX_TRAITS}LockUnlock'
+TRAIT_FANSPEED = f'{PREFIX_TRAITS}FanSpeed'
+TRAIT_MODES = f'{PREFIX_TRAITS}Modes'
+TRAIT_OPEN_CLOSE = f'{PREFIX_TRAITS}OpenClose'
+TRAIT_ARM_DISARM = f'{PREFIX_TRAITS}ArmDisarm'
+TRAIT_VOLUME = f'{PREFIX_TRAITS}Volume'
+TRAIT_CAMERA_STREAM = f'{PREFIX_TRAITS}CameraStream'
+TRAIT_TOGGLES = f'{PREFIX_TRAITS}Toggles'
+TRAIT_TIMER = f'{PREFIX_TRAITS}Timer'
+TRAIT_ENERGY = f'{PREFIX_TRAITS}EnergyStorage'
+TRAIT_HUMIDITY = f'{PREFIX_TRAITS}HumiditySetting'
+TRAIT_OBJECTDETECTION = f'{PREFIX_TRAITS}ObjectDetection'
+TRAIT_SENSOR_STATE = f'{PREFIX_TRAITS}SensorState'
 
 PREFIX_COMMANDS = 'action.devices.commands.'
-COMMAND_ONOFF = PREFIX_COMMANDS + 'OnOff'
-COMMAND_DOCK = PREFIX_COMMANDS + 'Dock'
-COMMAND_STARTSTOP = PREFIX_COMMANDS + 'StartStop'
-COMMAND_PAUSEUNPAUSE = PREFIX_COMMANDS + 'PauseUnpause'
-COMMAND_BRIGHTNESS_ABSOLUTE = PREFIX_COMMANDS + 'BrightnessAbsolute'
-COMMAND_COLOR_ABSOLUTE = PREFIX_COMMANDS + 'ColorAbsolute'
-COMMAND_ACTIVATE_SCENE = PREFIX_COMMANDS + 'ActivateScene'
+COMMAND_ONOFF = f'{PREFIX_COMMANDS}OnOff'
+COMMAND_DOCK = f'{PREFIX_COMMANDS}Dock'
+COMMAND_STARTSTOP = f'{PREFIX_COMMANDS}StartStop'
+COMMAND_PAUSEUNPAUSE = f'{PREFIX_COMMANDS}PauseUnpause'
+COMMAND_BRIGHTNESS_ABSOLUTE = f'{PREFIX_COMMANDS}BrightnessAbsolute'
+COMMAND_COLOR_ABSOLUTE = f'{PREFIX_COMMANDS}ColorAbsolute'
+COMMAND_ACTIVATE_SCENE = f'{PREFIX_COMMANDS}ActivateScene'
 COMMAND_THERMOSTAT_TEMPERATURE_SETPOINT = (
-        PREFIX_COMMANDS + 'ThermostatTemperatureSetpoint')
+        f'{PREFIX_COMMANDS}ThermostatTemperatureSetpoint'
+        )
 COMMAND_THERMOSTAT_TEMPERATURE_SET_RANGE = (
-        PREFIX_COMMANDS + 'ThermostatTemperatureSetRange')
-COMMAND_THERMOSTAT_SET_MODE = PREFIX_COMMANDS + 'ThermostatSetMode'
-COMMAND_THERMOSTAT_TEMPERATURE_RELATIVE = PREFIX_COMMANDS + 'TemperatureRelative'
-COMMAND_SET_TEMPERATURE = PREFIX_COMMANDS + 'SetTemperature'
-COMMAND_LOCKUNLOCK = PREFIX_COMMANDS + 'LockUnlock'
-COMMAND_FANSPEED = PREFIX_COMMANDS + 'SetFanSpeed'
-COMMAND_MODES = PREFIX_COMMANDS + 'SetModes'
-COMMAND_OPEN_CLOSE = PREFIX_COMMANDS + 'OpenClose'
-COMMAND_ARM_DISARM = PREFIX_COMMANDS + 'ArmDisarm'
-COMMAND_SET_VOLUME = PREFIX_COMMANDS + 'setVolume'
-COMMAND_VOLUME_RELATIVE = PREFIX_COMMANDS + 'volumeRelative'
-COMMAND_GET_CAMERA_STREAM = PREFIX_COMMANDS + 'GetCameraStream'
-COMMAND_TOGGLES = PREFIX_COMMANDS + 'SetToggles'
-COMMAND_TIMER_START = PREFIX_COMMANDS + 'TimerStart'
-COMMAND_TIMER_CANCEL = PREFIX_COMMANDS + 'TimerCancel'
-COMMAND_CHARGE = PREFIX_COMMANDS + 'Charge'
-COMMAND_SET_HUMIDITY = PREFIX_COMMANDS + 'SetHumidity'
-COMMAND_SET_HUMIDITY_RELATIVE = PREFIX_COMMANDS + 'HumidityRelative'
+        f'{PREFIX_COMMANDS}ThermostatTemperatureSetRange'
+        )
+COMMAND_THERMOSTAT_SET_MODE = f'{PREFIX_COMMANDS}ThermostatSetMode'
+COMMAND_THERMOSTAT_TEMPERATURE_RELATIVE = f'{PREFIX_COMMANDS}TemperatureRelative'
+COMMAND_SET_TEMPERATURE = f'{PREFIX_COMMANDS}SetTemperature'
+COMMAND_LOCKUNLOCK = f'{PREFIX_COMMANDS}LockUnlock'
+COMMAND_FANSPEED = f'{PREFIX_COMMANDS}SetFanSpeed'
+COMMAND_MODES = f'{PREFIX_COMMANDS}SetModes'
+COMMAND_OPEN_CLOSE = f'{PREFIX_COMMANDS}OpenClose'
+COMMAND_ARM_DISARM = f'{PREFIX_COMMANDS}ArmDisarm'
+COMMAND_SET_VOLUME = f'{PREFIX_COMMANDS}setVolume'
+COMMAND_VOLUME_RELATIVE = f'{PREFIX_COMMANDS}volumeRelative'
+COMMAND_GET_CAMERA_STREAM = f'{PREFIX_COMMANDS}GetCameraStream'
+COMMAND_TOGGLES = f'{PREFIX_COMMANDS}SetToggles'
+COMMAND_TIMER_START = f'{PREFIX_COMMANDS}TimerStart'
+COMMAND_TIMER_CANCEL = f'{PREFIX_COMMANDS}TimerCancel'
+COMMAND_CHARGE = f'{PREFIX_COMMANDS}Charge'
+COMMAND_SET_HUMIDITY = f'{PREFIX_COMMANDS}SetHumidity'
+COMMAND_SET_HUMIDITY_RELATIVE = f'{PREFIX_COMMANDS}HumidityRelative'
 
 TRAITS = []
 
@@ -597,7 +608,7 @@ class TemperatureSettingTrait(_Trait):
         if domain == domains['thermostat']:
             return features & ATTRS_THERMSTATSETPOINT
         else:
-            return domain in [domains['temperature'], domains['tempHumidity']]
+            return domain in [domains['temperature']]
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""
@@ -611,7 +622,7 @@ class TemperatureSettingTrait(_Trait):
             'minThresholdCelsius': minThree,
             'maxThresholdCelsius': maxThree}
         
-        if domain in [domains['temperature'], domains['tempHumidity']]:
+        if domain in [domains['temperature']]:
             response["queryOnlyTemperatureSetting"] = True
             response["availableThermostatModes"] = 'heat, cool'
 
@@ -631,7 +642,7 @@ class TemperatureSettingTrait(_Trait):
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
-        if domain in [domains['temperature'], domains['tempHumidity']]:           
+        if domain in [domains['temperature']]:           
             current_temp = float(self.state.temp)
             if current_temp is not None:
                 if round(tempConvert(current_temp, _google_temp_unit(units)),1) <= 3:
@@ -1307,11 +1318,11 @@ class HumiditySettingTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in domains['tempHumidity']
+        if domain == domains['temperature']:
+            return features & ATTRS_THERMSTATSETPOINT
 
     def sync_attributes(self):
         """Return humidity attributes for a sync request."""
-        # Neither supported domain can support sceneReversible
         response = {}
         response["humiditySetpointRange"] = {
             "minPercent": 25,
