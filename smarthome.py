@@ -433,7 +433,7 @@ def getDevices(devices="all", idx="0"):
                 req[aog.name]['willReportState'] = aog.report_state
                 logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
 
-    devlist = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
+    devlist = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state, d.entity_id) for d in aogDevs.values()]
     devlist.sort(key=takeSecond)
     deviceList = json.dumps(devlist)
 
