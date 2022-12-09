@@ -13,7 +13,7 @@ from const import (
     ATTRS_COLOR_TEMP,
     ATTRS_PERCENTAGE,
     ATTRS_VACUUM_MODES,
-    domains,
+    DOMAINS,
     ERR_ALREADY_IN_STATE,
     ERR_WRONG_PIN,
     ERR_NOT_SUPPORTED,
@@ -137,39 +137,39 @@ class OnOffTrait(_Trait):
         """Test if state is supported."""
 
         return domain in (
-            domains['ac_unit'],
-            domains['bathtub'],
-            domains['coffeemaker'],
-            domains['color'],
-            domains['cooktop'],
-            domains['dishwasher'],
-            domains['doorbell'],
-            domains['dryer'],
-            domains['fan'],
-            domains['group'],
-            domains['heater'],
-            domains['kettle'],
-            domains['light'],
-            domains['media'],
-            domains['microwave'],
-            domains['mower'],
-            domains['outlet'],
-            domains['oven'],
-            domains['push'],
-            domains['sensor'],
-            domains['smokedetector'],
-            domains['speaker'],
-            domains['switch'],
-            #domains['vacuum'],
-            domains['washer'],
-            domains['waterheater'],
+            DOMAINS['ac_unit'],
+            DOMAINS['bathtub'],
+            DOMAINS['coffeemaker'],
+            DOMAINS['color'],
+            DOMAINS['cooktop'],
+            DOMAINS['dishwasher'],
+            DOMAINS['doorbell'],
+            DOMAINS['dryer'],
+            DOMAINS['fan'],
+            DOMAINS['group'],
+            DOMAINS['heater'],
+            DOMAINS['kettle'],
+            DOMAINS['light'],
+            DOMAINS['media'],
+            DOMAINS['microwave'],
+            DOMAINS['mower'],
+            DOMAINS['outlet'],
+            DOMAINS['oven'],
+            DOMAINS['push'],
+            DOMAINS['sensor'],
+            DOMAINS['smokedetector'],
+            DOMAINS['speaker'],
+            DOMAINS['switch'],
+            #DOMAINS['vacuum'],
+            DOMAINS['washer'],
+            DOMAINS['waterheater'],
         )
 
     def sync_attributes(self):
         """Return OnOff attributes for a sync request."""
         domain = self.state.domain
         response = {}
-        if domain in [domains['sensor'], domains['smokedetector'], domains['doorbell']]:
+        if domain in [DOMAINS['sensor'], DOMAINS['smokedetector'], DOMAINS['doorbell']]:
             response['queryOnlyOnOff'] = True
         
         return response
@@ -179,11 +179,11 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
 
         response = {}
-        if domain == domains['push']:
+        if domain == DOMAINS['push']:
             response['on'] = False
         else:
             response['on'] = self.state.state != 'Off'
-        if domain != domains['group'] and self.state.battery <= configuration['Low_battery_limit']:
+        if domain != DOMAINS['group'] and self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
         return response
@@ -193,8 +193,8 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
         protected = self.state.protected
 
-        if domain not in [domains['sensor'], domains['smokedetector']]:
-            if domain == domains['group']:
+        if domain not in [DOMAINS['sensor'], DOMAINS['smokedetector']]:
+            if domain == DOMAINS['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
             else:
@@ -228,7 +228,7 @@ class SceneTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in domains['scene']
+        return domain in DOMAINS['scene']
 
     def sync_attributes(self):
         """Return scene attributes for a sync request."""
@@ -272,7 +272,7 @@ class BrightnessTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain in (domains['light'], domains['color'], domains['outlet']):
+        if domain in (DOMAINS['light'], DOMAINS['color'], DOMAINS['outlet']):
             return features & ATTRS_BRIGHTNESS
 
         return False
@@ -338,13 +338,13 @@ class OpenCloseTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         return domain in (
-                domains['blinds'],
-                domains['blindsinv'],
-                domains['door'],
-                domains['window'],
-                domains['gate'],
-                domains['garage'],
-                domains['valve']
+                DOMAINS['blinds'],
+                DOMAINS['blindsinv'],
+                DOMAINS['door'],
+                DOMAINS['window'],
+                DOMAINS['gate'],
+                DOMAINS['garage'],
+                DOMAINS['valve']
             )
 
     def sync_attributes(self):
@@ -365,11 +365,11 @@ class OpenCloseTrait(_Trait):
 
         if features & ATTRS_PERCENTAGE:
             response['openPercent'] = self.state.level
-            if domain == domains['blindsinv']:
+            if domain == DOMAINS['blindsinv']:
               response['openPercent'] = self.state.level
             else:
               response['openPercent'] = 100 - self.state.level
-        elif domain == domains['blindsinv']:
+        elif domain == DOMAINS['blindsinv']:
             if self.state.state in ['Open', 'Off']:
                 response['openPercent'] = 0
             else:
@@ -393,7 +393,7 @@ class OpenCloseTrait(_Trait):
         domain = self.state.domain
         
         if features & ATTRS_PERCENTAGE:
-            if domain == domains['blinds']:
+            if domain == DOMAINS['blinds']:
               url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
                 params['openPercent'])
             else:
@@ -404,7 +404,7 @@ class OpenCloseTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
             
-            if domain == domains['blindsinv']:
+            if domain == DOMAINS['blindsinv']:
               if p == 0 and state in ['Closed', 'Stopped', 'On']:
                   # open
                   url += 'Open'
@@ -452,13 +452,13 @@ class StartStopTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == domains['blinds']:
+        if domain == DOMAINS['blinds']:
             if features & ATTRS_PERCENTAGE:
                 return False
             else:
-                return domain in domains['blinds']
+                return domain in DOMAINS['blinds']
         else:
-            return domain in domains['vacuum']
+            return domain in DOMAINS['vacuum']
 
     def sync_attributes(self):
         """Return StartStop attributes for a sync request."""
@@ -468,7 +468,7 @@ class StartStopTrait(_Trait):
         """Return StartStop query attributes."""
         domain = self.state.domain 
         response = {}
-        if domain == domains['blinds']:
+        if domain == DOMAINS['blinds']:
             response['isRunning'] = True
         else:
             response['isRunning'] = self.state.state != 'Off'
@@ -484,7 +484,7 @@ class StartStopTrait(_Trait):
         protected = self.state.protected
         
         if command == COMMAND_STARTSTOP: 
-            if domain == domains['blinds']:
+            if domain == DOMAINS['blinds']:
                 if params['start'] is False:
                     url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Stop'
             else:
@@ -526,7 +526,7 @@ class StartStopTrait(_Trait):
     # def supported(domain, features):
         # """Test if state is supported."""
         # if domain in [
-            # domains['fan']
+            # DOMAINS['fan']
             # ]:
             # return features & ATTRS_FANSPEED
 
@@ -605,10 +605,10 @@ class TemperatureSettingTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == domains['thermostat']:
+        if domain == DOMAINS['thermostat']:
             return features & ATTRS_THERMSTATSETPOINT
         else:
-            return domain in [domains['temperature']]
+            return domain in [DOMAINS['temperature']]
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""
@@ -622,11 +622,11 @@ class TemperatureSettingTrait(_Trait):
             'minThresholdCelsius': minThree,
             'maxThresholdCelsius': maxThree}
         
-        if domain in [domains['temperature']]:
+        if domain in [DOMAINS['temperature']]:
             response["queryOnlyTemperatureSetting"] = True
             response["availableThermostatModes"] = 'heat, cool'
 
-        if domain == domains['thermostat']:
+        if domain == DOMAINS['thermostat']:
             if self.state.modes_idx is not None:
                 response["availableThermostatModes"] = 'off,heat,cool,auto,eco'
             else:
@@ -642,7 +642,7 @@ class TemperatureSettingTrait(_Trait):
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
-        if domain in [domains['temperature']]:           
+        if domain in [DOMAINS['temperature']]:           
             current_temp = float(self.state.temp)
             if current_temp is not None:
                 if round(tempConvert(current_temp, _google_temp_unit(units)),1) <= 3:
@@ -651,9 +651,10 @@ class TemperatureSettingTrait(_Trait):
                     response['thermostatMode'] = 'heat'
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
-                #current_humidity = self.state.humidity
+            # if current_humidity is not None:
+                # response['thermostatHumidityAmbient'] = current_humidity
 
-        if domain == domains['thermostat']:
+        if domain == DOMAINS['thermostat']:
             if self.state.modes_idx is not None:
                 levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
                 level = self.state.level
@@ -667,6 +668,9 @@ class TemperatureSettingTrait(_Trait):
             setpoint = float(self.state.setpoint)
             if setpoint is not None:
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(setpoint, _google_temp_unit(units)), 1)
+            if current_humidity is not None:
+                response['thermostatHumidityAmbient'] = current_humidity
+            
 
         return response
 
@@ -724,7 +728,7 @@ class TemperatureControlTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in [domains['heater'], domains['kettle'], domains['waterheater'], domains['oven']]
+        return domain in [DOMAINS['heater'], DOMAINS['kettle'], DOMAINS['waterheater'], DOMAINS['oven']]
 
     def sync_attributes(self):
         """Return temperature point attributes for a sync request."""
@@ -788,8 +792,8 @@ class LockUnlockTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in (domains['lock'],
-                          domains['lockinv'])
+        return domain in (DOMAINS['lock'],
+                          DOMAINS['lockinv'])
 
     def sync_attributes(self):
         """Return LockUnlock attributes for a sync request."""
@@ -811,7 +815,7 @@ class LockUnlockTrait(_Trait):
         state = self.state.state
         protected = self.state.protected
 
-        if domain == domains['lock']:
+        if domain == DOMAINS['lock']:
             if params['lock'] == True and state == 'Unlocked':
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=On'
             elif params['lock'] == False and state == 'Locked':
@@ -859,7 +863,7 @@ class ColorSettingTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == domains['color']:
+        if domain == DOMAINS['color']:
             return (features & ATTRS_COLOR or
                     features & ATTRS_COLOR_TEMP)
 
@@ -932,7 +936,7 @@ class ArmDisarmTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in domains['security']
+        return domain in DOMAINS['security']
 
     def sync_attributes(self):
         """Return ArmDisarm attributes for a sync request."""
@@ -1024,7 +1028,7 @@ class VolumeTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in domains['speaker']
+        return domain in DOMAINS['speaker']
 
     def sync_attributes(self):
         """Return volume attributes for a sync request."""
@@ -1084,7 +1088,7 @@ class CameraStreamTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         if configuration['Camera_Stream']['Enabled']:
-            return domain in [domains['camera'], domains['doorbell']]
+            return domain in [DOMAINS['camera'], DOMAINS['doorbell']]
             
         return False
 
@@ -1123,10 +1127,10 @@ class TooglesTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == domains['vacuum']:
+        if domain == DOMAINS['vacuum']:
             return features & ATTRS_VACUUM_MODES
         else:
-            return domain in domains['selector']
+            return domain in DOMAINS['selector']
 
     def sync_attributes(self):
         """Return mode attributes for a sync request."""
@@ -1201,12 +1205,12 @@ class Timer(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in [domains['light'],
-                          domains['color'],
-                          domains['switch'],
-                          domains['heater'],
-                          domains['kettle'],
-                          domains['fan'],
+        return domain in [DOMAINS['light'],
+                          DOMAINS['color'],
+                          DOMAINS['switch'],
+                          DOMAINS['heater'],
+                          DOMAINS['kettle'],
+                          DOMAINS['fan'],
                           ]
 
     def sync_attributes(self):
@@ -1249,13 +1253,13 @@ class EnergyStorageTrait(_Trait):
     def supported(domain, features):
         """Test if state is supported."""
         return domain in (
-                domains['vacuum'],
-                domains['blinds'],
-                domains['smokedetector'],
-                domains['sensor'],
-                domains['mower'],
-                domains['thermostat'],
-                domains['temperature']
+                DOMAINS['vacuum'],
+                DOMAINS['blinds'],
+                DOMAINS['smokedetector'],
+                DOMAINS['sensor'],
+                DOMAINS['mower'],
+                DOMAINS['thermostat'],
+                DOMAINS['temperature']
                 )
   
     def sync_attributes(self):
@@ -1287,7 +1291,7 @@ class EnergyStorageTrait(_Trait):
         # domain = self.state.domain
         # protected = self.state.protected
         
-        # if domain in (domains['vacuum'], domains['mower']):
+        # if domain in (DOMAINS['vacuum'], DOMAINS['mower']):
             # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + (
                 # 'On' if params['charge'] else 'Off')
 
@@ -1318,7 +1322,7 @@ class HumiditySettingTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if domain == domains['temperature']:
+        if domain == DOMAINS['temperature']:
             return features & ATTRS_THERMSTATSETPOINT
 
     def sync_attributes(self):
@@ -1346,7 +1350,7 @@ class HumiditySettingTrait(_Trait):
         # domain = self.state.domain
         # protected = self.state.protected
         
-        # if domain == domains['humidity']:
+        # if domain == DOMAINS['humidity']:
             # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
 
         # if protected:
