@@ -14,7 +14,14 @@ import yaml
 import google.auth.crypt
 import google.auth.jwt
 
-from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL, PUBLIC_URL)
+from const import (
+    CONFIGFILE,
+    LOGFILE,
+    KEYFILE,
+    HOMEGRAPH_SCOPE,
+    HOMEGRAPH_TOKEN_URL,
+    PUBLIC_URL
+)
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
