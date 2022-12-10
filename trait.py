@@ -651,6 +651,7 @@ class TemperatureSettingTrait(_Trait):
                     response['thermostatMode'] = 'heat'
                 response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
+            # current_humidity = self.state.humidity
             # if current_humidity is not None:
                 # response['thermostatHumidityAmbient'] = current_humidity
 
@@ -668,6 +669,7 @@ class TemperatureSettingTrait(_Trait):
             setpoint = float(self.state.setpoint)
             if setpoint is not None:
                 response['thermostatTemperatureSetpoint'] = round(tempConvert(setpoint, _google_temp_unit(units)), 1)
+            current_humidity = self.state.humidity
             if current_humidity is not None:
                 response['thermostatHumidityAmbient'] = current_humidity
             
