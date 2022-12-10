@@ -146,6 +146,8 @@ def AogGetDomain(device):
             return DOMAINS['lockinv']
         elif "Door Contact" == device["SwitchType"]:
             return DOMAINS['door']
+        elif "Doorbell" == device["SwitchType"]:
+            return DOMAINS['doorbell']
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
             return DOMAINS['push']
         elif 'Motion Sensor' == device["SwitchType"]:
@@ -296,6 +298,9 @@ def getAog(device):
                 if dt.lower() in ['vacuum']:
                     aog.domain = DOMAINS[dt.lower()]
             if aog.domain in [DOMAINS['camera']]:
+                if dt.lower() in ['doorbell']:
+                    aog.domain = DOMAINS[dt.lower()]
+            if aog.domain in [DOMAINS['push']]:
                 if dt.lower() in ['doorbell']:
                     aog.domain = DOMAINS[dt.lower()]
         pn = desc.get('name', None)
@@ -545,6 +550,7 @@ class _GoogleEntity:
 
         device = {
             'id': state.entity_id,
+            'notificationSupportedByAgent': (True if state.domain == 'Doorbell' else False),
             'name': {
                 'name': state.name
             },
@@ -733,6 +739,62 @@ class SmartHomeReqHandler(OAuthReqHandler):
             pass
            
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
+        
+    def notification_post(self, s):
+        logger.debug(s.headers)
+        a = s.headers.get('Authorization', None)
+
+        token = None
+        if a is not None:
+            types, tokenH = a.split()
+            if types.lower() == 'bearer':
+                token = Auth['tokens'].get(tokenH, None)
+
+        if token is None:
+            raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
+            
+        event_id = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase +
+                                     string.digits, k=10))
+
+        request_id = ''.join(random.choices(string.digits, k=20))
+
+        message = s.body
+        message = message.replace('|>>', '').split()
+        devid = message[0]
+        state = message[1]
+        aog = aogDevs.get(devid, None)
+        if aog != None:
+            if aog.domain in DOMAINS['doorbell']:
+                data = {
+                    'requestId': str(request_id),
+                    'agentUserId': token.get('userAgentId', None),
+                    'eventId': str(event_id),
+                    'payload': {
+                        'devices': {
+                            'states': {
+                                devid: {
+                                    'on': (True if state == 'ON' else False)
+                                },
+                            },
+                            'notifications': {
+                                devid: {
+                                    "ObjectDetection": {
+                                        "objects": {
+                                            "unfamiliar": 1
+                                        },
+                                        "priority": 0,
+                                        "detectionTimestamp": time.time() 
+                                    }
+                                  }
+                                }
+                            }
+                        }
+                    }
+                ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)
+            else:
+                logger.info('Notification is not supported for ' + message[0])
+        else:
+            logger.error('Something went wrong, check your notification settings!')
 
     def smarthome(self, s):
         s.send_message(500, "not supported")
@@ -1273,6 +1335,7 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
                             "/pycast": SmartHomeReqHandler.pycast}  
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
+                             "/notification": SmartHomeReqHandler.notification_post,
                              "/settings": SmartHomeReqHandler.settings_post}
 else:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
@@ -1283,7 +1346,8 @@ else:
                             "/sound": SmartHomeReqHandler.send_sound,
                             "/pycast": SmartHomeReqHandler.pycast}  
 
-    smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post}
+    smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
+                             "/notification": SmartHomeReqHandler.notification_post}
 
 smarthomeControlMappings = {'action.devices.SYNC': SmartHomeReqHandler.smarthome_sync,
                             'action.devices.QUERY': SmartHomeReqHandler.smarthome_query,
