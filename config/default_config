@@ -29,6 +29,7 @@ ssl_cert: # /path/to/fullchain.pem
 # Login on Google Home app and configuration interface
 auth_user: 'admin'
 auth_pass: 'admin'
+# If you change authToken you need to disconnect and reconnect to Google Assistant
 authToken: 'ZsokmCwKjdhk7qHLeYd2'
 
 # Google Assistant Settings:
