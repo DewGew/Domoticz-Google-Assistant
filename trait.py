@@ -504,89 +504,6 @@ class StartStopTrait(_Trait):
                                                                                                   self.state.entity_id))
             
 
-# @register_trait
-# class FanSpeedTrait(_Trait):
-    # """Trait to control speed of Fan.
-    # https://developers.google.com/actions/smarthome/traits/fanspeed
-    # """
-
-    # name = TRAIT_FANSPEED
-    # commands = [COMMAND_FANSPEED]
-
-    # speed_synonyms = {
-        # 'off': ["stop", "off"],
-        # 'speed_low': ["slow", "low", "slowest", "lowest"],
-        # 'speed_medium': ["medium", "mid", "middle"],
-        # 'speed_high': ["high", "max", "fast", "highest", "fastest", "maximum"],
-    # }
-    
-    # modes = ['off', 'speed_low', 'speed_medium','speed_high']
-
-    # @staticmethod
-    # def supported(domain, features):
-        # """Test if state is supported."""
-        # if domain in [
-            # DOMAINS['fan']
-            # ]:
-            # return features & ATTRS_FANSPEED
-
-        # return False
-
-    # def sync_attributes(self):
-        # """Return speed point and modes attributes for a sync request."""
-        # modes = self.modes
-        # speeds = []
-        # for mode in modes:
-            # if mode not in self.speed_synonyms:
-                # continue
-            # speed = {
-                # "speed_name": mode,
-                # "speed_values": [
-                    # {"speed_synonym": self.speed_synonyms.get(mode), "lang": "en"}
-                # ],
-            # }
-            # speeds.append(speed)
-
-        # return {
-            # "availableFanSpeeds": {"speeds": speeds, "ordered": True},
-        # }
-
-    # def query_attributes(self):
-        # """Return speed point and modes query attributes."""
-        # response = {}
-
-        # speed = self.state.state
-        # if speed is not None:
-            # response["on"] = speed != 'Off'
-            # response["online"] = True
-            # response["currentFanSpeedSetting"] = speed.lower()
-
-        # return response
-
-    # def execute(self, command, params):
-        # """Execute an SetFanSpeed command."""
-        # modes = self.modes
-        # protected = self.state.protected
-        # for key in params['fanSpeed']:
-            # if key in modes:
-                # level = str(modes.index(key) * 10)
-
-        # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + level
-
-        # if protected:
-            # url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
-
-        # r = requests.get(url, auth=CREDITS)
-
-        # if protected:
-            # status = r.json()
-            # err = status.get('status')
-            # if err == 'ERROR':
-                # raise SmartHomeError(ERR_WRONG_PIN,
-                                     # 'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              # self.state.entity_id))
-
-
 @register_trait
 class TemperatureSettingTrait(_Trait):
     """Trait to offer handling both temperature point and modes functionality.
@@ -1097,9 +1014,7 @@ class CameraStreamTrait(_Trait):
     def sync_attributes(self):
         """Return stream attributes for a sync request."""
         return {
-            'cameraStreamSupportedProtocols': [
-                "hls",
-            ],
+            'cameraStreamSupportedProtocols': ['hls'],
             'cameraStreamNeedAuthToken': False,
             'cameraStreamNeedDrmEncryption': False,
         }
@@ -1270,6 +1185,7 @@ class EnergyStorageTrait(_Trait):
         response = {}
         if battery is not None or battery != 255:
             response['queryOnlyEnergyStorage'] = True
+            response['isRechargeable'] = False
         
         return response
 
@@ -1277,14 +1193,24 @@ class EnergyStorageTrait(_Trait):
         """Return EnergyStorge query attributes."""
         battery = self.state.battery
         response = {}
-        if battery is not None or battery != 255:
-            if battery <= 99:
-                response['capacityRemaining'] = [{
-                    'unit': 'PERCENTAGE',
-                    'rawValue': battery
-                  }]
-            else:
-                response['descriptiveCapacityRemaining'] = 'FULL'
+        if battery == 255:
+            return {}
+        if battery == 100:
+            descriptive_capacity_remaining = "FULL"
+        elif 75 <= battery < 100:
+            descriptive_capacity_remaining = "HIGH"
+        elif 50 <= battery < 75:
+            descriptive_capacity_remaining = "MEDIUM"
+        elif 25 <= battery < 50:
+            descriptive_capacity_remaining = "LOW"
+        elif 0 <= battery < 25:
+            descriptive_capacity_remaining = "CRITICALLY_LOW"
+        if battery is not None:
+            response['descriptiveCapacityRemaining'] = descriptive_capacity_remaining
+            response['capacityRemaining'] = [{
+                'unit': 'PERCENTAGE',
+                'rawValue': battery
+              }]
            
         return response
 
@@ -1353,12 +1279,139 @@ class HumiditySettingTrait(_Trait):
         # protected = self.state.protected
         
         # if domain == DOMAINS['humidity']:
-            # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
+            # url = DOMOTICZ_URL + '/json.htm?type=command&param=setsetpoint&idx=' + self.state.id + '&setpoint=' + str(params['humidity'])
 
         # if protected:
             # url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
 
         # r = requests.get(url, auth=CREDITS)
+        # if protected:
+            # status = r.json()
+            # err = status.get('status')
+            # if err == 'ERROR':
+                # raise SmartHomeError(ERR_WRONG_PIN,
+                                     # 'Unable to execute {} for {} check your settings'.format(command,
+                                                                                              # self.state.entity_id))
+                                                                                              
+@register_trait
+class SensorStateTrait(_Trait):
+    """Trait to get sensor state.
+    https://developers.google.com/actions/smarthome/traits/sensorstate
+    """
+
+    name = TRAIT_SENSOR_STATE
+    commands = []
+
+    @staticmethod
+    def supported(domain, features):
+        """Test if state is supported."""
+        return domain in [DOMAINS['smokedetector']]
+
+    def sync_attributes(self):
+        """Return attributes for a sync request."""
+        domain = self.state.domain
+        if domain == DOMAIN['smokedetector']:
+            return {
+                "sensorStatesSupported": [
+                    {
+                      "name": "SmokeLevel",
+                      "descriptiveCapabilities": {
+                        "availableStates": [
+                          "smoke detected",
+                          "no smoke detected"
+                        ]
+                      }
+                    }
+                  ]
+                }
+
+    def query_attributes(self):
+        """Return the attributes of this trait for this entity."""
+        domain = self.state.domain
+        if self.state.state is not None:
+            return {
+                "currentSensorStateData": [
+                    {
+                        "name": "SmokeLevel",
+                        "currentSensorState": "smoke detected",
+                        }
+                ]
+            }
+
+# @register_trait
+# class FanSpeedTrait(_Trait):
+    # """Trait to control speed of Fan.
+    # https://developers.google.com/actions/smarthome/traits/fanspeed
+    # """
+
+    # name = TRAIT_FANSPEED
+    # commands = [COMMAND_FANSPEED]
+
+    # speed_synonyms = {
+        # 'off': ["stop", "off"],
+        # 'speed_low': ["slow", "low", "slowest", "lowest"],
+        # 'speed_medium': ["medium", "mid", "middle"],
+        # 'speed_high': ["high", "max", "fast", "highest", "fastest", "maximum"],
+    # }
+    
+    # modes = ['off', 'speed_low', 'speed_medium','speed_high']
+
+    # @staticmethod
+    # def supported(domain, features):
+        # """Test if state is supported."""
+        # if domain in [
+            # DOMAINS['fan']
+            # ]:
+            # return features & ATTRS_FANSPEED
+
+        # return False
+
+    # def sync_attributes(self):
+        # """Return speed point and modes attributes for a sync request."""
+        # modes = self.modes
+        # speeds = []
+        # for mode in modes:
+            # if mode not in self.speed_synonyms:
+                # continue
+            # speed = {
+                # "speed_name": mode,
+                # "speed_values": [
+                    # {"speed_synonym": self.speed_synonyms.get(mode), "lang": "en"}
+                # ],
+            # }
+            # speeds.append(speed)
+
+        # return {
+            # "availableFanSpeeds": {"speeds": speeds, "ordered": True},
+        # }
+
+    # def query_attributes(self):
+        # """Return speed point and modes query attributes."""
+        # response = {}
+
+        # speed = self.state.state
+        # if speed is not None:
+            # response["on"] = speed != 'Off'
+            # response["online"] = True
+            # response["currentFanSpeedSetting"] = speed.lower()
+
+        # return response
+
+    # def execute(self, command, params):
+        # """Execute an SetFanSpeed command."""
+        # modes = self.modes
+        # protected = self.state.protected
+        # for key in params['fanSpeed']:
+            # if key in modes:
+                # level = str(modes.index(key) * 10)
+
+        # url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + level
+
+        # if protected:
+            # url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
+
+        # r = requests.get(url, auth=CREDITS)
+
         # if protected:
             # status = r.json()
             # err = status.get('status')
