@@ -303,7 +303,7 @@ def getAog(device):
                 if dt.lower() in ['doorbell']:
                     aog.domain = DOMAINS[dt.lower()]
             if aog.domain in [DOMAINS['push']]:
-                if dt.lower() in ['doorbell']:
+                if dt.lower() in ['doorbell', 'outlet', 'light']:
                     aog.domain = DOMAINS[dt.lower()]
         pn = desc.get('name', None)
         if pn is not None:
