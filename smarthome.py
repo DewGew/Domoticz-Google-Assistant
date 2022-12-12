@@ -761,9 +761,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         request_id = ''.join(random.choices(string.digits, k=20))
 
         message = s.body
-        message = message.replace('|', '').split()
+        message = message.replace('|', ' ').split()
+        if '>>' in message: message.remove('>>')
         devid = message[0]
         state = message[1]
+        
         aog = aogDevs.get(devid, None)
         if aog != None:
             if aog.domain in DOMAINS['doorbell']:
@@ -775,7 +777,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                         'devices': {
                             'states': {
                                 devid: {
-                                    'on': (True if state in ['pressed', '>>ON'] else False)
+                                    'on': (True if state.lower() in ['on', 'pressed'] else False)
                                 },
                             },
                             'notifications': {
