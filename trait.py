@@ -339,7 +339,6 @@ class OpenCloseTrait(_Trait):
         """Test if state is supported."""
         return domain in (
                 DOMAINS['blinds'],
-                DOMAINS['blindsinv'],
                 DOMAINS['door'],
                 DOMAINS['window'],
                 DOMAINS['gate'],
@@ -365,15 +364,6 @@ class OpenCloseTrait(_Trait):
 
         if features & ATTRS_PERCENTAGE:
             response['openPercent'] = self.state.level
-            if domain == DOMAINS['blindsinv']:
-              response['openPercent'] = self.state.level
-            else:
-              response['openPercent'] = 100 - self.state.level
-        elif domain == DOMAINS['blindsinv']:
-            if self.state.state in ['Open', 'Off']:
-                response['openPercent'] = 0
-            else:
-                response['openPercent'] = 100
         else:
             if self.state.state in ['Open', 'Off']:
                 response['openPercent'] = 100
@@ -396,37 +386,21 @@ class OpenCloseTrait(_Trait):
             if domain == DOMAINS['blinds']:
               url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
                 params['openPercent'])
-            else:
-              url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=Set%20Level&level=' + str(
-                100 - params['openPercent'])
         else:
             p = params.get('openPercent', 50)
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
             
-            if domain == DOMAINS['blindsinv']:
-              if p == 0 and state in ['Closed', 'Stopped', 'On']:
-                  # open
-                  url += 'Open'
-              elif p == 100 and state in ['Open', 'Stopped', 'Off']:
-                  # close
-                  url += 'Close'
-              else:
-                  raise SmartHomeError(ERR_ALREADY_IN_STATE,
-                                       'Unable to execute {} for {}. Already in state '.format(command,
-                                                                                               self.state.entity_id))
-            else:
-              if p == 100 and state in ['Closed', 'Stopped', 'On']:
-                  # open
-                  url += 'Open'
-              elif p == 0 and state in ['Open', 'Stopped', 'Off']:
-                  # close
-                  url += 'Close'
-              else:
-                  raise SmartHomeError(ERR_ALREADY_IN_STATE,
-                                       'Unable to execute {} for {}. Already in state '.format(command,
-                                                                                               self.state.entity_id))
-
+        if p == 100 and state in ['Closed', 'Stopped', 'On']:
+          # open
+          url += 'Open'
+        elif p == 0 and state in ['Open', 'Stopped', 'Off']:
+          # close
+          url += 'Close'
+        else:
+          raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                               'Unable to execute {} for {}. Already in state '.format(command,
+                                                                                       self.state.entity_id))
 
         if protected:
             url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
