@@ -124,7 +124,7 @@ function readDevices(devicelist){
             if (devicelist[i][5] == undefined) {
                 nicknames = " ";
             }else{ nicknames = " <small><i>(" + devicelist[i][5] + ")</i></small>"}
-            xl += "<tr><th scope='row'>" + devicelist[i][1] + "</th>"
+            xl += "<tr><th scope='row'>" + devicelist[i][1] + " <small><i>(" + devicelist[i][7] + ")</i></small></th>"
             xl += "<td>" + devicelist[i][0] +  nicknames + "</td>";
             xl += "<td>" + devicelist[i][2] + "</td>";
             if (devicelist[i][3] == "Off" | devicelist[i][3] == "Closed"){
@@ -269,6 +269,12 @@ $("#ngrok_tunnel").click(function(){
     }
 });
 
+$(function() {
+    $("#logout").click(function(e) {
+      document.cookie = 'aog_session_id=; Max-Age=0; path=/';	  
+    });
+  });
+  
 function getIssues(){
     
     $.ajax({

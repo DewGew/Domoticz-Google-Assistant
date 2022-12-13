@@ -14,7 +14,14 @@ import yaml
 import google.auth.crypt
 import google.auth.jwt
 
-from const import (CONFIGFILE, LOGFILE, KEYFILE, HOMEGRAPH_SCOPE, HOMEGRAPH_TOKEN_URL, PUBLIC_URL)
+from const import (
+    CONFIGFILE,
+    LOGFILE,
+    KEYFILE,
+    HOMEGRAPH_SCOPE,
+    HOMEGRAPH_TOKEN_URL,
+    PUBLIC_URL
+)
 
 FILE_PATH = os.path.abspath(__file__)
 FILE_DIR = os.path.split(FILE_PATH)[0]
@@ -116,6 +123,8 @@ if 'ClientID' not in configuration:
     configuration['ClientID'] = 'sampleClientId'
 if 'ClientSecret' not in configuration:
     configuration['ClientSecret'] = 'sampleClientSecret'
+if 'authToken' not in configuration:
+    configuration['authToken'] = 'ZsokmCwKjdhk7qHLeYd2'
 
 Auth = {
     'clients': {
@@ -125,17 +134,17 @@ Auth = {
         },
     },
     'tokens': {
-        'ZsokmCwKjdhk7qHLeYd2': {
+        configuration['authToken']: {
             'uid': '1234',
-            'accessToken': 'ZsokmCwKjdhk7qHLeYd2',
-            'refreshToken': 'ZsokmCwKjdhk7qHLeYd2',
+            'accessToken': configuration['authToken'],
+            'refreshToken': configuration['authToken'],
             'userAgentId': '1234',
         },
         'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub': {
             'uid': '2345',
             'accessToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
             'refreshToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
-            'userId': '2345'
+            'userAgentId': '2345'
         },
     },
     'users': {
@@ -143,18 +152,11 @@ Auth = {
             'uid': '1234',
             'name': configuration['auth_user'],
             'password': configuration['auth_pass'],
-            'tokens': ['ZsokmCwKjdhk7qHLeYd2'],
+            'tokens': [configuration['authToken']],
         },
-        # '2345': {
-        # 'uid': '2345',
-        # 'name': configuration['auth_user_2'],
-        # 'password': configuration['auth_pass_2'],
-        # 'tokens': ['bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub'],
-        # },
     },
     'usernames': {
         configuration['auth_user']: '1234',
-        # configuration['auth_user_2']: '2345',
     }
 }
 
@@ -206,6 +208,8 @@ class AogState:
         self.lastupdate = ''
         self.selectorLevelName = ''
         self.merge_thermo_idx = None
+        self.minThreehold = -20
+        self.maxThreehold = 40
 
 
 def uptime():

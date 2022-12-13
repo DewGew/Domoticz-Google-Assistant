@@ -6,6 +6,8 @@ import re
 import subprocess
 import sys
 import yaml
+import random
+import string
 from collections.abc import Mapping
 from itertools import product
 from pid import PidFile
@@ -14,53 +16,67 @@ import requests
 
 import trait
 from auth import *
-from const import (DOMOTICZ_TO_GOOGLE_TYPES, ERR_FUNCTION_NOT_SUPPORTED, ERR_PROTOCOL_ERROR, ERR_DEVICE_OFFLINE,
-                   ERR_UNKNOWN_ERROR, ERR_CHALLENGE_NEEDED, DOMOTICZ_GET_ALL_DEVICES_URL, domains,
-                   DOMOTICZ_GET_SETTINGS_URL, DOMOTICZ_GET_ONE_DEVICE_URL, DOMOTICZ_GET_SCENES_URL, CONFIGFILE, LOGFILE,
-                   REQUEST_SYNC_BASE_URL, REPORT_STATE_BASE_URL, ATTRS_BRIGHTNESS, ATTRS_FANSPEED, ATTRS_VACUUM_MODES,
-                   ATTRS_THERMSTATSETPOINT, ATTRS_COLOR_TEMP, ATTRS_PERCENTAGE, VERSION, DOMOTICZ_GET_VERSION)
-from helpers import (configuration, readFile, saveFile, SmartHomeError, SmartHomeErrorNoChallenge, AogState, uptime,
-                     getTunnelUrl, FILE_DIR, logger, ReportState, Auth, logfilepath)
-    
-try:
-    from jinja2 import Environment, FileSystemLoader
-except ImportError:
-    logger.info('Installing package jinja2')
-    subprocess.call(['pip3', 'install', 'jinja2'])
-    from jinja2 import Environment, FileSystemLoader
+from const import (
+    DOMOTICZ_TO_GOOGLE_TYPES,
+    ERR_FUNCTION_NOT_SUPPORTED,
+    ERR_PROTOCOL_ERROR,
+    ERR_DEVICE_OFFLINE,
+    ERR_UNKNOWN_ERROR,
+    ERR_CHALLENGE_NEEDED,
+    DOMOTICZ_GET_ALL_DEVICES_URL,
+    DOMAINS,
+    DOMOTICZ_GET_SETTINGS_URL,
+    DOMOTICZ_GET_ONE_DEVICE_URL,
+    DOMOTICZ_GET_SCENES_URL,
+    CONFIGFILE,
+    LOGFILE,
+    REQUEST_SYNC_BASE_URL,
+    REPORT_STATE_BASE_URL,
+    ATTRS_BRIGHTNESS,
+    ATTRS_FANSPEED,
+    ATTRS_VACUUM_MODES,
+    ATTRS_THERMSTATSETPOINT,
+    ATTRS_COLOR_TEMP,
+    ATTRS_PERCENTAGE,
+    ATTRS_HUMIDITY,
+    VERSION,
+    DOMOTICZ_GET_VERSION
+)
+
+from helpers import (
+    configuration,
+    readFile,
+    saveFile,
+    SmartHomeError,
+    SmartHomeErrorNoChallenge,
+    AogState,
+    uptime,
+    getTunnelUrl,
+    FILE_DIR,
+    logger,
+    ReportState,
+    Auth,
+    logfilepath
+)
+from jinja2 import Environment, FileSystemLoader
     
 if 'Chromecast_Name' in configuration and configuration['Chromecast_Name'] != 'add_chromecast_name':
-    try:
-        import pychromecast
-    except ImportError as e:
-        logger.error('Installing package pychromecast') 
-        subprocess.call(['pip3', 'install', '--upgrade', '--force-reinstall', 'pychromecast'])
-    try:
-        from gtts import gTTS
-    except ImportError as e:
-        logger.error('Installing package gtts') 
-        subprocess.call(['pip3', 'install', 'gtts'])
-    try:
-        from slugify import slugify   
-    except ImportError as e:
-        logger.error('Installing package slugify') 
-        subprocess.call(['pip3', 'install', 'slugify'])
-
     import pychromecast
-    import socket  ##
+    import socket 
     from gtts import gTTS
     from slugify import slugify
-		
     logger.info("Starting up chromecasts")
     try:
         chromecasts, _ = pychromecast.get_chromecasts()
         cast = next(cc for cc in chromecasts if cc.device.friendly_name == configuration['Chromecast_Name'])
+        mc = cast.media_controller
     except Exception as e:
         logger.error('chromecasts init not succeeded, error : %s' % e)
     t = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) 
     t.connect(("8.8.8.8", 80))                           
     IP_Address = t.getsockname()[0]                      
-    t.close                                              
+    t.close
+    IP_Port = str(configuration['port_number'])    
     logger.info("IP_Address is : " + IP_Address)         
 
 DOMOTICZ_URL = configuration['Domoticz']['ip'] + ':' + configuration['Domoticz']['port']
@@ -121,70 +137,70 @@ if update:
 # some way to convert a domain type: Domoticz to google
 def AogGetDomain(device):
     if device["Type"] in ['Light/Switch', 'Lighting 1', 'Lighting 2', 'Lighting 5', 'RFY', 'Value']:
-        if device["SwitchType"] in ['Blinds', 'Venetian Blinds EU', 'Venetian Blinds US',
+        if device["SwitchType"] in ['Blinds', 'Blinds + Stop', 'Venetian Blinds EU', 'Venetian Blinds US',
                                     'Blinds Percentage']:
-            return domains['blinds']
-        elif device["SwitchType"] in ['Blinds Inverted', 'Blinds Percentage Inverted']:
-            return domains['blindsinv']
+            return DOMAINS['blinds']
         elif 'Door Lock' == device["SwitchType"]:
-            return domains['lock']
+            return DOMAINS['lock']
         elif 'Door Lock Inverted' == device["SwitchType"]:
-            return domains['lockinv']
+            return DOMAINS['lockinv']
         elif "Door Contact" == device["SwitchType"]:
-            return domains['door']
+            return DOMAINS['door']
+        elif "Doorbell" == device["SwitchType"]:
+            return DOMAINS['doorbell']
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
-            return domains['push']
+            return DOMAINS['push']
         elif 'Motion Sensor' == device["SwitchType"]:
-            return domains['sensor']
+            return DOMAINS['sensor']
         elif 'Selector' == device["SwitchType"]:
             if device['Image'] == 'Fan':
-                return domains['fan']
+                return DOMAINS['fan']
             else:
-                return domains['selector']
+                return DOMAINS['selector']
         elif 'Smoke Detector' == device["SwitchType"]:
-            return domains['smokedetector']
+            return DOMAINS['smokedetector']
         elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
                 configuration['Camera_Stream']['Enabled']:
-            return domains['camera']
+            return DOMAINS['camera']
         elif device["Image"] == 'Generic':
-            return domains['switch']
+            return DOMAINS['switch']
         elif device["Image"] in ['Media', 'TV']:
-            return domains['media']
+            return DOMAINS['media']
         elif device["Image"] == 'WallSocket':
-            return domains['outlet']
+            return DOMAINS['outlet']
         elif device["Image"] == 'Speaker':
-            return domains['speaker']
+            return DOMAINS['speaker']
         elif device["Image"] == 'Fan':
-            return domains['fan']
+            return DOMAINS['fan']
         elif device["Image"] == 'Heating':
-            return domains['heater']
+            return DOMAINS['heater']
         else:
-            return domains['light']
+            return DOMAINS['light']
     elif 'Blinds' == device["Type"]:	
-        return domains['blinds']
+        return DOMAINS['blinds']
     elif 'Group' == device["Type"]:
-        return domains['group']
+        return DOMAINS['group']
     elif 'Scene' == device["Type"]:
-        return domains['scene']
+        return DOMAINS['scene']
     elif device["Type"] in ['Temp', 'Temp + Humidity', 'Temp + Humidity + Baro']:
-        return domains['temperature']
+        return DOMAINS['temperature']
     elif 'Thermostat' == device['Type']:
-        return domains['thermostat']
+        return DOMAINS['thermostat']
     elif 'Color Switch' == device["Type"]: 
         if "Dimmer" == device["SwitchType"]:
-            return domains['color']
+            return DOMAINS['color']
         elif "On/Off" == device["SwitchType"]:
             logger.info('%s (Idx: %s) is a color switch. To get all functions, set this device as Dimmer in Domoticz', device["Name"], device[
                 "idx"])
-            return domains['light']
+            return DOMAINS['light']
         elif device["SwitchType"] in ['Push On Button', 'Push Off Button']:
-            return domains['push']
+            return DOMAINS['push']
     elif 'Security' == device["Type"]:
-        return domains['security']
+        return DOMAINS['security']
     return None
 
 def getDesc(state):
-    if state.domain in [domains['scene'], domains['group']]:
+    if state.domain in [DOMAINS['scene'], DOMAINS['group']]:
         if 'Scene_Config' in configuration and configuration['Scene_Config'] is not None:
             desc = configuration['Scene_Config'].get(int(state.id), None)
             return desc
@@ -241,7 +257,7 @@ def getAog(device):
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
     aog.setpoint = device.get("SetPoint")
-    if aog.domain is domains['color']:
+    if aog.domain is DOMAINS['color']:
         aog.color = device.get("Color")
     aog.protected = device.get("Protected")
     aog.maxdimlevel = device.get("MaxDimLevel")   
@@ -269,18 +285,24 @@ def getAog(device):
     if desc is not None:
         dt = desc.get('devicetype', None)
         if dt is not None:
-            if aog.domain in [domains['blinds']]:
+            if aog.domain in [DOMAINS['blinds']]:
                 if dt.lower() in ['window', 'gate', 'garage', 'door']:
-                    aog.domain = domains[dt.lower()]
-            if aog.domain in [domains['light'], domains['switch']]:
-                if dt.lower() in ['window', 'door', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffeemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
-                    aog.domain = domains[dt.lower()]
-            if aog.domain in [domains['door']]:
+                    aog.domain = DOMAINS[dt.lower()]
+            if aog.domain in [DOMAINS['light'], DOMAINS['switch']]:
+                if dt.lower() in ['window', 'door', 'doorbell', 'gate', 'garage', 'light', 'ac_unit', 'bathtub', 'coffeemaker', 'dishwasher', 'dryer', 'fan', 'heater', 'kettle', 'media', 'microwave', 'outlet', 'oven', 'speaker', 'switch', 'vacuum', 'washer', 'waterheater']:
+                    aog.domain = DOMAINS[dt.lower()]
+            if aog.domain in [DOMAINS['door']]:
                 if dt.lower() in ['window', 'gate', 'garage']:
-                    aog.domain = domains[dt.lower()]    
-            if aog.domain in [domains['selector']]:
+                    aog.domain = DOMAINS[dt.lower()]    
+            if aog.domain in [DOMAINS['selector']]:
                 if dt.lower() in ['vacuum']:
-                    aog.domain = domains[dt.lower()]
+                    aog.domain = DOMAINS[dt.lower()]
+            if aog.domain in [DOMAINS['camera']]:
+                if dt.lower() in ['doorbell']:
+                    aog.domain = DOMAINS[dt.lower()]
+            if aog.domain in [DOMAINS['push']]:
+                if dt.lower() in ['doorbell', 'outlet', 'light']:
+                    aog.domain = DOMAINS[dt.lower()]
         pn = desc.get('name', None)
         if pn is not None:
             aog.name = pn
@@ -298,65 +320,71 @@ def getAog(device):
             aog.report_state = False
         if not report_state:
             aog.report_state = report_state            
-        if domains['thermostat'] == aog.domain:
+        if DOMAINS['thermostat'] == aog.domain:
+            minT = desc.get('minThreehold', None)
+            if minT is not None:
+                aog.minThreehold = minT
+            maxT = desc.get('maxThreehold', None)
+            if maxT is not None:
+                aog.maxThreehold = maxT
             at_idx = desc.get('actual_temp_idx', None)
             if at_idx is not None:
                 aog.actual_temp_idx = at_idx
                 try:
-                    aog.state = str(aogDevs[domains['temperature'] + at_idx].temp)
-                    aogDevs[domains['temperature'] + at_idx].domain = domains['merged'] + aog.id + ')'
+                    aog.state = str(aogDevs[DOMAINS['temperature'] + at_idx].temp)
+                    aogDevs[DOMAINS['temperature'] + at_idx].domain = DOMAINS['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find temperature device with idx %s', at_idx)
             modes_idx = desc.get('selector_modes_idx', None)
             if modes_idx is not None:
                 aog.modes_idx = modes_idx
                 try:
-                    aog.level = aogDevs[domains['selector'] + modes_idx].level
-                    aog.selectorLevelName = aogDevs[domains['selector'] + modes_idx].selectorLevelName
-                    aogDevs[domains['selector'] + modes_idx].domain = domains['merged'] + aog.id + ')'
+                    aog.level = aogDevs[DOMAINS['selector'] + modes_idx].level
+                    aog.selectorLevelName = aogDevs[DOMAINS['selector'] + modes_idx].selectorLevelName
+                    aogDevs[DOMAINS['selector'] + modes_idx].domain = DOMAINS['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find selector device with idx %s', modes_idx)
-        if aog.domain in [domains['heater'], domains['kettle'], domains['waterheater'], domains['oven']]:
+        if aog.domain in [DOMAINS['heater'], DOMAINS['kettle'], DOMAINS['waterheater'], DOMAINS['oven']]:
             tc_idx = desc.get('merge_thermo_idx', None)
             if tc_idx is not None:
                 aog.merge_thermo_idx = tc_idx
                 try:
-                    aog.temp = aogDevs[domains['thermostat'] + tc_idx].state
-                    aog.setpoint = aogDevs[domains['thermostat'] + tc_idx].setpoint
-                    aogDevs[domains['thermostat'] + tc_idx].domain = domains['merged'] + aog.id + ')'
+                    aog.temp = aogDevs[DOMAINS['thermostat'] + tc_idx].state
+                    aog.setpoint = aogDevs[DOMAINS['thermostat'] + tc_idx].setpoint
+                    aogDevs[DOMAINS['thermostat'] + tc_idx].domain = DOMAINS['merged'] + aog.id + ')'
                 except:
                     logger.error('Merge Error, Cant find thermostat device with idx %s', tc_idx)
         hide = desc.get('hide', False)
         if hide:
-            if aog.domain not in [domains['scene'], domains['group']]:
-                aog.domain = domains['hidden']
+            if aog.domain not in [DOMAINS['scene'], DOMAINS['group']]:
+                aog.domain = DOMAINS['hidden']
             else:
                 logger.error('Scenes and Groups does not support function "hide" yet')
             
-    if aog.domain in [domains['camera']]:
+    if aog.domain in [DOMAINS['camera'], DOMAINS['doorbell']]:
         aog.report_state = False
         
-    if domains['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
+    if DOMAINS['light'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if domains['fan'] == aog.domain and "Selector" == device["SwitchType"]:
+    if DOMAINS['fan'] == aog.domain and "Selector" == device["SwitchType"]:
         aog.attributes = ATTRS_FANSPEED
-    if domains['outlet'] == aog.domain and "Dimmer" == device["SwitchType"]:
+    if DOMAINS['outlet'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if domains['color'] == aog.domain and "Dimmer" == device["SwitchType"]:
+    if DOMAINS['color'] == aog.domain and "Dimmer" == device["SwitchType"]:
         aog.attributes = ATTRS_BRIGHTNESS
-    if domains['color'] == aog.domain and device["SubType"] in ["RGBWW", "RGBWZ", "White"]:
+    if DOMAINS['color'] == aog.domain and device["SubType"] in ["RGBWW", "RGBWZ", "White"]:
         aog.attributes = ATTRS_COLOR_TEMP
-    if domains['thermostat'] == aog.domain and "Thermostat" == device["Type"]:
+    if DOMAINS['thermostat'] == aog.domain and "Thermostat" == device["Type"]:
         aog.attributes = ATTRS_THERMSTATSETPOINT
-    if domains['blinds'] == aog.domain and "Blinds Percentage" == device["SwitchType"]:
+    if DOMAINS['blinds'] == aog.domain and ("Blinds Percentage" == device["SwitchType"] or "Blinds + Stop" == device["SwitchType"]):
         aog.attributes = ATTRS_PERCENTAGE
-    if domains['blindsinv'] == aog.domain and "Blinds Percentage Inverted" == device["SwitchType"]:
-        aog.attributes = ATTRS_PERCENTAGE
-    if domains['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
+    if DOMAINS['vacuum'] == aog.domain and "Selector" == device["SwitchType"]:
         aog.attributes = ATTRS_VACUUM_MODES
+    if DOMAINS['temperature'] == aog.domain and device["Type"] in ['Temp + Humidity', 'Temp + Humidity + Baro']:
+        aog.attributes = ATTRS_HUMIDITY
         
     if aog.room == None:
-        if aog.domain not in [domains['scene'], domains['group']]:
+        if aog.domain not in [DOMAINS['scene'], DOMAINS['group']]:
             if aog.plan != "0":
                 aog.room = getPlans(aog.plan)
         
@@ -408,7 +436,7 @@ def getDevices(devices="all", idx="0"):
                 req[aog.name]['willReportState'] = aog.report_state
                 logger.debug(json.dumps(req, indent=2, sort_keys=False, ensure_ascii=False))
 
-    devlist = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state) for d in aogDevs.values()]
+    devlist = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state, d.entity_id) for d in aogDevs.values()]
     devlist.sort(key=takeSecond)
     deviceList = json.dumps(devlist)
 
@@ -520,6 +548,7 @@ class _GoogleEntity:
 
         device = {
             'id': state.entity_id,
+            'notificationSupportedByAgent': (True if state.domain == 'Doorbell' else False),
             'name': {
                 'name': state.name
             },
@@ -545,6 +574,9 @@ class _GoogleEntity:
         room = state.room
         if room:
             device['roomHint'] = room
+            
+        if state.domain == 'Doorbell':
+            device['traits'].append('action.devices.traits.ObjectDetection')
                
         return device
 
@@ -560,7 +592,7 @@ class _GoogleEntity:
         attrs = {'online': True}
         for trt in self.traits():
             deep_update(attrs, trt.query_attributes())
-
+                
         return attrs
 
     def execute(self, command, params, challenge):
@@ -579,9 +611,9 @@ class _GoogleEntity:
                 else:
                     protect = False
 
-                if protect or self.state.domain == domains['security']:
+                if protect or self.state.domain == DOMAINS['security']:
                     pincode = configuration['Domoticz']['switchProtectionPass']
-                    if self.state.domain == domains['security']:
+                    if self.state.domain == DOMAINS['security']:
                         pincode = self.state.seccode
                     acknowledge = False
                     if challenge is None:
@@ -596,12 +628,11 @@ class _GoogleEntity:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-                    elif self.state.domain == domains['security'] and pincode != hashlib.md5(
+                    elif self.state.domain == DOMAINS['security'] and pincode != hashlib.md5(
                             str.encode(challenge.get('pin'))).hexdigest():
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-
                 if acknowledge:
                     if challenge is None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'ackNeeded',
@@ -623,10 +654,11 @@ class _GoogleEntity:
     def async_update(self):
         """Update the entity with latest info from Domoticz."""
 
-        if self.state.domain == domains['group'] or self.state.domain == domains['scene']:
+        if self.state.domain == DOMAINS['group'] or self.state.domain == DOMAINS['scene']:
             getDevices('scene')
         else:
             getDevices('id', self.state.id)
+            
 
 class SmartHomeReqHandler(OAuthReqHandler):
     global smarthomeControlMappings
@@ -661,6 +693,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 }
 
         handler = smarthomeControlMappings.get(inputs[0].get('intent'))
+        
+        logger.info("Google Assistant requests an " + inputs[0].get('intent'))
 
         if handler is None:
             return {'requestId': request_id, 'payload': {'errorCode': ERR_PROTOCOL_ERROR}}
@@ -692,8 +726,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         message = json.loads(s.body)
 
         self._request_id = message.get('requestId')
-
-        logger.info("Request " + json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
+        
+        logger.info(json.dumps(message, indent=2, sort_keys=True, ensure_ascii=False))
         response = self.smarthome_process(message, token)
 
         try:
@@ -701,7 +735,66 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 logger.error('Error handling message %s: %s' % (message, response['payload']))
         except:
             pass
+           
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
+        
+    def notification_post(self, s):
+        logger.debug(s.headers)
+        a = s.headers.get('Authorization', None)
+
+        token = None
+        if a is not None:
+            types, tokenH = a.split()
+            if types.lower() == 'bearer':
+                token = Auth['tokens'].get(tokenH, None)
+
+        if token is None:
+            raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
+            
+        event_id = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase +
+                                     string.digits, k=10))
+
+        request_id = ''.join(random.choices(string.digits, k=20))
+
+        message = s.body
+        message = message.replace('|', ' ').split()
+        if '>>' in message: message.remove('>>')
+        devid = message[0]
+        state = message[1]
+        
+        aog = aogDevs.get(devid, None)
+        if aog != None:
+            if aog.domain in DOMAINS['doorbell']:
+                data = {
+                    'requestId': str(request_id),
+                    'agentUserId': token.get('userAgentId', None),
+                    'eventId': str(event_id),
+                    'payload': {
+                        'devices': {
+                            'states': {
+                                devid: {
+                                    'on': (True if state.lower() in ['on', 'pressed'] else False)
+                                },
+                            },
+                            'notifications': {
+                                devid: {
+                                    "ObjectDetection": {
+                                        "objects": {
+                                            "unfamiliar": 1
+                                        },
+                                        "priority": 0,
+                                        "detectionTimestamp": time.time() 
+                                    }
+                                  }
+                                }
+                            }
+                        }
+                    }
+                ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)
+            else:
+                logger.info('Notification is not supported for ' + message[0])
+        else:
+            logger.error('Something went wrong, check your notification settings!')
 
     def smarthome(self, s):
         s.send_message(500, "not supported")
@@ -893,7 +986,6 @@ class SmartHomeReqHandler(OAuthReqHandler):
         aogDevs.clear()
         getDevices()  # sync all devices
         getSettings()
-        enableReport = ReportState.enable_report_state()
         agent_user_id = token.get('userAgentId', None)
 
         for state in aogDevs.values():
@@ -913,15 +1005,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def smarthome_query(self, payload, token):
         """Handle action.devices.QUERY request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicesquery
-        """
-        enableReport = ReportState.enable_report_state()
+        """     
         response = {}
         devices = {}
-        getDevices()
+        #getDevices()
         
         for device in payload.get('devices', []):
             devid = device['id']
-            #_GoogleEntity(aogDevs.get(devid, None)).async_update()
+            _GoogleEntity(aogDevs.get(devid, None)).async_update()
             state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
@@ -936,24 +1027,24 @@ class SmartHomeReqHandler(OAuthReqHandler):
               devices[devid] = {"online": False}
               
         response = {'devices': devices}
-        logger.info("Response " + json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
-        
-        if state.report_state == True and enableReport == True:
-            self.report_state(devices, token)
-               
+        logger.info(json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
+     
         return {'devices': devices}
 
     def smarthome_exec(self, payload, token):
         """Handle action.devices.EXECUTE request.
         https://developers.google.com/actions/smarthome/create-app#actiondevicesexecute
         """
+        enableReport = ReportState.enable_report_state()
         entities = {}
         results = {}
+        devices = {}
 
         for command in payload['commands']:
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
+                
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
                     continue
@@ -964,10 +1055,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
                         getSettings()
 
                     state = aogDevs.get(entity_id, None)
+
                     if state is None:
                         results[entity_id] = {'ids': [entity_id], 'status': 'ERROR', 'errorCode': ERR_DEVICE_OFFLINE}
                         continue
-
+          
                     entities[entity_id] = _GoogleEntity(state)
 
                 try:
@@ -982,13 +1074,23 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                           'challengeNeeded': {'type': err.desc}}
                     logger.error(err)
 
+                if state.report_state == True and enableReport == True:
+                    devices[entity_id] = execution.get('params', {})
+                    devices[entity_id].update({'online': True})
+                    if 'followUpToken' in devices[entity_id]:
+                        devices[entity_id].pop('followUpToken')
+                    self.report_state(devices, token)
+
         final_results = list(results.values())
+               
         for entity in entities.values():
             if entity.entity_id in results:
                 continue
             entity.async_update()
-            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': entity.query_serialize()})
-    
+            newState = entity.query_serialize()
+            newState.update(execution.get('params', {}))
+            final_results.append({'ids': [entity.entity_id], 'status': 'SUCCESS', 'states': newState})
+            
         return {'commands': final_results}
 
     def smarthome_disconnect(self, payload, token):
@@ -997,8 +1099,14 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """
         return None
         
-    def say(self, s):
-        itext = s.url.query.replace(" ","-")
+    def say(self, s):               #command "/say?text-to-say/lang@volume@device"
+        answ, scomm, rdevice, rvol, rcontent, rtype, stime = SmartHomeReqHandler.read_input(s.url.query)
+        if answ=="Error":
+            if rcontent!="?":
+                answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            SmartHomeReqHandler.send_resp("Error", s.url.query, scomm, stime, s)
+            return
+        itext = scomm.replace(" ","-")
         itext=itext.split("/")
         text = itext[0]
         if not text:
@@ -1008,53 +1116,212 @@ class SmartHomeReqHandler(OAuthReqHandler):
         else:
             lang = "en"
         slow = False
-        current_time = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
-        message="say command on " + current_time + ", text : " + str(text) + ", lang : " + lang
         tts = gTTS(text=text, lang=lang, slow=slow)
-        filename = slugify(text+"-"+lang+"-"+str(slow)) + ".mp3"
+        filename = slugify(text+"-"+lang+"-"+str(slow), only_ascii=True) + ".mp3"
         cache_filename = FILE_DIR + "/sound/cache/" + filename
         tts_file = Path(cache_filename)
         if not tts_file.is_file():
             logger.info(tts)
             tts.save(cache_filename)
-        mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?cache/" + filename
-        #make a query request for Get /sound
-        logger.info(message)
-        SmartHomeReqHandler.play_mp3(mp3_url)
-        s.send_message(200, "OK " + message + "\n")
+        mp3_url = "http://" + IP_Address + ":" + IP_Port + "/sound?cache/" + filename   #make a query request for Get /sound
+        rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
+        if rvol!="?":
+            answ, message = SmartHomeReqHandler.setvolume(str(round(rvol*100)))
+            rmessage = rmessage + " restore volume " + str(round(rvol*100))
+        if rcontent!="?":
+            answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            rmessage = rmessage + " restore stream : " + rcontent
+        if rdevice!="?":
+            answ, message = SmartHomeReqHandler.switchdevice(rdevice)
+            rmessage = rmessage + " restore device '" + rdevice+ "'"
+        SmartHomeReqHandler.send_resp(rstatus, "say " + s.url.query, rmessage, stime, s)
 
-    def play(self, s):
-        filename = s.url.query   
+    def play(self, s):                          #command "/play?soundfile.mp3@volume@device"      
+        answ, scomm, rdevice, rvol, rcontent, rtype, stime = SmartHomeReqHandler.read_input(s.url.query)
+        if answ=="Error":
+            if rcontent!="?":
+                answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            SmartHomeReqHandler.send_resp("Error", s.url.query, scomm, stime, s)
+            return
+        filename = scomm   
         mp3_filename = FILE_DIR + "/sound/" + filename
         mp3 = Path(mp3_filename)
-        current_time = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
-        message = "play command on " + current_time + ", file : " + str(mp3_filename)
-        logger.info(message)
         if mp3.is_file():
-            mp3_url = "http://" + IP_Address + ":" + str(s.server.server_port) + "/sound?" + filename
+            mp3_url = "http://" + IP_Address + ":" + IP_Port + "/sound?" + filename
             #make a query request for Get /sound
-            SmartHomeReqHandler.play_mp3(mp3_url)
-            s.send_message(200, "OK " + message + "\n")
+            rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
         else:
-            s.send_message(200, "File not found\n")
-
-    def play_mp3(mp3_url):
-        cast.wait()
-        mc = cast.media_controller
-        mc.play_media(mp3_url, 'audio/mp3')
-        logger.info("Play mp3 started")
+            rstatus="Error"
+            rmessage = str(mp3_filename) + ", file not found!"
+        if rvol!="?":
+            answ, message = SmartHomeReqHandler.setvolume(str(round(rvol*100)))
+            rmessage = rmessage + " restore volume " + str(round(rvol*100))
+        if rcontent!="?":
+            answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
+            rmessage = rmessage + " restore stream : " + rcontent
+        if rdevice!="?":
+            answ, message = SmartHomeReqHandler.switchdevice(rdevice)
+            rmessage = rmessage + " restore device '" + rdevice+ "'"
+        SmartHomeReqHandler.send_resp(rstatus, "play " + s.url.query, rmessage, stime, s)
 
     def send_sound(self, s):
         filename = s.url.query
         cache_filename = FILE_DIR + "/sound/" + filename
-        logger.info("sound : " + cache_filename)
+        logger.debug("Request for soundfile received, file = " + str(cache_filename))
         f = open(cache_filename, 'rb')
-        s.send_response(200)        # send_message (later in server.py)
+        s.send_response(200)    
         s.send_header('Content-type', 'audio/mpeg3')
         s.end_headers()
         s.wfile.write(f.read())
         f.close()
+        logger.debug("File returned succesfully")
+        
+    def send_resp(rstatus, rcommand, rmessage, stime, s):
+        # time.sleep(1)
+        etime = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        rvolume = "{:.0%}".format(cast.status.volume_level)
+        rcontent = mc.status.content_id
+        rtype = mc.status.content_type
+        rpstate = mc.status.player_state
+        if rpstate == "UNKNOWN":
+            rcontent="?" 
+            rtype="?"
+        message='{"device":"'+ cast.device.friendly_name + '","status":"' + rstatus + '","command":"' + rcommand  + '","volume":"' +rvolume +'","starttime":"' + stime + '","endtime":"' + etime + '","playstate":"' + rpstate + '","content":"' + rcontent + '","type":"' + rtype + '","message":"' + rmessage+ '"}'
+        s.send_json(200, message, False)
+        logger.info(message)
 
+    def read_input(ctext):                  
+        global cast, mc, chromecasts
+        stime = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        answ="OK"
+        message=""
+        rdevice = "?"
+        rvol = "?"
+        rcontent = "?"
+        rtype = "?"
+        ctext = ctext.split("@")
+        try:
+            svol=ctext[1]
+        except:
+            svol=""
+        try:
+            sdevice=ctext[2]
+        except:
+            sdevice=""
+        if sdevice!="":
+            rdevice = cast.device.friendly_name
+            answ, message = SmartHomeReqHandler.switchdevice(sdevice)
+            if answ == "Error":
+                return answ, message, rdevice, rvol, rcontent, rtype, stime
+        rpstate = mc.status.player_state
+        if rpstate != "UNKNOWN" and rpstate != "IDLE":
+            mc.stop()
+            rcontent = mc.status.content_id
+            rtype = mc.status.content_type
+        else:
+            rcontent = "?"
+            rtype = "?"
+        if svol!="":
+            cast.wait()
+            rvol = cast.status.volume_level
+            answ, message = SmartHomeReqHandler.setvolume(svol)
+            if answ == "Error":
+                return answ, message, rdevice, rvol, rcontent, rtype, stime
+        return answ, ctext[0], rdevice, rvol, rcontent, rtype, stime
+
+    def switchdevice(sdevice):
+        global cast, mc, chromecasts
+        sdevice = sdevice.replace("%20"," ")
+        try:    
+            cast = next(cc for cc in chromecasts if cc.device.friendly_name == sdevice)
+            cast.wait()
+            mc = cast.media_controller
+            return "OK","Switched to device " + str(cast.device.friendly_name) 
+        except Exception as e:
+            logger.error('chromecasts init not succeeded, error : %s' % e)
+            return "Error","Not switched to device " + str(sdevice)
+
+    def setvolume(svol):
+        global cast, mc, chromecasts
+        svol=svol.replace("%","")
+        try:
+            cast.wait()
+            cast.set_volume(int(svol)/100)
+            time.sleep(1)
+            cast.wait()
+            return "OK","Volume level set to : " + svol +"%" 
+        except Exception as e:
+            logger.error('Chromecast setvolume unsuccesfull, error : %s' % e)
+            return "Error","Volume level not set to : " + svol +"%" 
+
+    def playmedia(pmedia,ptype, wstate, tmax):
+        try:
+            mc.play_media(pmedia, ptype)
+            mc.block_until_active()
+            cast.wait()
+            pstate = "?"
+            i=1 #max x seconds
+            while (mc.status.player_state != wstate or pstate != wstate) and i<tmax:
+                pstate = mc.status.player_state 
+                time.sleep(1)
+                i+=1
+            message="play mp3 : " + pmedia + ", volume : " + str((round(cast.status.volume_level * 100))) + "%" + " on device '" + str(cast.device.friendly_name) + "' playerstate : " + mc.status.player_state
+            logger.info(message)
+            return "OK","Playing "+ str(pmedia) + ", type " + str(ptype)
+        except Exception as e:
+            logger.error('Chromecast playmedia unsuccefull, error : %s' % e)
+            return "Error","Error playing "+ str(pmedia) + ", type " +str(ptype)
+
+    def pycast(self, s):
+        global cast, mc, chromecasts
+        stime = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
+        cast.wait()
+        itext = s.url.query
+        itext = itext.split("@")
+        command = itext[0]
+        answ = "OK"
+        if command == "devices":
+            chromecasts, _ = pychromecast.get_chromecasts()
+            message= "Devices found : "
+            for cc in chromecasts:
+                if message == "Devices found : ":
+                    message = message + "'" + str(cc.device.friendly_name) + "'"
+                else:
+                    message = message + ", '" + str(cc.device.friendly_name) + "'"               
+        if command == "switchdevice":
+            answ, message = SmartHomeReqHandler.switchdevice(itext[1])
+        if command == "status":
+            message = str(cast.status) 
+#        if command == "mediastatus":
+#            message = str(mc.status).replace("None","'None'")
+        if command == "pause":
+            mc.pause()
+            message = "Paused"
+        if command == "stop":
+            mc.stop()
+            message = "Stopped"
+        if command == "play":
+            if mc.status.player_state == "PAUSED":
+                mc.play()
+                message = "Playing after pause"
+            else:
+                message = "Nothing to play not in PAUSED state"
+        if command == "playmedia":
+            answ, message = SmartHomeReqHandler.playmedia(itext[1],itext[2],'PLAYING', 30)
+        if command == "volume":
+            message = "Volume is " + str((round(cast.status.volume_level * 100))) + "%"
+        if command == "setvolume":
+            answ, message = SmartHomeReqHandler.setvolume(itext[1])
+        if command == "wait":
+            try:
+                wt=int(itext[1].replace("s",""))
+                time.sleep(wt)
+            except Exception as e:
+                logger.error('Chromecast wait time unsuccefull, error : %s' % e)
+                answ="Error"
+            message = "Wait time " + str(wt) + " seconds is finished"
+        SmartHomeReqHandler.send_resp(answ, command, message, stime, s)
+        
 if 'userinterface' in configuration and configuration['userinterface'] == True:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
                             "/sync": SmartHomeReqHandler.syncDevices,
@@ -1064,9 +1331,11 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
                             "/restart": SmartHomeReqHandler.restartServer,
                             "/say": SmartHomeReqHandler.say,
                             "/play": SmartHomeReqHandler.play, 
-                            "/sound": SmartHomeReqHandler.send_sound}
+                            "/sound": SmartHomeReqHandler.send_sound,
+                            "/pycast": SmartHomeReqHandler.pycast}  
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
+                             "/notification": SmartHomeReqHandler.notification_post,
                              "/settings": SmartHomeReqHandler.settings_post}
 else:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
@@ -1074,9 +1343,11 @@ else:
                             "/restart": SmartHomeReqHandler.restartServer,
                             "/say": SmartHomeReqHandler.say,
                             "/play": SmartHomeReqHandler.play, 
-                            "/sound": SmartHomeReqHandler.send_sound}
+                            "/sound": SmartHomeReqHandler.send_sound,
+                            "/pycast": SmartHomeReqHandler.pycast}  
 
-    smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post}
+    smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
+                             "/notification": SmartHomeReqHandler.notification_post}
 
 smarthomeControlMappings = {'action.devices.SYNC': SmartHomeReqHandler.smarthome_sync,
                             'action.devices.QUERY': SmartHomeReqHandler.smarthome_query,

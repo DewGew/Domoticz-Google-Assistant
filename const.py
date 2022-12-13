@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.10.9'
+VERSION = '1.22.25'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -22,6 +22,7 @@ DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
 DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
 DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
 DOMOTICZ_GET_VERSION = '/json.htm?type=command&param=getversion'
+DOMOTICZ_SEND_COMMAND = 'json.htm?type=command&param='
 
 # https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'
@@ -34,6 +35,7 @@ TYPE_COOKTOP = PREFIX_TYPES + 'COOKTOP'
 TYPE_CURTAIN = PREFIX_TYPES + 'CURTAIN'
 TYPE_DISHWASHER = PREFIX_TYPES + 'DISHWASHER'
 TYPE_DOOR = PREFIX_TYPES + 'DOOR'
+TYPE_DOORBELL = PREFIX_TYPES + 'DOORBELL'
 TYPE_DRYER = PREFIX_TYPES + 'DRYER'
 TYPE_FAN = PREFIX_TYPES + 'FAN'
 TYPE_GARAGE = PREFIX_TYPES + 'GARAGE'
@@ -75,16 +77,16 @@ ERR_UNKNOWN_ERROR = 'unknownError'
 ERR_VALUE_OUT_OF_RANGE = "valueOutOfRange"
 ERR_WRONG_PIN = 'pinIncorrect'
 
-domains = {
+DOMAINS = {
     'ac_unit': 'AcUnit',
     'bathtub': 'Bathtub',
     'blinds': 'Blind',
-    'blindsinv': 'BlindInverted',
     'camera': 'Camera',
     'coffeemaker': 'Coffeemaker',
     'color': 'ColorSwitch',
     'cooktop': 'Cooktop',
     'door': 'DoorSensor',
+    'doorbell': 'Doorbell',
     'dishwasher': 'Dishwasher',
     'dryer': 'Dryer',
     'fan': 'Fan',
@@ -129,47 +131,48 @@ ATTRS_COLOR_TEMP = 3
 ATTRS_PERCENTAGE = 1
 ATTRS_FANSPEED = 1
 ATTRS_VACUUM_MODES = 1
+ATTRS_HUMIDITY = 1
 
 DOMOTICZ_TO_GOOGLE_TYPES = {
-    domains['ac_unit']: TYPE_AC_UNIT,
-    domains['bathtub']: TYPE_BATHTUB,
-    domains['blinds']: TYPE_BLINDS,
-    domains['blindsinv']: TYPE_BLINDS,
-    domains['camera']: TYPE_CAMERA,
-    domains['coffeemaker']: TYPE_COFFEE,
-    domains['color']: TYPE_LIGHT,
-    domains['cooktop']: TYPE_COOKTOP,
-    domains['dishwasher']: TYPE_DISHWASHER,
-    domains['door']: TYPE_DOOR,
-    domains['dryer']: TYPE_DRYER,
-    domains['fan']: TYPE_FAN,
-    domains['garage']: TYPE_GARAGE,
-    domains['gate']: TYPE_GATE,
-    domains['group']: TYPE_SWITCH,
-    domains['heater']: TYPE_HEATER,
-    domains['kettle']: TYPE_KETTLE,
-    domains['light']: TYPE_LIGHT,
-    domains['lock']: TYPE_LOCK,
-    domains['lockinv']: TYPE_LOCK,
-    domains['media']: TYPE_MEDIA,
-    domains['microwave']: TYPE_MICRO,
-    domains['mower']: TYPE_MOWER,
-    domains['outlet']: TYPE_OUTLET,
-    domains['oven']: TYPE_OVEN,
-    domains['push']: TYPE_SWITCH,
-    domains['scene']: TYPE_SCENE,
-    domains['screen']: TYPE_SCREEN,
-    domains['security']: TYPE_SECURITY,
-    domains['selector']: TYPE_SWITCH,
-    domains['sensor']: TYPE_SENSOR,
-    domains['smokedetector']: TYPE_SMOKE_DETECTOR,
-    domains['speaker']: TYPE_SPEAKER,
-    domains['switch']: TYPE_SWITCH,
-    domains['temperature']: TYPE_THERMOSTAT,
-    domains['thermostat']: TYPE_THERMOSTAT,
-    domains['vacuum']: TYPE_VACUUM,
-    domains['valve']: TYPE_VALVE,
-    domains['washer']: TYPE_WASHER,
-    domains['waterheater']: TYPE_WATERHEATER,
-    domains['window']: TYPE_WINDOW,
+    DOMAINS['ac_unit']: TYPE_AC_UNIT,
+    DOMAINS['bathtub']: TYPE_BATHTUB,
+    DOMAINS['blinds']: TYPE_BLINDS,
+    DOMAINS['camera']: TYPE_CAMERA,
+    DOMAINS['coffeemaker']: TYPE_COFFEE,
+    DOMAINS['color']: TYPE_LIGHT,
+    DOMAINS['cooktop']: TYPE_COOKTOP,
+    DOMAINS['dishwasher']: TYPE_DISHWASHER,
+    DOMAINS['door']: TYPE_DOOR,
+    DOMAINS['doorbell']: TYPE_DOORBELL,
+    DOMAINS['dryer']: TYPE_DRYER,
+    DOMAINS['fan']: TYPE_FAN,
+    DOMAINS['garage']: TYPE_GARAGE,
+    DOMAINS['gate']: TYPE_GATE,
+    DOMAINS['group']: TYPE_SWITCH,
+    DOMAINS['heater']: TYPE_HEATER,
+    DOMAINS['kettle']: TYPE_KETTLE,
+    DOMAINS['light']: TYPE_LIGHT,
+    DOMAINS['lock']: TYPE_LOCK,
+    DOMAINS['lockinv']: TYPE_LOCK,
+    DOMAINS['media']: TYPE_MEDIA,
+    DOMAINS['microwave']: TYPE_MICRO,
+    DOMAINS['mower']: TYPE_MOWER,
+    DOMAINS['outlet']: TYPE_OUTLET,
+    DOMAINS['oven']: TYPE_OVEN,
+    DOMAINS['push']: TYPE_SWITCH,
+    DOMAINS['scene']: TYPE_SCENE,
+    DOMAINS['screen']: TYPE_SCREEN,
+    DOMAINS['security']: TYPE_SECURITY,
+    DOMAINS['selector']: TYPE_SWITCH,
+    DOMAINS['sensor']: TYPE_SENSOR,
+    DOMAINS['smokedetector']: TYPE_SMOKE_DETECTOR,
+    DOMAINS['speaker']: TYPE_SPEAKER,
+    DOMAINS['switch']: TYPE_SWITCH,
+    DOMAINS['temperature']: TYPE_SENSOR,
+    DOMAINS['thermostat']: TYPE_THERMOSTAT,
+    DOMAINS['vacuum']: TYPE_VACUUM,
+    DOMAINS['valve']: TYPE_VALVE,
+    DOMAINS['washer']: TYPE_WASHER,
+    DOMAINS['waterheater']: TYPE_WATERHEATER,
+    DOMAINS['window']: TYPE_WINDOW,
 }
