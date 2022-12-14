@@ -23,4 +23,4 @@ jobs:
     - name: Build the Docker Image
       run: docker build . --file Dockerfile --tag dewgew/domoticz-google-assistant:$(date +%s)
     - name: Docker Push
-      run: docker push ${{secrets.DOCKER_USER}}/domoticz-google-assistant:latest
+      run: docker push ${{secrets.DOCKER_USER}}/domoticz-google-assistant
