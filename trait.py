@@ -157,7 +157,6 @@ class OnOffTrait(_Trait):
             DOMAINS['oven'],
             DOMAINS['push'],
             DOMAINS['sensor'],
-            DOMAINS['smokedetector'],
             DOMAINS['speaker'],
             DOMAINS['switch'],
             #DOMAINS['vacuum'],
@@ -169,7 +168,7 @@ class OnOffTrait(_Trait):
         """Return OnOff attributes for a sync request."""
         domain = self.state.domain
         response = {}
-        if domain in [DOMAINS['sensor'], DOMAINS['smokedetector'], DOMAINS['doorbell']]:
+        if domain in [DOMAINS['sensor'], DOMAINS['doorbell']]:
             response['queryOnlyOnOff'] = True
         
         return response
@@ -193,7 +192,7 @@ class OnOffTrait(_Trait):
         domain = self.state.domain
         protected = self.state.protected
 
-        if domain not in [DOMAINS['sensor'], DOMAINS['smokedetector']]:
+        if domain not in [DOMAINS['sensor']]:
             if domain == DOMAINS['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
@@ -980,10 +979,10 @@ class CameraStreamTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        if configuration['Camera_Stream']['Enabled']:
+        if 'Camera_Stream' in configuration and configuration['Camera_Stream']['Enabled']:
             return domain in [DOMAINS['camera'], DOMAINS['doorbell']]
-            
-        return False
+        else:    
+            return False
 
     def sync_attributes(self):
         """Return stream attributes for a sync request."""
@@ -1286,13 +1285,13 @@ class SensorStateTrait(_Trait):
         domain = self.state.domain
         if domain == DOMAIN['smokedetector']:
             return {
-                "sensorStatesSupported": [
+                'sensorStatesSupported': [
                     {
-                      "name": "SmokeLevel",
-                      "descriptiveCapabilities": {
-                        "availableStates": [
-                          "smoke detected",
-                          "no smoke detected"
+                      'name': 'SmokeLevel',
+                      'descriptiveCapabilities': {
+                        'availableStates': [
+                          'smoke detected',
+                          'no smoke detected'
                         ]
                       }
                     }
@@ -1302,12 +1301,13 @@ class SensorStateTrait(_Trait):
     def query_attributes(self):
         """Return the attributes of this trait for this entity."""
         domain = self.state.domain
-        if self.state.state is not None:
+        state = self.state.state
+        if state is not None:
             return {
-                "currentSensorStateData": [
+                'currentSensorStateData': [
                     {
-                        "name": "SmokeLevel",
-                        "currentSensorState": "smoke detected",
+                        'name': 'SmokeLevel',
+                        'currentSensorState': ('smoke detekted' if state == 'on' else 'no smoke detected'),
                         }
                 ]
             }
