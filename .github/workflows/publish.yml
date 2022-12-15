@@ -5,13 +5,9 @@ on:
     branches: [ "master" ]
   pull_request:
     branches: [ "master" ]
-
 jobs:
-
-  build:
-
+  publish-docker-image:
     runs-on: ubuntu-latest
-
     steps:
     - uses: actions/checkout@v3
     - name: Login to GitHub Container Registry
