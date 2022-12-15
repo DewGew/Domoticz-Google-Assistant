@@ -159,8 +159,7 @@ def AogGetDomain(device):
                 return DOMAINS['selector']
         elif 'Smoke Detector' == device["SwitchType"]:
             return DOMAINS['smokedetector']
-        elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == \
-                configuration['Camera_Stream']['Enabled']:
+        elif 'Camera_Stream' in configuration and True == device["UsedByCamera"] and True == configuration['Camera_Stream']['Enabled']:
             return DOMAINS['camera']
         elif device["Image"] == 'Generic':
             return DOMAINS['switch']
@@ -548,7 +547,7 @@ class _GoogleEntity:
 
         device = {
             'id': state.entity_id,
-            'notificationSupportedByAgent': (True if state.domain == 'Doorbell' else False),
+            'notificationSupportedByAgent': (True if state.domain in [DOMAINS['doorbell'], DOMAINS['smokedetector']] else False),
             'name': {
                 'name': state.name
             },
@@ -575,7 +574,7 @@ class _GoogleEntity:
         if room:
             device['roomHint'] = room
             
-        if state.domain == 'Doorbell':
+        if state.domain == DOMAINS['doorbell']:
             device['traits'].append('action.devices.traits.ObjectDetection')
                
         return device
@@ -741,13 +740,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
     def notification_post(self, s):
         logger.debug(s.headers)
         a = s.headers.get('Authorization', None)
-
         token = None
         if a is not None:
             types, tokenH = a.split()
             if types.lower() == 'bearer':
                 token = Auth['tokens'].get(tokenH, None)
-
+                
         if token is None:
             raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
             
@@ -755,7 +753,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                      string.digits, k=10))
 
         request_id = ''.join(random.choices(string.digits, k=20))
-
+        
         message = s.body
         message = message.replace('|', ' ').split()
         if '>>' in message: message.remove('>>')
@@ -785,6 +783,31 @@ class SmartHomeReqHandler(OAuthReqHandler):
                                         "priority": 0,
                                         "detectionTimestamp": time.time() 
                                     }
+                                  }
+                                }
+                            }
+                        }
+                    }
+                ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)                        
+            elif aog.domain in DOMAINS['smokedetector']:
+                data = {
+                    'requestId': str(request_id),
+                    'agentUserId': token.get('userAgentId', None),
+                    'eventId': str(event_id),
+                    'payload': {
+                        'devices': {
+                            'states': {
+                                devid: {
+                                    'on': (True if state.lower() in ['on'] else False)
+                                },
+                            },
+                            'notifications': {
+                                devid: {
+                                    'SensorState': {
+                                        'priority': 0,
+                                        'name': 'SmokeLevel',
+                                        'currentSensorState': 'smoke detected'
+                                        }
                                   }
                                 }
                             }
