@@ -755,7 +755,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         request_id = ''.join(random.choices(string.digits, k=20))
         
         message = s.body
-        message = message.replace('|', ' ').split()
+        if '|' in message: message = message.replace('|', ' ').split()
         if '>>' in message: message.remove('>>')
         devid = message[0]
         state = message[1]
@@ -816,6 +816,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
                 ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)
             else:
                 logger.info('Notification is not supported for ' + message[0])
+        elif message == 'Domoticz test message!':
+            logger.info('Great! Test is working, Now add custom message e.g "light123|$value" in the device notification settings')
         else:
             logger.error('Something went wrong, check your notification settings!')
 
