@@ -390,16 +390,16 @@ class OpenCloseTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
             
-        if p == 100 and state in ['Closed', 'Stopped', 'On']:
-          # open
-          url += 'Open'
-        elif p == 0 and state in ['Open', 'Stopped', 'Off']:
-          # close
-          url += 'Close'
-        else:
-          raise SmartHomeError(ERR_ALREADY_IN_STATE,
-                               'Unable to execute {} for {}. Already in state '.format(command,
-                                                                                       self.state.entity_id))
+            if p == 100 and state in ['Closed', 'Stopped', 'On']:
+              # open
+              url += 'Open'
+            elif p == 0 and state in ['Open', 'Stopped', 'Off']:
+              # close
+              url += 'Close'
+            else:
+              raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                   'Unable to execute {} for {}. Already in state '.format(command,
+                                                                                           self.state.entity_id))
 
         if protected:
             url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
