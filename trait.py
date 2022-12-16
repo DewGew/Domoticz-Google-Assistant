@@ -348,8 +348,11 @@ class OpenCloseTrait(_Trait):
     def sync_attributes(self):
         """Return OpenClose attributes for a sync request."""
         features = self.state.attributes
+        domain = self.state.domain
         response = {}
         
+        if domain != DOMAINS['blinds']:
+            response['queryOnlyOpenClose'] = True
         if features & ATTRS_PERCENTAGE != True:
             response['discreteOnlyOpenClose'] = True
             
@@ -442,7 +445,7 @@ class StartStopTrait(_Trait):
         domain = self.state.domain 
         response = {}
         if domain == DOMAINS['blinds']:
-            response['isRunning'] = True
+            response['isRunning'] = False
         else:
             response['isRunning'] = self.state.state != 'Off'
             
@@ -1283,7 +1286,7 @@ class SensorStateTrait(_Trait):
     def sync_attributes(self):
         """Return attributes for a sync request."""
         domain = self.state.domain
-        if domain == DOMAIN['smokedetector']:
+        if domain == DOMAINS['smokedetector']:
             return {
                 'sensorStatesSupported': [
                     {
