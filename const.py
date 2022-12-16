@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.22.25'
+VERSION = '1.22.32'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -90,7 +90,7 @@ DOMAINS = {
     'dishwasher': 'Dishwasher',
     'dryer': 'Dryer',
     'fan': 'Fan',
-    'garage': 'GarageSensor',
+    'garage': 'GarageDoor',
     'gate': 'Gate',
     'group': 'Group',
     'heater': 'Heater',
