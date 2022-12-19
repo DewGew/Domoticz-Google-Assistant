@@ -8,6 +8,8 @@ import os
 import time
 import subprocess
 import sys
+import string
+import random
 
 import requests
 import yaml
@@ -50,8 +52,12 @@ def saveFile(filename, text):
     file.write(text)
     file.close()
     return code
-
-
+    
+# Random string generator
+def random_string(stringLength=8):
+    chars = string.ascii_letters + string.digits
+    return ''.join(random.choice(chars) for i in range(stringLength))
+       
 try:
     print('Loading configuration...')
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
@@ -84,6 +90,21 @@ logger.setLevel(logging.DEBUG)
 ch = logging.StreamHandler()
 ch.setLevel(loglevel)
 logger.addHandler(ch)
+
+# Generate and save random token with username
+try:
+    with open(os.path.join(FILE_DIR, 'config/token/'+ configuration['auth_user']), 'r') as t:
+        configuration['authToken'] = t.read()
+        t.close()
+except FileNotFoundError:
+    logger.info('Generating token...')
+    access_token = random_string(20)
+    access_token_file = os.path.join(FILE_DIR, 'config/token/' + configuration['auth_user'])
+    with open(os.path.join(FILE_DIR, 'config/token/'+ configuration['auth_user']), 'w+') as f:
+        f.write(access_token)
+        configuration['authToken'] = f
+        f.close()
+        
 # Log to file
 if 'pathToLogFile' not in configuration or configuration['pathToLogFile'] == '':
     logfilepath = FILE_DIR
@@ -123,8 +144,6 @@ if 'ClientID' not in configuration:
     configuration['ClientID'] = 'sampleClientId'
 if 'ClientSecret' not in configuration:
     configuration['ClientSecret'] = 'sampleClientSecret'
-if 'authToken' not in configuration:
-    configuration['authToken'] = 'ZsokmCwKjdhk7qHLeYd2'
 
 Auth = {
     'clients': {
