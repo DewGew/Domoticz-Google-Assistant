@@ -6,8 +6,6 @@ import re
 import subprocess
 import sys
 import yaml
-import random
-import string
 from collections.abc import Mapping
 from itertools import product
 from pid import PidFile
@@ -56,7 +54,8 @@ from helpers import (
     logger,
     ReportState,
     Auth,
-    logfilepath
+    logfilepath,
+    random_string
 )
 from jinja2 import Environment, FileSystemLoader
     
@@ -749,10 +748,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if token is None:
             raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
             
-        event_id = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase +
-                                     string.digits, k=10))
-
-        request_id = ''.join(random.choices(string.digits, k=20))
+        event_id = random_string(10)
+        request_id = random_string(20)
         
         message = s.body
         if '|' in message: message = message.replace('|', ' ').split()
