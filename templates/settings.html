@@ -59,24 +59,12 @@
       </div>
       </div>
     </div>
-    <div class="row">
-      <div class="col-md-4">
-      <div class="form-check">
-        <label class="form-check-label">Enable Ngrok Tunnel
-          <input id="ngrok_tunnel" name="ngrok_tunnel" class="form-check-input" type="checkbox"
-          {% if conf.ngrok_tunnel %} checked="checked" {% endif %}>
-          <small class="form-text text-muted">Instantly create a public HTTPS URL.</small>
-          <span class="form-check-sign">
-            <span class="check"></span>
-          </span>
-        </label>
-      </div>
-      </div>
-      <div class="col-md-8">
+	<div class="row">
+      <div class="col-md-12">
         <div class="form-group">
-          <label class="bmd-label-floating">Ngrok Token</label>
-          <input id="ngrok_auth_token" name="ngrok_auth_token" type="text" class="form-control" value="{{ conf.ngrok_auth_token }}">
-          <small class="form-text text-muted">Create account at ngrok.com and paste the token here.</small>
+          <label class="bmd-label-floating">Auth Token</label>
+          <input id="authToken" name="authToken" type="text" class="form-control" value="{{ conf.authToken }}" disabled>
+          <small class="form-text text-muted">This is your authToken to use with notifications.</small>
         </div>
       </div>
     </div>
@@ -128,10 +116,10 @@
       </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-4">
         <div class="form-group">
           <label class="bmd-label-floating">Switch Protection Pass</label>
-          <input id="DomoticzswitchProtectionPass" name="DomoticzswitchProtectionPass" type="text" class="form-control" value="{{ conf.Domoticz.switchProtectionPass }}">
+          <input id="DomoticzswitchProtectionPass" name="DomoticzswitchProtectionPass" type="password" class="form-control" value="{{ conf.Domoticz.switchProtectionPass }}">
         </div>
       </div>
     </div>
@@ -151,7 +139,7 @@
     <div class="card-body">
     <form>
       <div class="row">
-      <div class="col-md-3">
+      <div class="col-md-2">
       <div class="form-check form-check-radio">
         <label class="form-check-label">
           <input id="loglevel_info" name="loglevel_info" class="form-check-input" type="radio"
@@ -162,7 +150,7 @@
         </label>
       </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
       <div class="form-check form-check-radio">
         <label class="form-check-label">
           <input id="loglevel_debug" name="loglevel_debug" class="form-check-input" type="radio"
@@ -173,7 +161,7 @@
         </label>
       </div>
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
       <div class="form-check form-check-radio">
         <label class="form-check-label">
           <input id="loglevel_error" name="loglevel_error" class="form-check-input" type="radio"
@@ -184,12 +172,9 @@
         </label>
       </div>
       </div>
-      <div class="col-md-3">
-
-      </div>
     </div>
     <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-2">
       <div class="form-group">
         <label for="logtofile"><small>Write To Logfile</small></label>
         <select class="form-control" data-style="btn btn-link" id="logtofile">
@@ -200,9 +185,8 @@
         </select>
       </div>
       </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12">
+      <div class="col-md-10">
+	  <br>
         <div class="form-group">
           <label class="bmd-label-floating">Path To Logfile</label>
           <input id="pathToLogFile" name="pathToLogFile" type="text" class="form-control" value="{{ conf.pathToLogFile }}">
@@ -294,6 +278,7 @@
         </div>
       </div>
     </div>
+	<hr>
     <div class="row">
       <div class="col-md-12">
         <div class="form-group">
@@ -303,12 +288,25 @@
         </div>
       </div>
     </div>
+	<hr>
 	<div class="row">
-      <div class="col-md-12">
+      <div class="col-md-4">
+      <div class="form-check">
+        <label class="form-check-label">Enable Ngrok Tunnel
+          <input id="ngrok_tunnel" name="ngrok_tunnel" class="form-check-input" type="checkbox"
+          {% if conf.ngrok_tunnel %} checked="checked" {% endif %}>
+          <small class="form-text text-muted">Instantly create a public HTTPS URL.</small>
+          <span class="form-check-sign">
+            <span class="check"></span>
+          </span>
+        </label>
+      </div>
+      </div>
+      <div class="col-md-8">
         <div class="form-group">
-          <label class="bmd-label-floating">Auth Token</label>
-          <input id="authToken" name="authToken" type="text" class="form-control" value="{{ conf.authToken }}" disabled>
-          <small class="form-text text-muted">This is your authToken to use with notifications.</small>
+          <label class="bmd-label-floating">Ngrok Token</label>
+          <input id="ngrok_auth_token" name="ngrok_auth_token" type="text" class="form-control" value="{{ conf.ngrok_auth_token }}">
+          <small class="form-text text-muted">Create account at ngrok.com and paste the token here.</small>
         </div>
       </div>
     </div>
