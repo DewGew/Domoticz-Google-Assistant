@@ -62,9 +62,9 @@ try:
     print('Loading configuration...')
     with open(os.path.join(FILE_DIR, CONFIGFILE), 'r') as conf:
         configuration = yaml.safe_load(conf)
-except yaml.YAMLError as exc:
+except yaml.YAMLError:
     print('ERROR: Please check config.yaml')
-except FileNotFoundError as err:
+except FileNotFoundError:
     print('No config.yaml found...')
     print('Loading default configuration...')
     content = readFile(os.path.join(FILE_DIR, 'config/default_config'))
