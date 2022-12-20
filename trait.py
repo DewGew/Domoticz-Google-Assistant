@@ -1305,12 +1305,13 @@ class SensorStateTrait(_Trait):
         """Return the attributes of this trait for this entity."""
         domain = self.state.domain
         state = self.state.state
+
         if state is not None:
             return {
                 'currentSensorStateData': [
                     {
                         'name': 'SmokeLevel',
-                        'currentSensorState': ('smoke detekted' if state == 'on' else 'no smoke detected'),
+                        'currentSensorState': ('smoke detekted' if state == 'On' else 'no smoke detected'),
                         }
                 ]
             }
