@@ -93,14 +93,14 @@ logger.addHandler(ch)
 
 # Generate and save random token with username
 try:
-    with open(os.path.join(FILE_DIR, 'config/token/'+ configuration['auth_user']), 'r') as t:
+    with open(os.path.join(FILE_DIR, 'config/.token/.'+ configuration['auth_user']), 'r') as t:
         configuration['authToken'] = t.read()
         t.close()
 except FileNotFoundError:
     logger.info('Generating token...')
     access_token = random_string(20)
-    access_token_file = os.path.join(FILE_DIR, 'config/token/' + configuration['auth_user'])
-    with open(os.path.join(FILE_DIR, 'config/token/'+ configuration['auth_user']), 'w+') as f:
+    access_token_file = os.path.join(FILE_DIR, 'config/.token/.' + configuration['auth_user'])
+    with open(os.path.join(FILE_DIR, 'config/.token/.'+ configuration['auth_user']), 'w+') as f:
         f.write(access_token)
         configuration['authToken'] = f
         f.close()
@@ -158,12 +158,6 @@ Auth = {
             'accessToken': configuration['authToken'],
             'refreshToken': configuration['authToken'],
             'userAgentId': '1234',
-        },
-        'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub': {
-            'uid': '2345',
-            'accessToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
-            'refreshToken': 'bfrrLnxxWdULSh3Y9IU2cA5pw8s4ub',
-            'userAgentId': '2345'
         },
     },
     'users': {
