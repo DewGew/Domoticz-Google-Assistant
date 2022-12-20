@@ -4,18 +4,18 @@ from const import PUBLIC_URL
 from server import *
 from smarthome import *
 
-use_ssl = ('use_ssl' in configuration and configuration['use_ssl'] == True)
+use_ssl = ('use_ssl' in configuration and configuration['use_ssl'] is True)
 
 if use_ssl:
     import ssl
 
-if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] == True:
+if 'ngrok_tunnel' in configuration and configuration['ngrok_tunnel'] is True:
     from pyngrok import ngrok
 
 tunnel = PUBLIC_URL
 
 def secure(server):
-    key  = configuration['ssl_key']  if 'ssl_key'  in configuration else None
+    key = configuration['ssl_key'] if 'ssl_key' in configuration else None
     cert = configuration['ssl_cert'] if 'ssl_cert' in configuration else None
 
     if key is None or cert is None:
@@ -23,7 +23,7 @@ def secure(server):
         return
 
     logger.info('Using SSL connection')
-    server.socket = ssl.wrap_socket (server.socket, keyfile=key, certfile=cert, server_side=True, ssl_version=ssl.PROTOCOL_TLSv1_2)
+    server.socket = ssl.wrap_socket(server.socket, keyfile=key, certfile=cert, server_side=True, ssl_version=ssl.PROTOCOL_TLSv1_2)
 
 class ThreadingSimpleServer(socketserver.ThreadingMixIn, http.server.HTTPServer):
     pass
@@ -48,7 +48,7 @@ def startServer():
             # Create a web server and define the handler to manage the
             # incoming request
             server = ThreadingSimpleServer(('', configuration['port_number']), AogServer)
-            if(use_ssl):
+            if (use_ssl):
                 secure(server)
 
             logger.info('========')
