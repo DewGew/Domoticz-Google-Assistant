@@ -54,7 +54,7 @@ class OAuthReqHandler(ReqHandler):
         user = self.getUser(s.form.get("username", None), s.form.get("password", None))
 
         if user is None:
-            if s.headers['X-Forwarded-For'] == None:
+            if s.headers['X-Forwarded-For'] is None:
                 logger.error("Failed login from %s", s.address_string())
             else:
                 logger.error("Failed login from %s", s.headers['X-Forwarded-For'])
@@ -89,7 +89,7 @@ class OAuthReqHandler(ReqHandler):
     # * &response_type=token
     # * &grant_type=refresh_token
     # * &refresh_token=REFRESH_TOKEN
-    # */        
+    # */
     def token_post(self, s):
         client_id = s.query_components.get("client_id", s.form.get("client_id", None))
         client_secret = s.query_components.get("client_secret", s.form.get("client_secret", None))
@@ -155,7 +155,7 @@ class OAuthReqHandler(ReqHandler):
     # *   token_type: "bearer",
     # *   access_token: "ACCESS_TOKEN",
     # * }
-    # */ 
+    # */
     def handleRefreshToken(self, s):
         client_id = s.query_components.get("client_id", s.form.get("client_id", None))
         client_secret = s.query_components.get("client_secret", s.form.get("client_secret", None))
