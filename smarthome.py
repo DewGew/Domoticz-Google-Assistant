@@ -752,6 +752,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         request_id = random_string(20)
         
         message = s.body
+
         if '|' in message: message = message.replace('|', ' ').split()
         if '>>' in message: message.remove('>>')
         devid = message[0]
@@ -785,7 +786,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                             }
                         }
                     }
-                ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)                        
+                ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)
             elif aog.domain in DOMAINS['smokedetector']:
                 data = {
                     'requestId': str(request_id),
@@ -1030,11 +1031,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """     
         response = {}
         devices = {}
-        #getDevices()
+        getDevices()
         
         for device in payload.get('devices', []):
             devid = device['id']
-            _GoogleEntity(aogDevs.get(devid, None)).async_update()
+            #_GoogleEntity(aogDevs.get(devid, None)).async_update()
             state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
