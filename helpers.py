@@ -99,7 +99,7 @@ try:
 except FileNotFoundError:
     logger.info('Generating token...')
     access_token = random_string(20)
-    access_token_file = os.path.join(FILE_DIR, 'config/.token/.' + configuration['auth_user'])
+    os.makedirs(os.path.join(FILE_DIR, 'config/.token'), exist_ok=True)
     with open(os.path.join(FILE_DIR, 'config/.token/.'+ configuration['auth_user']), 'w+') as f:
         f.write(access_token)
         configuration['authToken'] = f
