@@ -92,18 +92,19 @@ ch.setLevel(loglevel)
 logger.addHandler(ch)
 
 # Generate and save random token with username
-try:
-    with open(os.path.join(FILE_DIR, 'config/.token/.'+ configuration['auth_user']), 'r') as t:
-        configuration['authToken'] = t.read()
-        t.close()
-except FileNotFoundError:
-    logger.info('Generating token...')
-    access_token = random_string(20)
-    os.makedirs(os.path.join(FILE_DIR, 'config/.token'), exist_ok=True)
-    with open(os.path.join(FILE_DIR, 'config/.token/.'+ configuration['auth_user']), 'w+') as f:
-        f.write(access_token)
-        configuration['authToken'] = f
-        f.close()
+if 'authToken' not in configuration:
+    try:
+        with open(os.path.join(FILE_DIR, 'config/.token/.'+ configuration['auth_user']), 'r') as t:
+            configuration['authToken'] = t.read()
+            t.close()
+    except FileNotFoundError:
+        logger.info('Generating token...')
+        access_token = random_string(20)
+        os.makedirs(os.path.join(FILE_DIR, 'config/.token'), exist_ok=True)
+        with open(os.path.join(FILE_DIR, 'config/.token/.'+ configuration['auth_user']), 'w+') as f:
+            f.write(access_token)
+            configuration['authToken'] = f
+            f.close()
         
 # Log to file
 if 'pathToLogFile' not in configuration or configuration['pathToLogFile'] == '':
