@@ -1,6 +1,8 @@
 name: Docker Image CI Beta
 
 on:
+  push:
+    branches: [ "Beta" ]
   pull_request:
     branches: [ "Beta" ]
     types:
