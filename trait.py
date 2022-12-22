@@ -143,7 +143,6 @@ class OnOffTrait(_Trait):
             DOMAINS['color'],
             DOMAINS['cooktop'],
             DOMAINS['dishwasher'],
-            DOMAINS['doorbell'],
             DOMAINS['dryer'],
             DOMAINS['fan'],
             DOMAINS['group'],
@@ -168,7 +167,7 @@ class OnOffTrait(_Trait):
         """Return OnOff attributes for a sync request."""
         domain = self.state.domain
         response = {}
-        if domain in [DOMAINS['sensor'], DOMAINS['doorbell']]:
+        if domain in [DOMAINS['sensor']]:
             response['queryOnlyOnOff'] = True
         
         return response
@@ -342,8 +341,7 @@ class OpenCloseTrait(_Trait):
                 DOMAINS['door'],
                 DOMAINS['window'],
                 DOMAINS['gate'],
-                DOMAINS['garage'],
-                DOMAINS['valve']
+                DOMAINS['garage']
             )
 
     def sync_attributes(self):
@@ -642,7 +640,7 @@ class TemperatureControlTrait(_Trait):
             response = {"temperatureStepCelsius": 1}
             
         if domain in [DOMAINS['temperature']]:
-            response['queryOnlyTemperatureControl'] = True
+            response = {'queryOnlyTemperatureControl': True}
             
         return response
 
@@ -667,7 +665,7 @@ class TemperatureControlTrait(_Trait):
             current_temp = float(self.state.temp)
             if current_temp is not None:
                 response['temperatureAmbientCelsius'] = current_temp
-                #response['temperatureSetpointCelsius'] = current_temp
+                response['temperatureSetpointCelsius'] = current_temp
                 
         return response
 
