@@ -1,12 +1,8 @@
 name: Docker Image CI Beta
 
 on:
-  push:
+  workflow_dispatch:
     branches: [ "beta" ]
-  pull_request:
-    branches: [ "beta" ]
-    types:
-      - closed
 
 jobs:
 
