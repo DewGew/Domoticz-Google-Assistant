@@ -2,9 +2,9 @@ name: Docker Image CI Beta
 
 on:
   push:
-    branches: [ "Beta" ]
+    branches: [ "beta" ]
   pull_request:
-    branches: [ "Beta" ]
+    branches: [ "beta" ]
     types:
       - closed
 
