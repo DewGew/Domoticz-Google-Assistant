@@ -796,7 +796,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                         'devices': {
                             'states': {
                                 devid: {
-                                    'on': (True if state.lower() in ['ALARM/FIRE'] else False)
+                                    'on': (True if state.lower() in ['on', 'alarm/fire'] else False)
                                 },
                             },
                             'notifications': {
