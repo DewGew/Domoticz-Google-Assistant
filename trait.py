@@ -392,11 +392,11 @@ class OpenCloseTrait(_Trait):
             
             if p == 100 and state in ['Closed', 'Stopped']:
                 url += 'Open'
-            elif p == 100 and state is 'On':
+            elif p == 100 and state == 'On':
                 url += 'Off'
             elif p == 0 and state in ['Open', 'Stopped']:
                 url += 'Close'
-            elif p == 0 and state is 'Off':
+            elif p == 0 and state == 'Off':
                 url += 'On'
             else:
               raise SmartHomeError(ERR_ALREADY_IN_STATE,
