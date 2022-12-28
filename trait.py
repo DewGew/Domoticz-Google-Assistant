@@ -350,8 +350,6 @@ class OpenCloseTrait(_Trait):
         domain = self.state.domain
         response = {}
         
-        if domain != DOMAINS['blinds']:
-            response['queryOnlyOpenClose'] = True
         if features & ATTRS_PERCENTAGE != True:
             response['discreteOnlyOpenClose'] = True
             
