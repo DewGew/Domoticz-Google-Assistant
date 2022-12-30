@@ -97,7 +97,8 @@ try:
     r = requests.get(
         DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
         auth=CREDITS, timeout=(2, 5))
-except Exception as e:
+    r.raise_for_status()
+except requests.exceptions.HTTPError as e:
     logger.error('Connection to Domoticz refused with error: %s' % e)
 
 try:
