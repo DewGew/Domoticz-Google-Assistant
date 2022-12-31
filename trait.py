@@ -499,8 +499,8 @@ class TemperatureSettingTrait(_Trait):
         """Test if state is supported."""
         if domain == DOMAINS['thermostat']:
             return features & ATTRS_THERMSTATSETPOINT
-        # else:
-            # return domain in [DOMAINS['temperature']]
+        else:
+            return domain in [DOMAINS['temperature']]
 
     def sync_attributes(self):
         """Return temperature point and modes attributes for a sync request."""
@@ -514,9 +514,9 @@ class TemperatureSettingTrait(_Trait):
             'minThresholdCelsius': minThree,
             'maxThresholdCelsius': maxThree}
         
-        # if domain in [DOMAINS['temperature']]:
-            # response["queryOnlyTemperatureSetting"] = True
-            # response["availableThermostatModes"] = 'heat, cool'
+        if domain in [DOMAINS['temperature']]:
+            response["queryOnlyTemperatureSetting"] = True
+            response["availableThermostatModes"] = 'heat, cool'
 
         if domain == DOMAINS['thermostat']:
             if self.state.modes_idx is not None:
@@ -534,15 +534,15 @@ class TemperatureSettingTrait(_Trait):
         if self.state.battery <= configuration['Low_battery_limit']:
             response['exceptionCode'] = 'lowBattery'
 
-        # if domain in [DOMAINS['temperature']]:           
-            # current_temp = float(self.state.temp)
-            # if current_temp is not None:
-                # if round(tempConvert(current_temp, _google_temp_unit(units)),1) <= 3:
-                    # response['thermostatMode'] = 'cool'
-                # else:
-                    # response['thermostatMode'] = 'heat'
-                # response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
-                # response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
+        if domain in [DOMAINS['temperature']]:           
+            current_temp = float(self.state.temp)
+            if current_temp is not None:
+                if round(tempConvert(current_temp, _google_temp_unit(units)),1) <= 3:
+                    response['thermostatMode'] = 'cool'
+                else:
+                    response['thermostatMode'] = 'heat'
+                response['thermostatTemperatureAmbient'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
+                response['thermostatTemperatureSetpoint'] = round(tempConvert(current_temp, _google_temp_unit(units)), 1)
             # current_humidity = self.state.humidity
             # if current_humidity is not None:
                 # response['thermostatHumidityAmbient'] = current_humidity
@@ -622,7 +622,7 @@ class TemperatureControlTrait(_Trait):
     @staticmethod
     def supported(domain, features):
         """Test if state is supported."""
-        return domain in [DOMAINS['heater'], DOMAINS['kettle'], DOMAINS['waterheater'], DOMAINS['oven'], DOMAINS['temperature']]
+        return domain in [DOMAINS['heater'], DOMAINS['kettle'], DOMAINS['waterheater'], DOMAINS['oven']]
 
     def sync_attributes(self):
         """Return temperature point attributes for a sync request."""
@@ -639,8 +639,8 @@ class TemperatureControlTrait(_Trait):
         if self.state.merge_thermo_idx is not None:
             response = {"temperatureStepCelsius": 1}
             
-        if domain in [DOMAINS['temperature']]:
-            response = {'queryOnlyTemperatureControl': True}
+        # if domain in [DOMAINS['temperature']]:
+            # response = {'queryOnlyTemperatureControl': True}
             
         return response
 
@@ -661,11 +661,11 @@ class TemperatureControlTrait(_Trait):
             if setpoint is not None:
                 response['temperatureSetpointCelsius'] = setpoint
                 
-        elif domain in [DOMAINS['temperature']]:           
-            current_temp = float(self.state.temp)
-            if current_temp is not None:
-                response['temperatureAmbientCelsius'] = current_temp
-                response['temperatureSetpointCelsius'] = current_temp
+        # elif domain in [DOMAINS['temperature']]:           
+            # current_temp = float(self.state.temp)
+            # if current_temp is not None:
+                # response['temperatureAmbientCelsius'] = current_temp
+                # response['temperatureSetpointCelsius'] = current_temp
                 
         return response
 
