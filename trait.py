@@ -189,15 +189,28 @@ class OnOffTrait(_Trait):
     def execute(self, command, params):
         """Execute an OnOff command."""
         domain = self.state.domain
+        state = self.state.state
         protected = self.state.protected
 
         if domain not in [DOMAINS['sensor']]:
             if domain == DOMAINS['group']:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
-                    'On' if params['on'] else 'Off')
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd='
+                if params['on'] is True and state == 'Off':
+                    url += 'On'
+                elif params['on'] is False and state == 'On':
+                    url += 'Off'
+                else:
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                   'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
             else:
-                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + (
-                    'On' if params['on'] else 'Off')
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
+                if params['on'] is True and state == 'Off':
+                    url += 'On'
+                elif params['on'] is False and state == 'On':
+                    url += 'Off'
+                else:
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                   'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
 
             if protected:
                 url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
@@ -209,8 +222,7 @@ class OnOffTrait(_Trait):
                 if err == 'ERROR':
                     raise SmartHomeError(ERR_WRONG_PIN,
                                          'Unable to execute {} for {} check your settings'.format(command,
-                                                                                                  self.state.entity_id))
-
+                                                                                                  self.state.entity_id))     
 
 @register_trait
 class SceneTrait(_Trait):
