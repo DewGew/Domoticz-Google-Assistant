@@ -196,10 +196,25 @@ class OnOffTrait(_Trait):
             if domain == DOMAINS['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd='
+                if params['on'] is True and state == 'Off':
+                    url += 'On'
+                elif params['on'] is False and state == 'On':
+                    url += 'Off'
+                else:
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                   'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
             else:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
-
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
+                if params['on'] is True and state == 'Off':
+                    url += 'On'
+                elif params['on'] is False and state == 'On':
+                    url += 'Off'
+                else:
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                   'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
 
             if protected:
                 url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
