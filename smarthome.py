@@ -1032,11 +1032,10 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """     
         response = {}
         devices = {}
-        getDevices()
-        
+               
         for device in payload.get('devices', []):
             devid = device['id']
-            #_GoogleEntity(aogDevs.get(devid, None)).async_update()
+            _GoogleEntity(aogDevs.get(devid, None)).async_update()
             state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
@@ -1068,6 +1067,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
+                _GoogleEntity(aogDevs.get(entity_id, None)).async_update() # Get states before execution
                 
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
