@@ -9,4 +9,5 @@ env/
 config/
 config/config.yaml
 config/smart-home-key.json
+config/token/*
 

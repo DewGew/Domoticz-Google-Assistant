@@ -91,8 +91,8 @@ def register_trait(trait):
 def _google_temp_unit(units):
     """Return Google temperature unit."""
     if units:
-        return "F"
-    return "C"
+        return 'F'
+    return 'C'
 
 
 class _Trait:
@@ -143,7 +143,6 @@ class OnOffTrait(_Trait):
             DOMAINS['color'],
             DOMAINS['cooktop'],
             DOMAINS['dishwasher'],
-            DOMAINS['doorbell'],
             DOMAINS['dryer'],
             DOMAINS['fan'],
             DOMAINS['group'],
@@ -168,7 +167,7 @@ class OnOffTrait(_Trait):
         """Return OnOff attributes for a sync request."""
         domain = self.state.domain
         response = {}
-        if domain in [DOMAINS['sensor'], DOMAINS['doorbell']]:
+        if domain in [DOMAINS['sensor']]:
             response['queryOnlyOnOff'] = True
         
         return response
@@ -190,15 +189,32 @@ class OnOffTrait(_Trait):
     def execute(self, command, params):
         """Execute an OnOff command."""
         domain = self.state.domain
+        state = self.state.state
         protected = self.state.protected
 
         if domain not in [DOMAINS['sensor']]:
             if domain == DOMAINS['group']:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd='
+                if params['on'] is True and state == 'Off':
+                    url += 'On'
+                elif params['on'] is False and state != 'Off':
+                    url += 'Off'
+                else:
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                   'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
             else:
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd=' + (
                     'On' if params['on'] else 'Off')
+                url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
+                if params['on'] is True and state == 'Off':
+                    url += 'On'
+                elif params['on'] is False and state != 'Off':
+                    url += 'Off'
+                else:
+                    raise SmartHomeError(ERR_ALREADY_IN_STATE,
+                                   'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
 
             if protected:
                 url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
@@ -210,8 +226,7 @@ class OnOffTrait(_Trait):
                 if err == 'ERROR':
                     raise SmartHomeError(ERR_WRONG_PIN,
                                          'Unable to execute {} for {} check your settings'.format(command,
-                                                                                                  self.state.entity_id))
-
+                                                                                                  self.state.entity_id))     
 
 @register_trait
 class SceneTrait(_Trait):
@@ -241,8 +256,9 @@ class SceneTrait(_Trait):
     def execute(self, command, params):
         """Execute a scene command."""
         protected = self.state.protected
-
-        url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
+        
+        if params['deactivate'] is False:
+            url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd=On'
 
         if protected:
             url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
@@ -341,8 +357,7 @@ class OpenCloseTrait(_Trait):
                 DOMAINS['door'],
                 DOMAINS['window'],
                 DOMAINS['gate'],
-                DOMAINS['garage'],
-                DOMAINS['valve']
+                DOMAINS['garage']
             )
 
     def sync_attributes(self):
@@ -351,8 +366,6 @@ class OpenCloseTrait(_Trait):
         domain = self.state.domain
         response = {}
         
-        if domain != DOMAINS['blinds']:
-            response['queryOnlyOpenClose'] = True
         if features & ATTRS_PERCENTAGE != True:
             response['discreteOnlyOpenClose'] = True
             
@@ -393,12 +406,14 @@ class OpenCloseTrait(_Trait):
 
             url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
             
-            if p == 100 and state in ['Closed', 'Stopped', 'On']:
-              # open
-              url += 'Open'
-            elif p == 0 and state in ['Open', 'Stopped', 'Off']:
-              # close
-              url += 'Close'
+            if p == 100 and state in ['Closed', 'Stopped']:
+                url += 'Open'
+            elif p == 100 and state == 'On':
+                url += 'Off'
+            elif p == 0 and state in ['Open', 'Stopped']:
+                url += 'Close'
+            elif p == 0 and state == 'Off':
+                url += 'On'
             else:
               raise SmartHomeError(ERR_ALREADY_IN_STATE,
                                    'Unable to execute {} for {}. Already in state '.format(command,
@@ -632,13 +647,16 @@ class TemperatureControlTrait(_Trait):
         minThree = -100
         maxThree = 100
         response = {}
-        response = {"temperatureUnitForUX": _google_temp_unit(units)}
-        response["temperatureRange"] = {
+        response = {'temperatureUnitForUX': _google_temp_unit(units)}
+        response['temperatureRange'] = {
                 'minThresholdCelsius': minThree,
                 'maxThresholdCelsius': maxThree}
             
         if self.state.merge_thermo_idx is not None:
             response = {"temperatureStepCelsius": 1}
+            
+        # if domain in [DOMAINS['temperature']]:
+            # response = {'queryOnlyTemperatureControl': True}
             
         return response
 
@@ -647,18 +665,24 @@ class TemperatureControlTrait(_Trait):
         domain = self.state.domain
         units = self.state.tempunit
         response = {}
+        
+        if self.state.battery <= configuration['Low_battery_limit']:
+            response['exceptionCode'] = 'lowBattery'
                 
         if self.state.merge_thermo_idx is not None:
-            if self.state.battery <= configuration['Low_battery_limit']:
-                response['exceptionCode'] = 'lowBattery'
-
             current_temp = float(self.state.temp)
             if current_temp is not None:
                 response['temperatureAmbientCelsius'] = current_temp
             setpoint = float(self.state.setpoint)
             if setpoint is not None:
                 response['temperatureSetpointCelsius'] = setpoint
-
+                
+        # elif domain in [DOMAINS['temperature']]:           
+            # current_temp = float(self.state.temp)
+            # if current_temp is not None:
+                # response['temperatureAmbientCelsius'] = current_temp
+                # response['temperatureSetpointCelsius'] = current_temp
+                
         return response
 
     def execute(self, command, params):
@@ -1305,12 +1329,13 @@ class SensorStateTrait(_Trait):
         """Return the attributes of this trait for this entity."""
         domain = self.state.domain
         state = self.state.state
+
         if state is not None:
             return {
                 'currentSensorStateData': [
                     {
                         'name': 'SmokeLevel',
-                        'currentSensorState': ('smoke detekted' if state == 'on' else 'no smoke detected'),
+                        'currentSensorState': ('smoke detekted' if state == 'On' else 'no smoke detected'),
                         }
                 ]
             }

@@ -128,13 +128,13 @@ function readDevices(devicelist){
             xl += "<td>" + devicelist[i][0] +  nicknames + "</td>";
             xl += "<td>" + devicelist[i][2] + "</td>";
             if (devicelist[i][3] == "Off" | devicelist[i][3] == "Closed"){
-                xl += "<td><button type='button' class='btn btn-danger btn-sm'>" + devicelist[i][3] + "</button></td>";
+                xl += "<td><button type='button' class='btn btn-danger btn-sm not-allowed'>" + devicelist[i][3] + "</button></td>";
             }else if (devicelist[i][3] == "On" | devicelist[i][3] == "Open" | devicelist[i][3] == "Normal"){
-                xl += "<td><button type='button'class='btn btn-success btn-sm'>" + devicelist[i][3] + "</button></td>";
+                xl += "<td><button type='button'class='btn btn-success btn-sm not-allowed'>" + devicelist[i][3] + "</button></td>";
             }else if (devicelist[i][3] == "Mixed"){
-                xl += "<td><button type='button'class='btn btn-warning btn-sm'>" + devicelist[i][3] + "</button></td>";
+                xl += "<td><button type='button'class='btn btn-warning btn-sm not-allowed'>" + devicelist[i][3] + "</button></td>";
             }else {
-                 xl += "<td><button type='button'class='btn btn-info btn-sm' disabled>" + devicelist[i][3] + "</button></td>";
+                 xl += "<td><button type='button'class='btn btn-info btn-sm not-allowed'>" + devicelist[i][3] + "</button></td>";
             }
             xl += "<td>" + devicelist[i][4] + "</td></tr>";
         };

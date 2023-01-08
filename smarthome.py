@@ -6,8 +6,6 @@ import re
 import subprocess
 import sys
 import yaml
-import random
-import string
 from collections.abc import Mapping
 from itertools import product
 from pid import PidFile
@@ -56,7 +54,8 @@ from helpers import (
     logger,
     ReportState,
     Auth,
-    logfilepath
+    logfilepath,
+    random_string
 )
 from jinja2 import Environment, FileSystemLoader
     
@@ -98,7 +97,8 @@ try:
     r = requests.get(
         DOMOTICZ_URL + '/json.htm?type=command&param=addlogmessage&message=Connected to Google Assistant with DZGA v' + VERSION,
         auth=CREDITS, timeout=(2, 5))
-except Exception as e:
+    r.raise_for_status()
+except requests.exceptions.HTTPError as e:
     logger.error('Connection to Domoticz refused with error: %s' % e)
 
 try:
@@ -749,12 +749,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         if token is None:
             raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
             
-        event_id = ''.join(random.choices(string.ascii_uppercase + string.ascii_lowercase +
-                                     string.digits, k=10))
-
-        request_id = ''.join(random.choices(string.digits, k=20))
+        event_id = random_string(10)
+        request_id = random_string(20)
         
         message = s.body
+
         if '|' in message: message = message.replace('|', ' ').split()
         if '>>' in message: message.remove('>>')
         devid = message[0]
@@ -788,7 +787,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                             }
                         }
                     }
-                ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)                        
+                ReportState.call_homegraph_api(REPORT_STATE_BASE_URL, data)
             elif aog.domain in DOMAINS['smokedetector']:
                 data = {
                     'requestId': str(request_id),
@@ -798,7 +797,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
                         'devices': {
                             'states': {
                                 devid: {
-                                    'on': (True if state.lower() in ['on'] else False)
+                                    'on': (True if state.lower() in ['on', 'alarm/fire'] else False)
                                 },
                             },
                             'notifications': {
@@ -1033,8 +1032,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """     
         response = {}
         devices = {}
-        #getDevices()
-        
+               
         for device in payload.get('devices', []):
             devid = device['id']
             _GoogleEntity(aogDevs.get(devid, None)).async_update()
@@ -1069,6 +1067,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             for device, execution in product(command['devices'],
                                              command['execution']):
                 entity_id = device['id']
+                _GoogleEntity(aogDevs.get(entity_id, None)).async_update() # Get states before execution
                 
                 # Happens if error occurred. Skip entity for further processing
                 if entity_id in results:
