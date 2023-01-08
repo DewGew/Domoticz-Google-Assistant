@@ -199,7 +199,7 @@ class OnOffTrait(_Trait):
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchscene&idx=' + self.state.id + '&switchcmd='
                 if params['on'] is True and state == 'Off':
                     url += 'On'
-                elif params['on'] is False and state == 'On':
+                elif params['on'] is False and state != 'Off':
                     url += 'Off'
                 else:
                     raise SmartHomeError(ERR_ALREADY_IN_STATE,
@@ -210,7 +210,7 @@ class OnOffTrait(_Trait):
                 url = DOMOTICZ_URL + '/json.htm?type=command&param=switchlight&idx=' + self.state.id + '&switchcmd='
                 if params['on'] is True and state == 'Off':
                     url += 'On'
-                elif params['on'] is False and state == 'On':
+                elif params['on'] is False and state != 'Off':
                     url += 'Off'
                 else:
                     raise SmartHomeError(ERR_ALREADY_IN_STATE,
