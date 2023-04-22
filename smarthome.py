@@ -750,7 +750,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
 
         r = self.forceDevicesSync()
-        s.send_message(200, 'Synchronization request sent, status_code: ' + st
+        s.send_message(200, 'Synchronization request sent, status_code: ' + st(r))
         
     def notification_post(self, s):
         logger.debug(s.headers)
