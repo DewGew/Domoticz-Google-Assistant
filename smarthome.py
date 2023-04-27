@@ -737,6 +737,21 @@ class SmartHomeReqHandler(OAuthReqHandler):
            
         s.send_json(200, json.dumps(response, ensure_ascii=False).encode('utf-8'), True)
         
+    def syncDevices_post(self, s):
+        logger.debug(s.headers)
+        a = s.headers.get('Authorization', None)
+        token = None
+        if a is not None:
+            types, tokenH = a.split()
+            if types.lower() == 'bearer':
+                token = Auth['tokens'].get(tokenH, None)
+                
+        if token is None:
+            raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
+
+        r = self.forceDevicesSync()
+        s.send_message(200, 'Synchronization request sent, status_code: ' + st(r))
+        
     def notification_post(self, s):
         logger.debug(s.headers)
         a = s.headers.get('Authorization', None)
@@ -1360,7 +1375,8 @@ if 'userinterface' in configuration and configuration['userinterface'] == True:
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
                              "/notification": SmartHomeReqHandler.notification_post,
-                             "/settings": SmartHomeReqHandler.settings_post}
+                             "/settings": SmartHomeReqHandler.settings_post,
+                             "/sync": SmartHomeReqHandler.syncDevices_post}
 else:
     smarthomeGetMappings = {"/smarthome": SmartHomeReqHandler.smarthome,
                             "/sync": SmartHomeReqHandler.syncDevices,
@@ -1371,7 +1387,8 @@ else:
                             "/pycast": SmartHomeReqHandler.pycast}  
 
     smarthomePostMappings = {"/smarthome": SmartHomeReqHandler.smarthome_post,
-                             "/notification": SmartHomeReqHandler.notification_post}
+                             "/notification": SmartHomeReqHandler.notification_post,
+                             "/sync": SmartHomeReqHandler.syncDevices_post}
 
 smarthomeControlMappings = {'action.devices.SYNC': SmartHomeReqHandler.smarthome_sync,
                             'action.devices.QUERY': SmartHomeReqHandler.smarthome_query,
