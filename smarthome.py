@@ -652,6 +652,8 @@ class _GoogleEntity:
 
     def async_update(self):
         """Update the entity with latest info from Domoticz."""
+        if not self.state:
+            return
 
         if self.state.domain == DOMAINS['group'] or self.state.domain == DOMAINS['scene']:
             getDevices('scene')
