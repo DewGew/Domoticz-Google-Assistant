@@ -440,6 +440,9 @@ def getDevices(devices="all", idx="0"):
     devlist = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state, d.entity_id) for d in aogDevs.values()]
     devlist.sort(key=takeSecond)
     deviceList = json.dumps(devlist)
+    
+    if "all" == devices:
+        aogDevsReady = True
 
 def takeSecond(elem):
     return elem[1]
@@ -1067,7 +1070,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
-                devices[devid] = {'online': False, 'status': "ERROR"}
+                devices[devid] = {'online': False, 'status': "OFFLINE"}
                 continue
 
             e = _GoogleEntity(state)
