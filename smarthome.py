@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 import yaml
 from collections.abc import Mapping
 from itertools import product
@@ -389,6 +390,7 @@ def getAog(device):
         
     return aog
 
+aogDevsReady = False
 aogDevs = {}
 deviceList = {}
 
@@ -457,6 +459,7 @@ settings['dzversion'] = "Unavailable"
 def getSettings():
     """Get domoticz settings."""
     global settings
+    global aogDevsReady
 
     url = DOMOTICZ_URL + DOMOTICZ_GET_SETTINGS_URL
     r = requests.get(url, auth=CREDITS)
@@ -469,7 +472,8 @@ def getSettings():
         settings['Language'] = devs['Language']
     
     getVersion()
-
+    aogDevsReady = True
+    
     logger.debug(json.dumps(settings, indent=2, sort_keys=False, ensure_ascii=False))
 
 def getVersion():
@@ -1024,9 +1028,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
         devices = []
+        aogDevsReady = False # lock smarthome_query while reloading devices
         aogDevs.clear()
         getDevices()  # sync all devices
         getSettings()
+        
         agent_user_id = token.get('userAgentId', None)
 
         for state in aogDevs.values():
@@ -1049,7 +1055,12 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """     
         response = {}
         devices = {}
-               
+        
+        loopCount = 5
+        while (loopCount>0 and not aogDevsReady): # whait for 5 seconds if aogDevs array is refreshed
+            time.sleep(1)
+            loopCount -= 1
+            
         for device in payload.get('devices', []):
             devid = device['id']
             _GoogleEntity(aogDevs.get(devid, None)).async_update()
@@ -1092,6 +1103,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
                 if entity_id not in entities:
                     if len(aogDevs) == 0:
+                        aogDevsReady = False
                         getDevices()
                         getSettings()
 
