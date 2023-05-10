@@ -5,6 +5,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 import yaml
 from collections.abc import Mapping
 from itertools import product
@@ -389,6 +390,7 @@ def getAog(device):
         
     return aog
 
+aogDevsReady = False
 aogDevs = {}
 deviceList = {}
 
@@ -438,6 +440,9 @@ def getDevices(devices="all", idx="0"):
     devlist = [(d.name, int(d.id), d.domain, d.state, d.room, d.nicknames, d.report_state, d.entity_id) for d in aogDevs.values()]
     devlist.sort(key=takeSecond)
     deviceList = json.dumps(devlist)
+    
+    if "all" == devices:
+        aogDevsReady = True
 
 def takeSecond(elem):
     return elem[1]
@@ -457,6 +462,7 @@ settings['dzversion'] = "Unavailable"
 def getSettings():
     """Get domoticz settings."""
     global settings
+    global aogDevsReady
 
     url = DOMOTICZ_URL + DOMOTICZ_GET_SETTINGS_URL
     r = requests.get(url, auth=CREDITS)
@@ -469,7 +475,8 @@ def getSettings():
         settings['Language'] = devs['Language']
     
     getVersion()
-
+    aogDevsReady = True
+    
     logger.debug(json.dumps(settings, indent=2, sort_keys=False, ensure_ascii=False))
 
 def getVersion():
@@ -588,7 +595,7 @@ class _GoogleEntity:
         # if state.state == STATE_UNAVAILABLE:
         # return {'online': False}
 
-        attrs = {'online': True}
+        attrs = {'online': True, 'status': "SUCCESS"}
         for trt in self.traits():
             deep_update(attrs, trt.query_attributes())
                 
@@ -652,6 +659,8 @@ class _GoogleEntity:
 
     def async_update(self):
         """Update the entity with latest info from Domoticz."""
+        if not self.state:
+            return
 
         if self.state.domain == DOMAINS['group'] or self.state.domain == DOMAINS['scene']:
             getDevices('scene')
@@ -1022,9 +1031,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         https://developers.google.com/actions/smarthome/create-app#actiondevicessync
         """
         devices = []
+        aogDevsReady = False # lock smarthome_query while reloading devices
         aogDevs.clear()
         getDevices()  # sync all devices
         getSettings()
+        
         agent_user_id = token.get('userAgentId', None)
 
         for state in aogDevs.values():
@@ -1047,14 +1058,19 @@ class SmartHomeReqHandler(OAuthReqHandler):
         """     
         response = {}
         devices = {}
-               
+        
+        loopCount = 5
+        while (loopCount>0 and not aogDevsReady): # whait for 5 seconds if aogDevs array is refreshed
+            time.sleep(1)
+            loopCount -= 1
+            
         for device in payload.get('devices', []):
             devid = device['id']
             _GoogleEntity(aogDevs.get(devid, None)).async_update()
             state = aogDevs.get(devid, None)           
             if not state:
                 # If we can't find a state, the device is offline
-                devices[devid] = {'online': False}
+                devices[devid] = {'online': False, 'status': "OFFLINE"}
                 continue
 
             e = _GoogleEntity(state)
@@ -1062,7 +1078,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
               devices[devid] = e.query_serialize()
             except Exception:
               logger.error("Unexpected error serializing query for %s", state)
-              devices[devid] = {"online": False}
+              devices[devid] = {"online": False, 'status': "ERROR"}
               
         response = {'devices': devices}
         logger.info(json.dumps(response, indent=2, sort_keys=True, ensure_ascii=False))
@@ -1090,6 +1106,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
 
                 if entity_id not in entities:
                     if len(aogDevs) == 0:
+                        aogDevsReady = False
                         getDevices()
                         getSettings()
 
@@ -1146,7 +1163,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             SmartHomeReqHandler.send_resp("Error", s.url.query, scomm, stime, s)
             return
         itext = scomm.replace(" ","-")
-        itext=itext.split("/")
+        itext = itext.split("/")
         text = itext[0]
         if not text:
             return False
@@ -1192,13 +1209,13 @@ class SmartHomeReqHandler(OAuthReqHandler):
         else:
             rstatus="Error"
             rmessage = str(mp3_filename) + ", file not found!"
-        if rvol!="?":
+        if rvol != "?":
             answ, message = SmartHomeReqHandler.setvolume(str(round(rvol*100)))
             rmessage = rmessage + " restore volume " + str(round(rvol*100))
-        if rcontent!="?":
+        if rcontent != "?":
             answ, message = SmartHomeReqHandler.playmedia(rcontent, rtype, 'PLAYING', 40)
             rmessage = rmessage + " restore stream : " + rcontent
-        if rdevice!="?":
+        if rdevice != "?":
             answ, message = SmartHomeReqHandler.switchdevice(rdevice)
             rmessage = rmessage + " restore device '" + rdevice+ "'"
         SmartHomeReqHandler.send_resp(rstatus, "play " + s.url.query, rmessage, stime, s)
@@ -1223,31 +1240,31 @@ class SmartHomeReqHandler(OAuthReqHandler):
         rtype = mc.status.content_type
         rpstate = mc.status.player_state
         if rpstate == "UNKNOWN":
-            rcontent="?" 
-            rtype="?"
-        message='{"device":"'+ cast.device.friendly_name + '","status":"' + rstatus + '","command":"' + rcommand  + '","volume":"' +rvolume +'","starttime":"' + stime + '","endtime":"' + etime + '","playstate":"' + rpstate + '","content":"' + rcontent + '","type":"' + rtype + '","message":"' + rmessage+ '"}'
+            rcontent = "?" 
+            rtype = "?"
+        message = '{"device":"'+ cast.device.friendly_name + '","status":"' + rstatus + '","command":"' + rcommand  + '","volume":"' +rvolume +'","starttime":"' + stime + '","endtime":"' + etime + '","playstate":"' + rpstate + '","content":"' + rcontent + '","type":"' + rtype + '","message":"' + rmessage+ '"}'
         s.send_json(200, message, False)
         logger.info(message)
 
     def read_input(ctext):                  
         global cast, mc, chromecasts
         stime = time.strftime("%d/%m/%y %H:%M:%S", time.localtime())
-        answ="OK"
-        message=""
+        answ = "OK"
+        message = ""
         rdevice = "?"
         rvol = "?"
         rcontent = "?"
         rtype = "?"
         ctext = ctext.split("@")
         try:
-            svol=ctext[1]
+            svol = ctext[1]
         except:
-            svol=""
+            svol = ""
         try:
-            sdevice=ctext[2]
+            sdevice = ctext[2]
         except:
-            sdevice=""
-        if sdevice!="":
+            sdevice = ""
+        if sdevice != "":
             rdevice = cast.device.friendly_name
             answ, message = SmartHomeReqHandler.switchdevice(sdevice)
             if answ == "Error":
@@ -1260,7 +1277,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
         else:
             rcontent = "?"
             rtype = "?"
-        if svol!="":
+        if svol != "":
             cast.wait()
             rvol = cast.status.volume_level
             answ, message = SmartHomeReqHandler.setvolume(svol)
@@ -1278,11 +1295,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return "OK","Switched to device " + str(cast.device.friendly_name) 
         except Exception as e:
             logger.error('chromecasts init not succeeded, error : %s' % e)
-            return "Error","Not switched to device " + str(sdevice)
+            return "Error", "Not switched to device " + str(sdevice)
 
     def setvolume(svol):
         global cast, mc, chromecasts
-        svol=svol.replace("%","")
+        svol = svol.replace("%","")
         try:
             cast.wait()
             cast.set_volume(int(svol)/100)
@@ -1291,7 +1308,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             return "OK","Volume level set to : " + svol +"%" 
         except Exception as e:
             logger.error('Chromecast setvolume unsuccesfull, error : %s' % e)
-            return "Error","Volume level not set to : " + svol +"%" 
+            return "Error", "Volume level not set to : " + svol +"%" 
 
     def playmedia(pmedia,ptype, wstate, tmax):
         try:
@@ -1299,17 +1316,17 @@ class SmartHomeReqHandler(OAuthReqHandler):
             mc.block_until_active()
             cast.wait()
             pstate = "?"
-            i=1 #max x seconds
+            i = 1 #max x seconds
             while (mc.status.player_state != wstate or pstate != wstate) and i<tmax:
                 pstate = mc.status.player_state 
                 time.sleep(1)
-                i+=1
-            message="play mp3 : " + pmedia + ", volume : " + str((round(cast.status.volume_level * 100))) + "%" + " on device '" + str(cast.device.friendly_name) + "' playerstate : " + mc.status.player_state
+                i += 1
+            message = "play mp3 : " + pmedia + ", volume : " + str((round(cast.status.volume_level * 100))) + "%" + " on device '" + str(cast.device.friendly_name) + "' playerstate : " + mc.status.player_state
             logger.info(message)
-            return "OK","Playing "+ str(pmedia) + ", type " + str(ptype)
+            return "OK", "Playing " + str(pmedia) + ", type " + str(ptype)
         except Exception as e:
             logger.error('Chromecast playmedia unsuccefull, error : %s' % e)
-            return "Error","Error playing "+ str(pmedia) + ", type " +str(ptype)
+            return "Error", "Error playing " + str(pmedia) + ", type " +str(ptype)
 
     def pycast(self, s):
         global cast, mc, chromecasts
