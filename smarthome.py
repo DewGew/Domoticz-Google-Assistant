@@ -759,7 +759,7 @@ class SmartHomeReqHandler(OAuthReqHandler):
             raise SmartHomeError(ERR_PROTOCOL_ERROR, 'not authorized access!!')
 
         r = self.forceDevicesSync()
-        s.send_message(200, 'Synchronization request sent, status_code: ' + st(r))
+        s.send_message(200, 'Synchronization request sent, status_code: ' + str(r))
         
     def notification_post(self, s):
         logger.debug(s.headers)
@@ -851,7 +851,8 @@ class SmartHomeReqHandler(OAuthReqHandler):
         userAgent = self.getUserAgent()
         enableReport = ReportState.enable_report_state()
         if userAgent is None:
-            return 500  # internal error
+            # return 500  # internal error
+            userAgent = "1234"
 
         data = {"agentUserId": userAgent}
         if enableReport:
