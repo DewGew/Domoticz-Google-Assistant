@@ -253,7 +253,9 @@ def getAog(device):
     aog.id = device["idx"]
     aog.entity_id = domain + aog.id
     aog.plan = device.get("PlanID")                               
-    aog.state = device.get("Data", "Scene")
+    aog.state = device.get("Data")
+    if aog.domain in [DOMAINS['scene'], DOMAINS['group']]:
+        aog.state = device.get("Status")
     aog.level = device.get("LevelInt", 0)
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
