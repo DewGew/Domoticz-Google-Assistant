@@ -27,6 +27,7 @@ from const import (
     DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL,
     DOMOTICZ_GET_SCENES_URL,
+    DOMOTICZ_GET_PLANS,
     CONFIGFILE,
     LOGFILE,
     REQUEST_SYNC_BASE_URL,
@@ -494,7 +495,7 @@ def getPlans(idx):
     """Get domoticz plan name."""
     global settings
     
-    url = DOMOTICZ_URL + '/json.htm?type=plans&order=name&used=true'
+    url = DOMOTICZ_URL + DOMOTICZ_GET_PLANS + '&order=name&used=true'
     r = requests.get(url, auth=CREDITS)
 
     if r.status_code == 200:
