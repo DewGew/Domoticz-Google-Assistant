@@ -46,7 +46,6 @@ Domoticz:
   roomplan: '0'
   username: 'username'
   password: 'password'
-  switchProtectionPass: '1234' #Set this to false if ask for pin function is not needed
 
 # Report low battry
 Low_battery_limit: 9

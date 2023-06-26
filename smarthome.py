@@ -252,7 +252,7 @@ def getAog(device):
     aog.domain = domain
     aog.id = device["idx"]
     aog.entity_id = domain + aog.id
-    aog.plan = device.get("PlanID")                               
+    aog.plan = device.get("PlanID")
     aog.state = device.get("Data")
     if aog.domain in [DOMAINS['scene'], DOMAINS['group']]:
         aog.state = device.get("Status")
@@ -613,17 +613,11 @@ class _GoogleEntity:
             if trt.can_execute(command, params):
 
                 acknowledge = self.state.ack  # ack is now stored in state
+                protect = self.state.protected
                 pincode = False
 
-                if configuration['Domoticz']['switchProtectionPass']:
-                    protect = self.state.protected
-                else:
-                    protect = False
-
                 if protect or self.state.domain == DOMAINS['security']:
-                    pincode = configuration['Domoticz']['switchProtectionPass']
-                    if self.state.domain == DOMAINS['security']:
-                        pincode = self.state.seccode
+                    pincode = self.state.seccode
                     acknowledge = False
                     if challenge is None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
@@ -633,10 +627,7 @@ class _GoogleEntity:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-                    elif True == protect and pincode != challenge.get('pin'):
-                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
-                                                        'Unable to execute {} for {} - challenge needed '.format(
-                                                            command, self.state.entity_id))
+
                     elif self.state.domain == DOMAINS['security'] and pincode != hashlib.md5(
                             str.encode(challenge.get('pin'))).hexdigest():
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
@@ -652,7 +643,7 @@ class _GoogleEntity:
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
 
-                trt.execute(command, params)
+                trt.execute(command, params, challenge)
                 executed = True
                 break
 

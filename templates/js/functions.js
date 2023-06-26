@@ -215,7 +215,6 @@ $("#saveSettings").click(function(){
             'roomplan': $('#Domoticzroomplan').val(),
             'username': $('#Domoticzusername').val(),
             'password': $('#Domoticzpassword').val(),
-            'switchProtectionPass': $('#DomoticzswitchProtectionPass').val(),
             },
     }
     document.getElementById("saveSettings").value = JSON.stringify(stext)
