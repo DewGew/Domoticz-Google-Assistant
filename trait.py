@@ -5,7 +5,7 @@ import json
 import requests
 
 from datetime import datetime
-from helpers import SmartHomeError, configuration, logger, tempConvert
+from helpers import SmartHomeError, SmartHomeErrorNoChallenge, configuration, logger, tempConvert
 from const import (
     ATTRS_BRIGHTNESS,
     ATTRS_THERMSTATSETPOINT,
@@ -14,6 +14,11 @@ from const import (
     ATTRS_PERCENTAGE,
     ATTRS_VACUUM_MODES,
     DOMAINS,
+    ERR_FUNCTION_NOT_SUPPORTED,
+    ERR_PROTOCOL_ERROR,
+    ERR_DEVICE_OFFLINE,
+    ERR_UNKNOWN_ERROR,
+    ERR_CHALLENGE_NEEDED,
     ERR_ALREADY_IN_STATE,
     ERR_WRONG_PIN,
     ERR_NOT_SUPPORTED,
@@ -81,6 +86,17 @@ TRAITS = []
 
 CREDITS = (configuration['Domoticz']['username'], configuration['Domoticz']['password'])
 
+def checkCode(self, command, status):
+    status = status.json()
+    err = status.get('status')
+    if err == 'ERROR':
+        msg = status.get('message')
+        if msg == 'WRONG CODE':
+            raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
+                                            'Unable to execute {} for {} - challenge needed '.format(
+                                                command, self.state.entity_id))
+
+    
 
 def register_trait(trait):
     """Decorate a function to register a trait."""
@@ -116,7 +132,7 @@ class _Trait:
         """Test if command can be executed."""
         return command in self.commands
 
-    async def execute(self, command, params):
+    async def execute(self, command, params, challenge):
         """Execute a trait command."""
         raise NotImplementedError
 
@@ -186,7 +202,7 @@ class OnOffTrait(_Trait):
 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute an OnOff command."""
         domain = self.state.domain
         state = self.state.state
@@ -213,16 +229,12 @@ class OnOffTrait(_Trait):
                                    'Unable to execute {} for {}. Already in state '.format(command, self.state.entity_id))
 
             if protected:
-                url = url + '&passcode=' + configuration['Domoticz']['switchProtectionPass']
+                url = url + '&passcode=' + challenge.get('pin')
 
             r = requests.get(url, auth=CREDITS)
             if protected:
-                status = r.json()
-                err = status.get('status')
-                if err == 'ERROR':
-                    raise SmartHomeError(ERR_WRONG_PIN,
-                                         'Unable to execute {} for {} check your settings'.format(command,
-                                                                                                  self.state.entity_id))     
+                checkCode(self, command, r)
+     
 
 @register_trait
 class SceneTrait(_Trait):
@@ -249,7 +261,7 @@ class SceneTrait(_Trait):
         """Return scene query attributes."""
         return {}
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a scene command."""
         protected = self.state.protected
         
@@ -261,12 +273,7 @@ class SceneTrait(_Trait):
 
         r = requests.get(url, auth=CREDITS)
         if protected:
-            status = r.json()
-            err = status.get('status')
-            if err == 'ERROR':
-                raise SmartHomeError(ERR_WRONG_PIN,
-                                     'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              self.state.entity_id))
+            checkCode(self, command, r)
 
 
 @register_trait
@@ -314,7 +321,7 @@ class BrightnessTrait(_Trait):
                                                                                           self.state.entity_id))
         return command in self.commands
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a brightness command."""
         protected = self.state.protected
 
@@ -326,12 +333,7 @@ class BrightnessTrait(_Trait):
 
         r = requests.get(url, auth=CREDITS)
         if protected:
-            status = r.json()
-            err = status.get('status')
-            if err == 'ERROR':
-                raise SmartHomeError(ERR_WRONG_PIN,
-                                     'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              self.state.entity_id))
+            checkCode(self, command, r)
 
 
 @register_trait
@@ -386,7 +388,7 @@ class OpenCloseTrait(_Trait):
 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a OpenClose command."""
         features = self.state.attributes
         protected = self.state.protected
@@ -420,12 +422,8 @@ class OpenCloseTrait(_Trait):
 
         r = requests.get(url, auth=CREDITS)
         if protected:
-            status = r.json()
-            err = status.get('status')
-            if err == 'ERROR':
-                raise SmartHomeError(ERR_WRONG_PIN,
-                                     'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              self.state.entity_id))
+            checkCode(self, command, r)
+
 
 @register_trait
 class StartStopTrait(_Trait):
@@ -465,7 +463,7 @@ class StartStopTrait(_Trait):
         
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a StartStop command."""
         domain = self.state.domain
         protected = self.state.protected
@@ -483,12 +481,8 @@ class StartStopTrait(_Trait):
 
             r = requests.get(url, auth=CREDITS)
             if protected:
-                status = r.json()
-                err = status.get('status')
-                if err == 'ERROR':
-                    raise SmartHomeError(ERR_WRONG_PIN,
-                                         'Unable to execute {} for {} check your settings'.format(command,
-                                                                                                  self.state.entity_id))
+                checkCode(self, command, r)
+
             
 
 @register_trait
@@ -580,7 +574,7 @@ class TemperatureSettingTrait(_Trait):
 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a temperature point or mode command."""
         # All sent in temperatures are always in Celsius
 
@@ -681,7 +675,7 @@ class TemperatureControlTrait(_Trait):
                 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a temperature point command."""
         # All sent in temperatures are always in Celsius
         if self.state.merge_thermo_idx is not None:
@@ -724,7 +718,7 @@ class LockUnlockTrait(_Trait):
 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute an LockUnlock command."""
         domain = self.state.domain
         state = self.state.state
@@ -754,12 +748,8 @@ class LockUnlockTrait(_Trait):
 
         r = requests.get(url, auth=CREDITS)
         if protected:
-            status = r.json()
-            err = status.get('status')
-            if err == 'ERROR':
-                raise SmartHomeError(ERR_WRONG_PIN,
-                                     'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              self.state.entity_id))
+            checkCode(self, command, r)
+
 
 
 @register_trait
@@ -812,7 +802,7 @@ class ColorSettingTrait(_Trait):
 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a color setting command."""
         if "temperature" in params["color"]:
             tempRange = self.kelvinTempMax - self.kelvinTempMin
@@ -897,10 +887,10 @@ class ArmDisarmTrait(_Trait):
 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute an ArmDisarm command."""
         state = self.state.state
-        seccode = self.state.seccode
+        seccode = challenge.get('pin')
 
         if params["arm"]:
             if params["armLevel"] == "Arm Home":
@@ -926,6 +916,12 @@ class ArmDisarmTrait(_Trait):
                 url = DOMOTICZ_URL + "/json.htm?type=command&param=setsecstatus&secstatus=0&seccode=" + seccode
 
         r = requests.get(url, auth=CREDITS)
+        status = r.json()
+        err = status.get('status')
+        if err == 'ERROR':
+            raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
+                                                'Unable to execute {} for {} - challenge needed '.format(
+                                                    command, self.state.entity_id)) 
 
 
 @register_trait
@@ -975,7 +971,7 @@ class VolumeTrait(_Trait):
             int(current + relative * self.state.maxdimlevel / 100))
         r = requests.get(url, auth=CREDITS)
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a volume command."""
         if command == COMMAND_SET_VOLUME:
             self._execute_set_volume(params)
@@ -1023,7 +1019,7 @@ class CameraStreamTrait(_Trait):
         self.stream_info = {'cameraStreamAccessUrl': url}
         return self.stream_info or {}
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a get camera stream command."""
         return
 
@@ -1081,7 +1077,7 @@ class TooglesTrait(_Trait):
 
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute an SetModes command."""
         levelName = base64.b64decode(self.state.selectorLevelName).decode('UTF-8').split("|")
         protected = self.state.protected
@@ -1097,12 +1093,8 @@ class TooglesTrait(_Trait):
         r = requests.get(url, auth=CREDITS)
 
         if protected:
-            status = r.json()
-            err = status.get('status')
-            if err == 'ERROR':
-                raise SmartHomeError(ERR_WRONG_PIN,
-                                     'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              self.state.entity_id))
+            checkCode(self, command, r)
+
 
 @register_trait
 class Timer(_Trait):
@@ -1138,7 +1130,7 @@ class Timer(_Trait):
         
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a Timer command."""
         
         if command == COMMAND_TIMER_START:
@@ -1210,7 +1202,7 @@ class EnergyStorageTrait(_Trait):
            
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a EnergyStorge command."""
         # domain = self.state.domain
         # protected = self.state.protected
@@ -1224,12 +1216,8 @@ class EnergyStorageTrait(_Trait):
 
             # r = requests.get(url, auth=CREDITS)
             # if protected:
-                # status = r.json()
-                # err = status.get('status')
-                # if err == 'ERROR':
-                    # raise SmartHomeError(ERR_WRONG_PIN,
-                                         # 'Unable to execute {} for {} check your settings'.format(command,
-                                                                                                  # self.state.entity_id))
+                # checkCode(self, command, r)
+
 
 @register_trait
 class HumiditySettingTrait(_Trait):
@@ -1269,7 +1257,7 @@ class HumiditySettingTrait(_Trait):
         
         return response
 
-    def execute(self, command, params):
+    def execute(self, command, params, challenge):
         """Execute a humidity command."""
         # domain = self.state.domain
         # protected = self.state.protected
@@ -1282,12 +1270,8 @@ class HumiditySettingTrait(_Trait):
 
         # r = requests.get(url, auth=CREDITS)
         # if protected:
-            # status = r.json()
-            # err = status.get('status')
-            # if err == 'ERROR':
-                # raise SmartHomeError(ERR_WRONG_PIN,
-                                     # 'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              # self.state.entity_id))
+            # checkCode(self, command, r)
+
                                                                                               
 @register_trait
 class SensorStateTrait(_Trait):
@@ -1395,7 +1379,7 @@ class SensorStateTrait(_Trait):
 
         # return response
 
-    # def execute(self, command, params):
+    # def execute(self, command, params, challenge):
         # """Execute an SetFanSpeed command."""
         # modes = self.modes
         # protected = self.state.protected
@@ -1411,9 +1395,5 @@ class SensorStateTrait(_Trait):
         # r = requests.get(url, auth=CREDITS)
 
         # if protected:
-            # status = r.json()
-            # err = status.get('status')
-            # if err == 'ERROR':
-                # raise SmartHomeError(ERR_WRONG_PIN,
-                                     # 'Unable to execute {} for {} check your settings'.format(command,
-                                                                                              # self.state.entity_id))
+            # checkCode(self, command, r)
+
