@@ -1197,8 +1197,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         filename = scomm   
         mp3_filename = FILE_DIR + "/sound/" + filename
         mp3 = Path(mp3_filename)
+        uses_ssl = ('use_ssl' in configuration and configuration['use_ssl'] is True)
         if mp3.is_file():
             mp3_url = "http://" + IP_Address + ":" + IP_Port + "/sound?" + filename
+            if uses_ssl:
+                mp3_url = mp3_url.replace("http", "https")
             #make a query request for Get /sound
             rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
         else:
