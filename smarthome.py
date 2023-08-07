@@ -27,6 +27,7 @@ from const import (
     DOMOTICZ_GET_SETTINGS_URL,
     DOMOTICZ_GET_ONE_DEVICE_URL,
     DOMOTICZ_GET_SCENES_URL,
+    DOMOTICZ_GET_PLANS,
     CONFIGFILE,
     LOGFILE,
     REQUEST_SYNC_BASE_URL,
@@ -251,8 +252,10 @@ def getAog(device):
     aog.domain = domain
     aog.id = device["idx"]
     aog.entity_id = domain + aog.id
-    aog.plan = device.get("PlanID")                               
-    aog.state = device.get("Data", "Scene")
+    aog.plan = device.get("PlanID")
+    aog.state = device.get("Data")
+    if aog.domain in [DOMAINS['scene'], DOMAINS['group']]:
+        aog.state = device.get("Status")
     aog.level = device.get("LevelInt", 0)
     aog.temp = device.get("Temp")
     aog.humidity = device.get("Humidity")
@@ -494,7 +497,7 @@ def getPlans(idx):
     """Get domoticz plan name."""
     global settings
     
-    url = DOMOTICZ_URL + '/json.htm?type=plans&order=name&used=true'
+    url = DOMOTICZ_URL + DOMOTICZ_GET_PLANS + '&order=name&used=true'
     r = requests.get(url, auth=CREDITS)
 
     if r.status_code == 200:
@@ -610,17 +613,11 @@ class _GoogleEntity:
             if trt.can_execute(command, params):
 
                 acknowledge = self.state.ack  # ack is now stored in state
+                protect = self.state.protected
                 pincode = False
 
-                if configuration['Domoticz']['switchProtectionPass']:
-                    protect = self.state.protected
-                else:
-                    protect = False
-
                 if protect or self.state.domain == DOMAINS['security']:
-                    pincode = configuration['Domoticz']['switchProtectionPass']
-                    if self.state.domain == DOMAINS['security']:
-                        pincode = self.state.seccode
+                    pincode = self.state.seccode
                     acknowledge = False
                     if challenge is None:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'pinNeeded',
@@ -630,10 +627,7 @@ class _GoogleEntity:
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'userCancelled',
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
-                    elif True == protect and pincode != challenge.get('pin'):
-                        raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
-                                                        'Unable to execute {} for {} - challenge needed '.format(
-                                                            command, self.state.entity_id))
+
                     elif self.state.domain == DOMAINS['security'] and pincode != hashlib.md5(
                             str.encode(challenge.get('pin'))).hexdigest():
                         raise SmartHomeErrorNoChallenge(ERR_CHALLENGE_NEEDED, 'challengeFailedPinNeeded',
@@ -649,7 +643,7 @@ class _GoogleEntity:
                                                         'Unable to execute {} for {} - challenge needed '.format(
                                                             command, self.state.entity_id))
 
-                trt.execute(command, params)
+                trt.execute(command, params, challenge)
                 executed = True
                 break
 
@@ -1203,8 +1197,11 @@ class SmartHomeReqHandler(OAuthReqHandler):
         filename = scomm   
         mp3_filename = FILE_DIR + "/sound/" + filename
         mp3 = Path(mp3_filename)
+        uses_ssl = ('use_ssl' in configuration and configuration['use_ssl'] is True)
         if mp3.is_file():
             mp3_url = "http://" + IP_Address + ":" + IP_Port + "/sound?" + filename
+            if uses_ssl:
+                mp3_url = mp3_url.replace("http", "https")
             #make a query request for Get /sound
             rstatus, rmessage = SmartHomeReqHandler.playmedia(mp3_url,'audio/mp3','IDLE', 20)
         else:

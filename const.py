@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
                     
 """Constants for Google Assistant."""
-VERSION = '1.23.7'
+VERSION = '1.23.10'
 PUBLIC_URL = 'https://[your public url]'
 CONFIGFILE = 'config/config.yaml'
 LOGFILE = 'dzga.log'
@@ -16,13 +16,14 @@ REPORT_STATE_BASE_URL = HOMEGRAPH_URL + "v1/devices:reportStateAndNotification"
 SESSION_TIMEOUT = 3600
 AUTH_CODE_TIMEOUT = 600
 
-DOMOTICZ_GET_ALL_DEVICES_URL = '/json.htm?type=devices&plan='
-DOMOTICZ_GET_ONE_DEVICE_URL = '/json.htm?type=devices&rid='
-DOMOTICZ_GET_SCENES_URL = '/json.htm?type=scenes'
-DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=settings'
-DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=cameras'
+DOMOTICZ_GET_ALL_DEVICES_URL = '/json.htm?type=command&param=getdevices&plan='
+DOMOTICZ_GET_ONE_DEVICE_URL = '/json.htm?type=command&param=getdevices&rid='
+DOMOTICZ_GET_SCENES_URL = '/json.htm?type=command&param=getscenes'
+DOMOTICZ_GET_SETTINGS_URL = '/json.htm?type=command&param=getsettings'
+DOMOTICZ_GET_CAMERAS_URL = '/json.htm?type=command&param=getcameras'
 DOMOTICZ_GET_VERSION = '/json.htm?type=command&param=getversion'
 DOMOTICZ_SEND_COMMAND = 'json.htm?type=command&param='
+DOMOTICZ_GET_PLANS = '/json.htm?type=command&param=getplans'
 
 # https://developers.google.com/actions/smarthome/guides/
 PREFIX_TYPES = 'action.devices.types.'

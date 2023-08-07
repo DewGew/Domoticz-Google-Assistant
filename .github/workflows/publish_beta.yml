@@ -4,8 +4,7 @@ on:
   workflow_dispatch:
     branches: [ "beta" ]
 jobs:
-  publish-docker-image:
-    if: github.event.pull_request.merged == true
+  publish-docker-image-beta:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
