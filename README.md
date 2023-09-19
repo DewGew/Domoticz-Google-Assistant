@@ -8,6 +8,7 @@ Standalone implementation for [Domoticz Home Automation](https://www.domoticz.co
 Based on Pawcio's script at [Domoticz Forum](https://www.domoticz.com/forum/viewtopic.php?f=69&t=27244)
 
 Required:
+- latest Domoticz stable 2023.2 or above.
 - public url
 - python >= 3.5
 - Make local deployment available trough HTTPS with valid certificate with one below:
