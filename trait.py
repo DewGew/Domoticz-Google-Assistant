@@ -1013,15 +1013,15 @@ class CameraStreamTrait(_Trait):
 
     def query_attributes(self):
         """Return camera stream attributes."""
+        return {}
+
+    def execute(self, command, params, challenge):
+        """Execute a get camera stream command."""
         for camUrl, idx in enumerate(configuration['Camera_Stream']['Cameras']['Idx']):
             if idx in self.state.id:
                 url = configuration['Camera_Stream']['Cameras']['Camera_URL'][camUrl]
         self.stream_info = {'cameraStreamAccessUrl': url}
         return self.stream_info or {}
-
-    def execute(self, command, params, challenge):
-        """Execute a get camera stream command."""
-        return
 
 
 @register_trait
