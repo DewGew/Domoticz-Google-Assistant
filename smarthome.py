@@ -185,7 +185,7 @@ def AogGetDomain(device):
         return DOMAINS['scene']
     elif device["Type"] in ['Temp', 'Temp + Humidity', 'Temp + Humidity + Baro']:
         return DOMAINS['temperature']
-    elif 'Thermostat' == device['Type']:
+    elif device['Type'] in ['Thermostat', 'Setpoint']:
         return DOMAINS['thermostat']
     elif 'Color Switch' == device["Type"]: 
         if "Dimmer" == device["SwitchType"]:
